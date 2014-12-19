@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/contacts_item_entry"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants"
+    android:background="@drawable/default_bkg_selector" >
+
+    <com.dhn.marrysocial.roundedimageview.RoundedImageView
+        android:id="@+id/contacts_person_pic"
+        android:layout_width="102px"
+        android:layout_height="102px"
+        android:layout_centerVertical="true"
+        android:layout_margin="10dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/person_default_small_pic"
+        app:border_width="0dp"
+        app:corner_radius="50dp"
+        app:oval="false" />
+
+    <CheckBox
+        android:id="@+id/contacts_person_description_more"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="18dp"
+        android:button="@null"
+        android:background="@drawable/contacts_radiobtn_selector" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/contacts_person_description_more"
+        android:layout_toRightOf="@id/contacts_person_pic"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/contacts_person_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:alpha="0.8"
+            android:text="姓名" />
+
+        <TextView
+            android:id="@+id/contacts_person_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginRight="10dp"
+            android:alpha="0.5"
+            android:text="来自 章楠楠 等的通讯录"
+            android:textSize="12dp" />
+    </LinearLayout>
+
+</RelativeLayout>

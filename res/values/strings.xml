@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">"有友"</string>
+    <string name="tab_community">"社区"</string>
+    <string name="tab_trade">"交易"</string>
+    <string name="tab_exerise">"活动"</string>
+    <string name="tab_setting">"用户"</string>
+    <string name="exit_confirm">"请再按一次退出来钱"</string>
+
+    <string name="app_list_header_refresh_down">下拉刷新</string>
+    <string name="app_list_header_refreshing">正在刷新</string>
+    <string name="app_list_header_refresh_up">松开刷新</string>
+    <string name="app_list_header_refresh_last_update">上次更新于:%s</string>
+    <string name="app_list_footer_more">更多</string>
+    <string name="app_list_footer_loading">正在加载</string>
+    <string name="network_not_available">网络连接不可用</string>
+    <string name="contacts_detail">来自 %s... 等的通讯录</string>
+    <string name="contacts_detail_more">来自 %s 的通讯录</string>
+    <string name="add_pics_limit">您最多可以添加 9 张照片</string>
+
+    <string name="time_just_now">刚刚</string>
+    <string name="time_five_seconds_before">五分钟前</string>
+    <string name="time_ten_seconds_before">十分钟前</string>
+    <string name="time_fifteen_seconds_before">十五分钟前</string>
+    <string name="time_thirty_seconds_before">三十分钟前</string>
+    <string name="time_one_hour_before">一小时前</string>
+    <string name="time_two_hours_before">二小时前</string>
+    <string name="time_three_hours_before">三小时前</string>
+    <string name="time_five_hours_before">五小时前</string>
+    <string name="time_one_day_before">一天前</string>
+
+    <string name="dynamic_bravo_tips_title">共 %1$d 个人点赞</string>
+    <string name="dynamic_reply_tips_title">显示全部 %1$d 条评论</string>
+
+</resources>

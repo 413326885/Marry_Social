@@ -1,0 +1,86 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/actionbar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="95px"
+        android:background="#991abc9c" >
+
+        <ImageView
+            android:id="@+id/actionbar_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:paddingLeft="8dp"
+            android:src="@drawable/ic_actionbar_logo" />
+
+        <TextView
+            android:id="@+id/actionbar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/actionbar_logo"
+            android:paddingLeft="8dp"
+            android:text="来钱"
+            android:textColor="@android:color/white"
+            android:textSize="18sp" />
+
+        <ImageButton
+            android:id="@+id/actionbar_setting"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:background="@drawable/default_bkg_selector"
+            android:src="@drawable/ic_settings" />
+
+        <ImageButton
+            android:id="@+id/actionbar_user_center"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/actionbar_setting"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:background="@drawable/default_bkg_selector"
+            android:src="@drawable/ic_user_center" />
+
+        <ImageButton
+            android:id="@+id/actionbar_invite_friends"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/actionbar_user_center"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:background="@drawable/default_bkg_selector"
+            android:src="@drawable/ic_invite" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/community_headbar"
+        android:layout_width="match_parent"
+        android:layout_height="40dp" >
+
+        <com.dhn.marrysocial.viewpagerindicator.TabPageIndicator
+            android:id="@+id/community_headbar_indicator"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/base_action_bar_bg" />
+    </RelativeLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:flipInterval="30"
+        android:persistentDrawingCache="animation" />
+
+</LinearLayout>

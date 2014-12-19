@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <RelativeLayout
+        android:id="@+id/edit_info_comments_head"
+        android:layout_width="match_parent"
+        android:layout_height="115px" >
+
+        <RelativeLayout
+            android:id="@+id/edit_info_comment_return"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/gray_bkg_selector"
+            android:clickable="true" >
+
+            <ImageView
+                android:id="@+id/edit_info_comment_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:paddingLeft="12dp"
+                android:paddingRight="2dp"
+                android:src="@drawable/ic_return_button" />
+
+            <com.dhn.marrysocial.roundedimageview.RoundedImageView
+                android:id="@+id/edit_info_comments_person_pic"
+                android:layout_width="102px"
+                android:layout_height="102px"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/edit_info_comment_arrow"
+                android:scaleType="centerCrop"
+                android:src="@drawable/head"
+                app:border_width="0dp"
+                app:corner_radius="50dp"
+                app:oval="false" />
+
+            <TextView
+                android:id="@+id/edit_info_comments_person_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/edit_info_comments_person_pic"
+                android:alpha="0.8"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:text="楠楠"
+                android:textSize="16dp" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/edit_info_comments_foot"
+        android:layout_width="match_parent"
+        android:layout_height="95px"
+        android:layout_alignParentBottom="true"
+        android:background="@color/gray_background_color" >
+
+        <ImageView
+            android:id="@+id/edit_info_comments_camera"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/gray_bkg_selector"
+            android:paddingLeft="24dp"
+            android:paddingRight="24dp"
+            android:src="@drawable/ic_camera_button" />
+
+        <ImageView
+            android:id="@+id/edit_info_comments_gallery"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@id/edit_info_comments_camera"
+            android:background="@drawable/gray_bkg_selector"
+            android:paddingLeft="24dp"
+            android:paddingRight="24dp"
+            android:src="@drawable/ic_gallery_button" />
+
+        <ImageView
+            android:id="@+id/edit_info_comments_send"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/gray_bkg_selector"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:src="@drawable/ic_send_button_unselected" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/edit_info_comments_body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/edit_info_comments_foot"
+        android:layout_below="@id/edit_info_comments_head"
+        android:background="@color/transparent" >
+
+        <EditText
+            android:id="@+id/edit_info_comments_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@color/transparent"
+            android:hint="说点什么，让世界听到你的心跳..."
+            android:minHeight="20dp"
+            android:padding="10dp" />
+
+        <GridView
+            android:id="@+id/edit_info_comments_add_pics"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/edit_info_comments_description"
+            android:padding="20dp"
+            android:columnWidth="98dp"
+            android:horizontalSpacing="5dp"
+            android:numColumns="auto_fit"
+            android:stretchMode="columnWidth"
+            android:verticalSpacing="10dp"
+            android:listSelector="#00000000" >
+        </GridView>
+    </RelativeLayout>
+
+</RelativeLayout>

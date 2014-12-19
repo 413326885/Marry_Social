@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <!--
+         <RelativeLayout
+        android:id="@+id/dynamic_info_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp" >
+
+        <ImageView
+            android:id="@+id/dynamic_info_send_comment_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/main_color"/>
+
+        <ImageView
+            android:id="@+id/dynamic_info_send_comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_margin="10dp"
+            android:src="@drawable/ic_send" />
+
+        <EditText
+            android:id="@+id/dynamic_info_edit_comment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_toLeftOf="@id/dynamic_info_send_comment"
+            android:background="@drawable/bkg_edit_comment"
+            android:hint="发表你的动态" />
+    </RelativeLayout>
+    -->
+
+
+    <!--
+         <com.dhn.marrysocial.view.RefreshListView
+        android:id="@+id/dynamic_info_listView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:listSelector="#00000000" >
+    </com.dhn.marrysocial.view.RefreshListView>
+    -->
+
+    <ListView
+        android:id="@+id/dynamic_info_listView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:listSelector="#00000000" >
+
+    </ListView>
+
+    <TextView
+        android:id="@+id/dynamic_info_list_empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="没有有效的动态内容"
+        android:textSize="18sp" />
+
+    <ImageView
+        android:id="@+id/dynamic_info_edit_comment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="14dp"
+        android:layout_marginRight="6dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:src="@drawable/dynamic_info_edit_selector" />
+
+    <RelativeLayout
+        android:id="@+id/dynamic_info_reply_foot"
+        android:layout_width="match_parent"
+        android:layout_height="95px"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"
+        android:background="@drawable/base_action_bar_bg" >
+
+        <ImageView
+            android:id="@+id/dynamic_info_reply_send"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/gray_bkg_selector"
+            android:clickable="true"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:src="@drawable/ic_send_button_selected" />
+
+        <EditText
+            android:id="@+id/dynamic_info_reply_contents"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@id/dynamic_info_reply_send"
+            android:background="@drawable/gray_bkg_selector"
+            android:paddingLeft="16dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:hint="让世界聆听你的心跳..." />
+    </RelativeLayout>
+
+</RelativeLayout>

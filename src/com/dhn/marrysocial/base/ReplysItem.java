@@ -1,0 +1,61 @@
+package com.dhn.marrysocial.base;
+
+public class ReplysItem {
+
+    private static final String TAG = "ReplysItem";
+
+    private String mUid;
+    private String mFullName;
+    private String mReplyContents;
+    private String mCommentId;
+    private String mReplyTime;
+    private String mReplyId;
+
+    public String getUid() {
+        return mUid;
+    }
+
+    public void setUid(String mUid) {
+        this.mUid = mUid;
+    }
+
+    public String getFullName() {
+        return mFullName;
+    }
+
+    public void setFullName(String mFullName) {
+        this.mFullName = mFullName;
+    }
+
+    public String getReplyContents() {
+        return mReplyContents;
+    }
+
+    public void setReplyContents(String mReplyContents) {
+        this.mReplyContents = mReplyContents;
+    }
+
+    public String getCommentId() {
+        return mCommentId;
+    }
+
+    public void setCommentId(String mCommentId) {
+        this.mCommentId = mCommentId;
+    }
+
+    public String getReplyTime() {
+        return mReplyTime;
+    }
+
+    public void setReplyTime(String mReplyTime) {
+        this.mReplyTime = mReplyTime;
+    }
+
+    public String getReplyId() {
+        return mReplyId;
+    }
+
+    public void setReplyId(String mReplyId) {
+        this.mReplyId = mReplyId;
+    }
+}

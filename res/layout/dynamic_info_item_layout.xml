@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/dynamic_info_item_entry"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants"
+    android:paddingBottom="10dp" >
+
+    <RelativeLayout
+        android:id="@+id/dynamic_info_head"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <com.dhn.marrysocial.roundedimageview.RoundedImageView
+            android:id="@+id/dynamic_info_person_pic"
+            android:layout_width="102px"
+            android:layout_height="102px"
+            android:layout_centerVertical="true"
+            android:layout_margin="10dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/person_default_small_pic"
+            app:border_width="0dp"
+            app:corner_radius="50dp"
+            app:oval="false" />
+
+        <TextView
+            android:id="@+id/dynamic_info_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="8dp"
+            android:layout_toRightOf="@id/dynamic_info_person_pic"
+            android:alpha="0.8"
+            android:text="SWINTER"
+            android:textColor="@color/main_color"
+            android:textSize="18dp" />
+
+        <TextView
+            android:id="@+id/dynamic_info_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="18dp"
+            android:alpha="0.5"
+            android:text="10月8日"
+            android:textSize="10dp" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/dynamic_info_contents"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/dynamic_info_head"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="48dp"
+        android:layout_marginRight="20dp"
+        android:alpha="0.8"
+        android:text="今天下午去打球，有人一起吗？"
+        android:textSize="14dp" />
+
+    <RelativeLayout
+        android:id="@+id/comments_pics"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dynamic_info_contents"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="48dp"
+        android:layout_marginRight="20dp" >
+
+        <RelativeLayout
+            android:id="@+id/linearItem01"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <ImageView
+                android:id="@+id/comments_pics_01"
+                android:layout_width="86dp"
+                android:layout_height="86dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:background="@color/gray_background_color"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/comments_pics_02"
+                android:layout_width="86dp"
+                android:layout_height="86dp"
+                android:layout_marginLeft="2dp"
+                android:layout_toRightOf="@id/comments_pics_01"
+                android:background="@color/gray_background_color"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/comments_pics_03"
+                android:layout_width="86dp"
+                android:layout_height="86dp"
+                android:layout_marginLeft="2dp"
+                android:layout_toRightOf="@id/comments_pics_02"
+                android:background="@color/gray_background_color"
+                android:visibility="gone" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/linearItem02"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/linearItem01"
+            android:paddingTop="2dp" >
+
+            <ImageView
+                android:id="@+id/comments_pics_04"
+                android:layout_width="86dp"
+                android:layout_height="86dp"
+                android:background="@color/gray_background_color"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/comments_pics_05"
+                android:layout_width="86dp"
+                android:layout_height="86dp"
+                android:layout_marginLeft="2dp"
+                android:layout_toRightOf="@id/comments_pics_04"
+                android:background="@color/gray_background_color"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/comments_pics_06"
+                android:layout_width="86dp"
+                android:layout_height="86dp"
+                android:layout_marginLeft="2dp"
+                android:layout_toRightOf="@id/comments_pics_05"
+                android:background="@color/gray_background_color"
+                android:visibility="gone" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/linearItem03"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/linearItem02"
+            android:paddingTop="2dp" >
+
+            <ImageView
+                android:id="@+id/comments_pics_07"
+                android:layout_width="86dp"
+                android:layout_height="86dp"
+                android:background="@color/gray_background_color"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/comments_pics_08"
+                android:layout_width="86dp"
+                android:layout_height="86dp"
+                android:layout_marginLeft="2dp"
+                android:layout_toRightOf="@id/comments_pics_07"
+                android:background="@color/gray_background_color"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/comments_pics_09"
+                android:layout_width="86dp"
+                android:layout_height="86dp"
+                android:layout_marginLeft="2dp"
+                android:layout_toRightOf="@id/comments_pics_08"
+                android:background="@color/gray_background_color"
+                android:visibility="gone" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/dynamic_info_bravo_tips"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/comments_pics"
+        android:layout_marginLeft="48dp"
+        android:layout_marginRight="50dp"
+        android:alpha="0.5"
+        android:background="@color/gray_background_color"
+        android:orientation="horizontal"
+        android:padding="4dp" >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="6dp"
+            android:src="@drawable/ic_bravo_selected" />
+
+        <TextView
+            android:id="@+id/dynamic_info_bravo_tips_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/dynamic_bravo_tips_title"
+            android:textColor="@color/main_color"
+            android:textSize="14dp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/dynamic_info_bravo_authors"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/dynamic_info_bravo_tips"
+        android:layout_marginLeft="48dp"
+        android:layout_marginRight="50dp"
+        android:alpha="0.5"
+        android:background="@color/gray_background_color"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:padding="4dp"
+        android:text="今天下午去打球，有人一起吗？"
+        android:textColor="@color/main_color"
+        android:textSize="12dp" />
+
+    <LinearLayout
+        android:id="@+id/dynamic_info_reply_tips"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/dynamic_info_bravo_authors"
+        android:layout_marginLeft="48dp"
+        android:layout_marginRight="50dp"
+        android:alpha="0.5"
+        android:background="@color/gray_background_color"
+        android:orientation="horizontal"
+        android:padding="4dp" >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="6dp"
+            android:src="@drawable/ic_comment_selected" />
+
+        <TextView
+            android:id="@+id/dynamic_info_reply_tips_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/gray_bkg_selector"
+            android:text="@string/dynamic_reply_tips_title"
+            android:textColor="@color/main_color"
+            android:textSize="14dp" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/dynamic_info_reply"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/dynamic_info_reply_tips"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="48dp"
+        android:layout_marginRight="50dp"
+        android:alpha="0.5"
+        android:background="@color/gray_background_color" >
+
+        <LinearLayout
+            android:id="@+id/dynamic_info_reply_05"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="2dp"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:paddingTop="2dp" >
+
+            <TextView
+                android:id="@+id/dynamic_info_reply_author_05"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="在水一方"
+                android:textColor="@color/main_color"
+                android:textSize="12dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" : "
+                android:textSize="12dp" />
+
+            <TextView
+                android:id="@+id/dynamic_info_reply_content_05"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="我和你一起去打球吧。。。"
+                android:textSize="12dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/dynamic_info_reply_04"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/dynamic_info_reply_05"
+            android:orientation="horizontal"
+            android:paddingBottom="2dp"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:paddingTop="2dp" >
+
+            <TextView
+                android:id="@+id/dynamic_info_reply_author_04"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="在水一方"
+                android:textColor="@color/main_color"
+                android:textSize="12dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" : "
+                android:textSize="12dp" />
+
+            <TextView
+                android:id="@+id/dynamic_info_reply_content_04"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="我和你一起去打球吧。。。"
+                android:textSize="12dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/dynamic_info_reply_03"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/dynamic_info_reply_04"
+            android:orientation="horizontal"
+            android:paddingBottom="2dp"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:paddingTop="2dp" >
+
+            <TextView
+                android:id="@+id/dynamic_info_reply_author_03"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="在水一方"
+                android:textColor="@color/main_color"
+                android:textSize="12dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" : "
+                android:textSize="12dp" />
+
+            <TextView
+                android:id="@+id/dynamic_info_reply_content_03"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="我和你一起去打球吧。。。"
+                android:textSize="12dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/dynamic_info_reply_02"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/dynamic_info_reply_03"
+            android:orientation="horizontal"
+            android:paddingBottom="2dp"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:paddingTop="2dp" >
+
+            <TextView
+                android:id="@+id/dynamic_info_reply_author_02"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="在水一方"
+                android:textColor="@color/main_color"
+                android:textSize="12dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" : "
+                android:textSize="12dp" />
+
+            <TextView
+                android:id="@+id/dynamic_info_reply_content_02"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="我和你一起去打球吧。。。"
+                android:textSize="12dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/dynamic_info_reply_01"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/dynamic_info_reply_02"
+            android:orientation="horizontal"
+            android:paddingBottom="2dp"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:paddingTop="2dp" >
+
+            <TextView
+                android:id="@+id/dynamic_info_reply_author_01"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="在水一方"
+                android:textColor="@color/main_color"
+                android:textSize="12dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" : "
+                android:textSize="12dp" />
+
+            <TextView
+                android:id="@+id/dynamic_info_reply_content_01"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="我和你一起去打球吧。。。"
+                android:textSize="12dp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/dynamic_info_comment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/dynamic_info_reply"
+        android:layout_marginBottom="10dp" >
+
+        <TextView
+            android:id="@+id/dynamic_info_friend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="18dp"
+            android:alpha="0.5"
+            android:text="来自 立东 的好友" />
+
+        <ImageView
+            android:id="@+id/dynamic_info_pinglun"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/ic_comment" />
+
+        <CheckBox
+            android:id="@+id/dynamic_info_bravo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="30dp"
+            android:layout_toLeftOf="@id/dynamic_info_pinglun"
+            android:background="@drawable/dynamic_info_bravo_checkbox_selector"
+            android:button="@null" />
+    </RelativeLayout>
+
+</RelativeLayout>
