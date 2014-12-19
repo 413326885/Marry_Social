@@ -80,8 +80,8 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
             MarrySocialDBHelper.KEY_REPLY_CONTENTS,
             MarrySocialDBHelper.KEY_ADDED_TIME };
 
-    // private RefreshListView mListView;
-    private ListView mListView;
+     private RefreshListView mListView;
+//    private ListView mListView;
     private DynamicInfoListAdapter mListViewAdapter;
     private ImageView mEditComment;
 
@@ -283,9 +283,9 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
 
         View view = inflater.inflate(R.layout.dynamic_info_fragment_layout,
                 container, false);
-        // mListView = (RefreshListView)
-        // view.findViewById(R.id.dynamic_info_listView);
-        mListView = (ListView) view.findViewById(R.id.dynamic_info_listView);
+         mListView = (RefreshListView)
+         view.findViewById(R.id.dynamic_info_listView);
+//        mListView = (ListView) view.findViewById(R.id.dynamic_info_listView);
         TextView emptyView = (TextView) view
                 .findViewById(R.id.dynamic_info_list_empty);
         mListViewAdapter = new DynamicInfoListAdapter(getActivity());
