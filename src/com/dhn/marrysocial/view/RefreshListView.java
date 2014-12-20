@@ -275,6 +275,7 @@ public class RefreshListView extends ListView implements OnScrollListener {
                 mHeaderTextView.setText("正在加载...");
                 mHeaderProgressBar.setVisibility(View.VISIBLE);
                 mHeaderPullDownImageView.setVisibility(View.GONE);
+                mHeaderPullDownImageView.clearAnimation();
                 mPullRefreshState = EXIT_PULL_REFRESH;
                 new Thread() {
                     public void run() {
@@ -283,7 +284,8 @@ public class RefreshListView extends ListView implements OnScrollListener {
                         }
                         Message msg = mHandler.obtainMessage();
                         msg.what = REFRESH_DONE;
-                        mHandler.sendMessage(msg);
+                        mHandler.sendMessageDelayed(msg, 2000);
+//                        mHandler.sendMessage(msg);
                     };
                 }.start();
                 break;
