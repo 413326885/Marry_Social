@@ -19,6 +19,7 @@ import com.dhn.marrysocial.services.ReadContactsIntentService;
 import com.dhn.marrysocial.services.UploadCommentsAndBravosAndReplysIntentService;
 import com.dhn.marrysocial.utils.Utils;
 import com.dhn.marrysocial.view.RefreshListView;
+import com.dhn.marrysocial.view.RefreshListView.PullDownRefreshListener;
 import com.dhn.marrysocial.R;
 
 import android.content.ContentResolver;
@@ -295,6 +296,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
         mListViewAdapter.setReplyBtnClickedListener(mReplyBtnClickedListener);
         mListView.setAdapter(mListViewAdapter);
         mListView.setEmptyView(emptyView);
+        mListView.setOnPullDownRefreshListener(mPullDownRefreshListener);
 
         mListView.setOnTouchListener(new OnTouchListener() {
 
@@ -650,4 +652,22 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
         ContentResolver resolver = getActivity().getContentResolver();
         resolver.insert(CommonDataStructure.REPLYURL, insertValues);
     }
+
+    PullDownRefreshListener mPullDownRefreshListener = new PullDownRefreshListener() {
+
+        @Override
+        public Object pullToRefresh() {
+            downloadUserComments();
+            return null;
+        }
+
+        @Override
+        public void refreshDone(Object obj) {
+        }
+
+        @Override
+        public void loadMore() {
+        }
+
+    };
 }

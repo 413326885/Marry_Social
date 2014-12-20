@@ -66,9 +66,9 @@ public class RefreshListView extends ListView implements OnScrollListener {
     private RotateAnimation mReleaseToPullAnimation;
 
     private Object mRefreshObject = null;
-    private RefreshListener mRefreshListener = null;
+    private PullDownRefreshListener mRefreshListener = null;
 
-    public void setOnRefreshListener(RefreshListener refreshListener) {
+    public void setOnPullDownRefreshListener(PullDownRefreshListener refreshListener) {
         this.mRefreshListener = refreshListener;
     }
 
@@ -104,7 +104,7 @@ public class RefreshListView extends ListView implements OnScrollListener {
                     mFooterTextView.setText(R.string.app_list_footer_loading);
                     mFooterProgressBar.setVisibility(View.VISIBLE);
                     if (mRefreshListener != null) {
-                        mRefreshListener.more();
+                        mRefreshListener.loadMore();
                     }
                 }
             }
@@ -115,7 +115,7 @@ public class RefreshListView extends ListView implements OnScrollListener {
         measureView(mHeaderLinearLayout);
         mHeaderHeight = mHeaderLinearLayout.getMeasuredHeight();
 
-        mSimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+        mSimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         mHeaderUpdateText.setText(context.getString(
                 R.string.app_list_header_refresh_last_update,
                 mSimpleDateFormat.format(new Date())));
@@ -280,7 +280,7 @@ public class RefreshListView extends ListView implements OnScrollListener {
                 new Thread() {
                     public void run() {
                         if (mRefreshListener != null) {
-                            mRefreshObject = mRefreshListener.refreshing();
+                            mRefreshObject = mRefreshListener.pullToRefresh();
                         }
                         Message msg = mHandler.obtainMessage();
                         msg.what = REFRESH_DONE;
@@ -314,7 +314,7 @@ public class RefreshListView extends ListView implements OnScrollListener {
                 mPullRefreshState = NONE_PULL_REFRESH;
                 setSelection(1);
                 if (mRefreshListener != null) {
-                    mRefreshListener.refreshed(mRefreshObject);
+                    mRefreshListener.refreshDone(mRefreshObject);
                 }
                 break;
             default:
@@ -323,12 +323,11 @@ public class RefreshListView extends ListView implements OnScrollListener {
         }
     };
 
-    public interface RefreshListener {
-        Object refreshing();
+    public interface PullDownRefreshListener {
 
-        void refreshed(Object obj);
-
-        void more();
+        Object pullToRefresh();
+        void refreshDone(Object obj);
+        void loadMore();
     }
 
     public void finishFootView() {
