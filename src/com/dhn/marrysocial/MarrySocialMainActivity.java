@@ -6,13 +6,16 @@ import com.dhn.marrysocial.adapter.ViewPagerFragmentAdapter;
 import com.dhn.marrysocial.fragment.ChatMsgFragment;
 import com.dhn.marrysocial.fragment.DynamicInfoFragment;
 import com.dhn.marrysocial.fragment.ContactsListFragment;
+import com.dhn.marrysocial.services.DownloadNoticesService;
 import com.dhn.marrysocial.viewpagerindicator.TabPageIndicator;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Window;
 import android.widget.Toast;
@@ -35,6 +38,7 @@ public class MarrySocialMainActivity extends FragmentActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.marrysocial_main);
         initViewPager();
+        startDownloadNoticesServices();
     }
 
     @Override
@@ -97,5 +101,23 @@ public class MarrySocialMainActivity extends FragmentActivity {
             return true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopDownloadNoticesServices();
+    }
+
+    private void startDownloadNoticesServices() {
+        Log.e(TAG, "nannan startDownloadNoticesServices");
+        Intent service = new Intent(getApplicationContext(), DownloadNoticesService.class);
+        startService(service);
+    }
+
+    private void stopDownloadNoticesServices() {
+        Log.e(TAG, "nannan stopDownloadNoticesServices");
+        Intent service = new Intent(getApplicationContext(), DownloadNoticesService.class);
+        stopService(service);
     }
 }

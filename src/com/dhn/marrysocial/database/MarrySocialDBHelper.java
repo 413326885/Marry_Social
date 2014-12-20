@@ -57,6 +57,9 @@ public class MarrySocialDBHelper {
     public static final String KEY_REPLY_CONTENTS = "reply_contents";
     public static final String KEY_REPLY_ID = "reply_id";
 
+    // for bravos table
+    public static final String KEY_BRAVO_ID = "bravo_id";
+
     private static final String DATABASE_CREATE_CONTACTS = "create table contacts ( "
             + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, avatar text, name text, friends text )";
 

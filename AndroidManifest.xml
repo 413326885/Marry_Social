@@ -56,6 +56,8 @@
         </service>
         <service android:name=".services.DownloadCommentsIntentService" >
         </service>
+        <service android:name=".services.DownloadNoticesService" >
+        </service>
 
         <provider
             android:name="com.dhn.marrysocial.provider.DataSetProvider"

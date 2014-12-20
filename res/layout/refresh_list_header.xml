@@ -33,7 +33,7 @@
             android:gravity="center"
             android:paddingTop="8dip"
             android:text="@string/app_list_header_refresh_down"
-            android:textColor="#192F06"
+            android:textColor="@color/main_color"
             android:textSize="12dip" />
 
         <TextView
@@ -44,7 +44,7 @@
             android:gravity="center"
             android:paddingBottom="8dip"
             android:text="@string/app_list_header_refresh_last_update"
-            android:textColor="#192F06"
+            android:textColor="@color/main_color"
             android:textSize="12dip" />
     </RelativeLayout>
 
