@@ -58,6 +58,8 @@
         </service>
         <service android:name=".services.DownloadNoticesService" >
         </service>
+        <service android:name=".services.DownloadIndirectFriendsIntentServices" >
+        </service>
 
         <provider
             android:name="com.dhn.marrysocial.provider.DataSetProvider"

@@ -35,15 +35,18 @@ public class ContactsInfo {
 
     private String mUid;
     private String mPhoneNum;
-    private String mAvatar;
+    private int mAvatar;
     private String mNikeName;
     private String mRealName;
-    private String mGender;
-    private String mAstro;
-    private String mHobby;
+    private int mGender;
+    private int mAstro;
+    private int mHobby;
     private String mLastLogin;
     private String mLastIp;
-    private String[] mFriends;
+    private String mDirectFriends;
+    private String mFirstDirectFriend;
+    private int mDirectFriendsCount;
+    private String mIndirectId;
 
     public String getUid() {
         return mUid;
@@ -61,11 +64,11 @@ public class ContactsInfo {
         this.mPhoneNum = mPhoneNum;
     }
 
-    public String getAvatar() {
+    public int getHeadPic() {
         return mAvatar;
     }
 
-    public void setAvatar(String mAvatar) {
+    public void setHeadPic(int mAvatar) {
         this.mAvatar = mAvatar;
     }
 
@@ -85,27 +88,27 @@ public class ContactsInfo {
         this.mRealName = mRealName;
     }
 
-    public String getGender() {
+    public int getGender() {
         return mGender;
     }
 
-    public void setGender(String mGender) {
+    public void setGender(int mGender) {
         this.mGender = mGender;
     }
 
-    public String getAstro() {
+    public int getAstro() {
         return mAstro;
     }
 
-    public void setAstro(String mAstro) {
+    public void setAstro(int mAstro) {
         this.mAstro = mAstro;
     }
 
-    public String getHobby() {
+    public int getHobby() {
         return mHobby;
     }
 
-    public void setHobby(String mHobby) {
+    public void setHobby(int mHobby) {
         this.mHobby = mHobby;
     }
 
@@ -125,13 +128,35 @@ public class ContactsInfo {
         this.mLastIp = mLastIp;
     }
 
-    public String[] getFriends() {
-        return mFriends;
+    public String getDirectFriends() {
+        return mDirectFriends;
     }
 
-    public void setFriends(String friend) {
-        String[] friends = friend.split(",");
-        this.mFriends = friends;
+    public void setDirectFriends(String mDirectFriends) {
+        this.mDirectFriends = mDirectFriends;
     }
 
+    public String getFirstDirectFriend() {
+        return mFirstDirectFriend;
+    }
+
+    public void setFirstDirectFriend(String mFirstDirectFriend) {
+        this.mFirstDirectFriend = mFirstDirectFriend;
+    }
+
+    public int getDirectFriendsCount() {
+        return mDirectFriendsCount;
+    }
+
+    public void setDirectFriendsCount(int mDirectFriendsCount) {
+        this.mDirectFriendsCount = mDirectFriendsCount;
+    }
+
+    public String getIndirectId() {
+        return mIndirectId;
+    }
+
+    public void setIndirectId(String mIndirectId) {
+        this.mIndirectId = mIndirectId;
+    }
 }

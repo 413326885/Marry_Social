@@ -73,13 +73,12 @@ public class ContactsListAdapter extends BaseAdapter {
         holder.person_name.setText(mData.get(position).getNikeName());
         holder.person_pic.setImageResource(R.drawable.person_default_small_pic);
         holder.person_description.setText(String.format(mContext.getResources()
-                .getString(R.string.contacts_detail), (mData.get(position)
-                .getFriends())[0]));
+                .getString(R.string.contacts_detail), mData.get(position).getFirstDirectFriend()));
         holder.person_description_more.setChecked(false);
 
         final ViewHolder holder_temp = holder;
-        final String description = (mData.get(position).getFriends())[0];
-        final String[] description_more = mData.get(position).getFriends();
+        final String description = (mData.get(position).getFirstDirectFriend());
+        final String description_more = mData.get(position).getDirectFriends();
 
         holder.person_description_more
                 .setOnClickListener(new OnClickListener() {
@@ -90,7 +89,7 @@ public class ContactsListAdapter extends BaseAdapter {
                             holder_temp.person_description.setText(String
                                     .format(mContext.getResources().getString(
                                             R.string.contacts_detail_more),
-                                            transArray2String(description_more)));
+                                            description_more));
                         } else {
                             holder_temp.person_description.setText(String
                                     .format(mContext.getResources().getString(
@@ -110,13 +109,13 @@ public class ContactsListAdapter extends BaseAdapter {
         CheckBox person_description_more;
     }
 
-    private String transArray2String(String[] friends) {
-        String friend = "";
-        for (String str : friends) {
-            friend = friend + str + ", ";
-        }
-
-        friend = friend.substring(0, friend.length() - 2);
-        return friend;
-    }
+//    private String transArray2String(String[] friends) {
+//        String friend = "";
+//        for (String str : friends) {
+//            friend = friend + str + ", ";
+//        }
+//
+//        friend = friend.substring(0, friend.length() - 2);
+//        return friend;
+//    }
 }

@@ -30,9 +30,17 @@ public class MarrySocialDBHelper {
 
     // for contacts table
     public static final String KEY_UID = "uid";
-    public static final String KEY_AVATAR = "avatar";
-    public static final String KEY_NAME = "name";
-    public static final String KEY_FRIENDS = "friends";
+    public static final String KEY_PHONE_NUM = "phoneNum";
+    public static final String KEY_HEADPIC = "avatar";
+    public static final String KEY_NIKENAME = "nikename";
+    public static final String KEY_REALNAME = "realname";
+    public static final String KEY_HOBBY = "hobby";
+    public static final String KEY_GENDER = "gender";
+    public static final String KEY_ASTRO = "astro";
+    public static final String KEY_DIRECT_FRIENDS_COUNT = "directfriendscount";
+    public static final String KEY_DIRECT_FRIENDS = "directfriends";
+    public static final String KEY_FIRST_DIRECT_FRIEND = "firstdirectfriend";
+    public static final String KEY_INDIRECT_ID = "indirect_id";
 
     // for comments table
     public static final String KEY_ID = "_id";
@@ -61,7 +69,9 @@ public class MarrySocialDBHelper {
     public static final String KEY_BRAVO_ID = "bravo_id";
 
     private static final String DATABASE_CREATE_CONTACTS = "create table contacts ( "
-            + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, avatar text, name text, friends text )";
+            + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, phoneNum text, nikename text, realname text, "
+            + "hobby integer, gender integer, astro integer, directfriendscount integer, "
+            + "firstdirectfriend text, directfriends text, indirect_id text, avatar integer )";
 
     private static final String DATABASE_CREATE_COMMENTS = "create table comments ( "
             + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, comment_id text, bucket_id text, "

@@ -34,12 +34,12 @@ public class DownloadCommentsIntentService extends IntentService {
             MarrySocialDBHelper.KEY_CONTENTS };
 
     private static final String[] REPLYS_PROJECTION = {
-        MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_COMMENT_ID,
-        MarrySocialDBHelper.KEY_REPLY_ID };
+            MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_COMMENT_ID,
+            MarrySocialDBHelper.KEY_REPLY_ID };
 
     private MarrySocialDBHelper mDBHelper;
-//    private String mToken;
-//    private String mUId;
+    // private String mToken;
+    // private String mUId;
     private SharedPreferences mPrefs;
 
     private ExecutorService mExecutorService;
@@ -55,18 +55,20 @@ public class DownloadCommentsIntentService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.e(TAG, "nannan DownloadCommentsIntentService onCreate()  2222222222222");
+        Log.e(TAG,
+                "nannan DownloadCommentsIntentService onCreate()  2222222222222");
         mDBHelper = MarrySocialDBHelper.newInstance(this);
         mPrefs = this.getSharedPreferences(PREFS_LAIQIAN_DEFAULT, MODE_PRIVATE);
-//        mToken = mPrefs.getString(CommonDataStructure.TOKEN, null);
-//        mUId = mPrefs.getString(CommonDataStructure.UID, null);
+        // mToken = mPrefs.getString(CommonDataStructure.TOKEN, null);
+        // mUId = mPrefs.getString(CommonDataStructure.UID, null);
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
                 .availableProcessors() * POOL_SIZE);
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.e(TAG, "nannan DownloadCommentsIntentService onHandleIntent()  333333333333");
+        Log.e(TAG,
+                "nannan DownloadCommentsIntentService onHandleIntent()  333333333333");
         if (!Utils.isActiveNetWorkAvailable(this)) {
             Toast.makeText(this, R.string.network_not_available, 1000);
             return;
@@ -82,7 +84,9 @@ public class DownloadCommentsIntentService extends IntentService {
             Log.e(TAG, "nannan DownloadFiles ()  1234567890");
             Long addedTime = 0l;
             ArrayList<CommentsItem> commentItems = Utils
-                    .downloadCommentsList(CommonDataStructure.URL_TOPIC_COMMENT_WITH_REPLY_LIST, null);
+                    .downloadCommentsList(
+                            CommonDataStructure.URL_TOPIC_COMMENT_WITH_REPLY_LIST,
+                            null);
             if (commentItems == null || commentItems.size() == 0) {
                 return;
             }
@@ -116,11 +120,11 @@ public class DownloadCommentsIntentService extends IntentService {
         ContentValues values = new ContentValues();
         values.put(MarrySocialDBHelper.KEY_UID, comment.getUid());
         values.put(MarrySocialDBHelper.KEY_COMMENT_ID, comment.getCommentId());
-        values.put(MarrySocialDBHelper.KEY_BUCKET_ID,
-                addedTime.hashCode());
+        values.put(MarrySocialDBHelper.KEY_BUCKET_ID, addedTime.hashCode());
         values.put(MarrySocialDBHelper.KEY_ADDED_TIME, addedTime);
         values.put(MarrySocialDBHelper.KEY_CONTENTS, comment.getContents());
-        values.put(MarrySocialDBHelper.KEY_AUTHOR_FULLNAME, comment.getFulName());
+        values.put(MarrySocialDBHelper.KEY_AUTHOR_FULLNAME,
+                comment.getFulName());
         values.put(MarrySocialDBHelper.KEY_PHOTO_COUNT, comment.getPhotoCount());
         values.put(MarrySocialDBHelper.KEY_BRAVO_COUNT, 0);
         values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
@@ -135,13 +139,15 @@ public class DownloadCommentsIntentService extends IntentService {
         insertValues.put(MarrySocialDBHelper.KEY_COMMENT_ID,
                 reply.getCommentId());
         insertValues.put(MarrySocialDBHelper.KEY_UID, reply.getUid());
-        insertValues.put(MarrySocialDBHelper.KEY_AUTHOR_FULLNAME, reply.getFullName());
+        insertValues.put(MarrySocialDBHelper.KEY_AUTHOR_FULLNAME,
+                reply.getFullName());
         insertValues.put(MarrySocialDBHelper.KEY_REPLY_CONTENTS,
                 reply.getReplyContents());
         insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
                 reply.getReplyTime());
         insertValues.put(MarrySocialDBHelper.KEY_REPLY_ID, reply.getReplyId());
-        insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS, MarrySocialDBHelper.DOWNLOAD_FROM_CLOUD_SUCCESS);
+        insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
+                MarrySocialDBHelper.DOWNLOAD_FROM_CLOUD_SUCCESS);
 
         ContentResolver resolver = this.getContentResolver();
         resolver.insert(CommonDataStructure.REPLYURL, insertValues);
@@ -174,8 +180,7 @@ public class DownloadCommentsIntentService extends IntentService {
         try {
             String whereclause = MarrySocialDBHelper.KEY_REPLY_ID + " = "
                     + replyId;
-            cursor = mDBHelper.query(
-                    MarrySocialDBHelper.DATABASE_REPLYS_TABLE,
+            cursor = mDBHelper.query(MarrySocialDBHelper.DATABASE_REPLYS_TABLE,
                     REPLYS_PROJECTION, whereclause, null, null, null, null,
                     null);
             if (cursor == null || cursor.getCount() == 0) {

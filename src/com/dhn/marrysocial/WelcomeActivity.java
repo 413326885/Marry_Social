@@ -1,6 +1,7 @@
 package com.dhn.marrysocial;
 
 import com.dhn.marrysocial.common.CommonDataStructure;
+import com.dhn.marrysocial.services.DownloadIndirectFriendsIntentServices;
 import com.dhn.marrysocial.services.ReadContactsIntentService;
 import com.dhn.marrysocial.test.MainActivity;
 
@@ -34,6 +35,7 @@ public class WelcomeActivity extends Activity {
             return;
         }
         uploadUserContacts();
+        downloadUserContacts();
 
         Editor editor = prefs.edit();
         editor.putBoolean(CommonDataStructure.IS_FIRST_STARTUP, false);
@@ -77,4 +79,8 @@ public class WelcomeActivity extends Activity {
 //        startService(serviceIntent);
     }
 
+    private void downloadUserContacts() {
+      Intent serviceIntent = new Intent(this, DownloadIndirectFriendsIntentServices.class);
+      startService(serviceIntent);
+    }
 }

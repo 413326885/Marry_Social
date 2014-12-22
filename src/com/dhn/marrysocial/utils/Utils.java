@@ -58,6 +58,7 @@ import android.widget.Toast;
 import com.dhn.marrysocial.R;
 import com.dhn.marrysocial.activity.EditCommentsActivity.UploadCommentContentEntry;
 import com.dhn.marrysocial.base.CommentsItem;
+import com.dhn.marrysocial.base.ContactsInfo;
 import com.dhn.marrysocial.base.NoticesItem;
 import com.dhn.marrysocial.base.ReplysItem;
 import com.dhn.marrysocial.common.CommonDataStructure;
@@ -615,8 +616,8 @@ public class Utils {
         return resultCode;
     }
 
-    public static boolean uploadBravoFile(String RequestURL,
-            String uId, String commentId) {
+    public static boolean uploadBravoFile(String RequestURL, String uId,
+            String commentId) {
 
         Log.e(TAG, "nannan uploadBravoFile ");
         boolean resultCode = false;
@@ -985,13 +986,14 @@ public class Utils {
         }
     }
 
-    public static ArrayList<CommentsItem> downloadCommentsList(String RequestURL, DownloadCommentsEntry entry) {
+    public static ArrayList<CommentsItem> downloadCommentsList(
+            String RequestURL, DownloadCommentsEntry entry) {
 
         Log.e(TAG, "nannan downloadCommentsList   4444444444");
         URL postUrl = null;
         HttpURLConnection connection = null;
         DataOutputStream output = null;
-        ArrayList<CommentsItem> commentItems = new ArrayList<CommentsItem> ();
+        ArrayList<CommentsItem> commentItems = new ArrayList<CommentsItem>();
 
         try {
             postUrl = new URL(RequestURL);
@@ -1017,7 +1019,7 @@ public class Utils {
             JSONObject commentContent = new JSONObject();
             commentContent.put("uid", "2");
             commentContent.put("indirectuids", "2,5,6");
-//            commentContent.put("datetime", entry.addedTime);
+            // commentContent.put("datetime", entry.addedTime);
 
             String content = null;
             content = "jsondata="
@@ -1047,7 +1049,7 @@ public class Utils {
             }
 
             JSONArray respData = response.getJSONArray("data");
-            for (int index = 0; index < respData.length(); index ++) {
+            for (int index = 0; index < respData.length(); index++) {
                 JSONObject comment = respData.getJSONObject(index);
                 CommentsItem commentItem = new CommentsItem();
                 commentItem.setUid(comment.getString("uid"));
@@ -1055,12 +1057,13 @@ public class Utils {
                 commentItem.setAddTime(comment.getString("addtime"));
                 commentItem.setContents(comment.getString("content"));
                 commentItem.setFullName(comment.getString("fullname"));
-                commentItem.setPhotoCount(Integer.valueOf(comment.getString("pics")));
+                commentItem.setPhotoCount(Integer.valueOf(comment
+                        .getString("pics")));
                 int replyCount = Integer.valueOf(comment.getString("replies"));
-                ArrayList<ReplysItem> replys = new ArrayList<ReplysItem> ();
+                ArrayList<ReplysItem> replys = new ArrayList<ReplysItem>();
                 if (replyCount > 0) {
                     JSONArray replyLists = comment.getJSONArray("replies_info");
-                    for (int pointer = 0; pointer < replyLists.length(); pointer ++) {
+                    for (int pointer = 0; pointer < replyLists.length(); pointer++) {
                         JSONObject item = replyLists.getJSONObject(pointer);
                         ReplysItem reply = new ReplysItem();
                         reply.setCommentId(item.getString("tid"));
@@ -1071,7 +1074,7 @@ public class Utils {
                         reply.setReplyTime(item.getString("addtime"));
                         replys.add(reply);
                     }
-                    
+
                 }
                 commentItem.setReplyLists(replys);
                 commentItems.add(commentItem);
@@ -1095,13 +1098,14 @@ public class Utils {
         return null;
     }
 
-    public static ArrayList<NoticesItem> downloadNoticesList(String RequestURL, String uId, String timeStamp) {
+    public static ArrayList<NoticesItem> downloadNoticesList(String RequestURL,
+            String uId, String timeStamp) {
 
         Log.e(TAG, "nannan downloadNoticesList");
         URL postUrl = null;
         HttpURLConnection connection = null;
         DataOutputStream output = null;
-        ArrayList<NoticesItem> noticeItems = new ArrayList<NoticesItem> ();
+        ArrayList<NoticesItem> noticeItems = new ArrayList<NoticesItem>();
 
         try {
             postUrl = new URL(RequestURL);
@@ -1156,13 +1160,138 @@ public class Utils {
             }
 
             JSONArray respData = response.getJSONArray("data");
-            for (int index = 0; index < respData.length(); index ++) {
+            for (int index = 0; index < respData.length(); index++) {
                 JSONObject notice = respData.getJSONObject(index);
             }
 
             reader.close();
 
             return noticeItems;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+
+        return null;
+    }
+
+    public static ArrayList<ContactsInfo> downloadDirectFriendsList(
+            String RequestURL, String uId, String timeStamp) {
+
+        Log.e(TAG, "nannan downloadDirectFriendsList ");
+        URL postUrl = null;
+        HttpURLConnection connection = null;
+        DataOutputStream output = null;
+        ArrayList<ContactsInfo> contactsList = new ArrayList<ContactsInfo>();
+
+        try {
+            postUrl = new URL(RequestURL);
+            if (postUrl == null)
+                return null;
+
+            connection = (HttpURLConnection) postUrl.openConnection();
+            if (connection == null)
+                return null;
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestMethod("POST");
+            connection.setUseCaches(false);
+            connection.setInstanceFollowRedirects(true);
+            connection.setRequestProperty("Content-Type",
+                    "application/x-www-form-urlencoded");
+            connection.connect();
+
+            OutputStream stream = connection.getOutputStream();
+            output = new DataOutputStream(stream);
+
+            JSONObject contactContent = new JSONObject();
+            contactContent.put("uid", "3");
+            contactContent.put("timestamp", "");
+
+            String content = null;
+            content = "jsondata="
+                    + URLEncoder.encode(contactContent.toString(), "UTF-8");
+
+            if (content == null)
+                return null;
+
+            output.writeBytes(content);
+            output.flush();
+            output.close();
+
+            BufferedReader reader = null;
+            reader = new BufferedReader(new InputStreamReader(
+                    connection.getInputStream()));
+            StringBuffer resp = new StringBuffer();
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                resp.append(line);
+            }
+
+            Log.e(TAG, "nannan resp 555555555555 = " + resp);
+            JSONObject response = new JSONObject(resp.toString());
+            String code = response.getString("code");
+            if (!"200".equalsIgnoreCase(code)) {
+                return null;
+            }
+
+            JSONArray respData = response.getJSONArray("data");
+            for (int index = 0; index < respData.length(); index++) {
+
+                JSONObject contactsInfo = respData.getJSONObject(index);
+                String inDirectId = contactsInfo.getString("indirectid");
+                String fromDirectUid = contactsInfo.getString("fromdirectuid");
+                String[] fromDirectUids = fromDirectUid.split(",");
+                int directFriendsCount = fromDirectUids.length;
+
+                JSONObject fromDirectName = contactsInfo
+                        .getJSONObject("fromdirectname");
+                String firstDirectName = fromDirectName
+                        .getString(fromDirectUids[0]);
+                StringBuffer directFriends = new StringBuffer();
+                for (int point = 0; point < directFriendsCount; point++) {
+                    directFriends.append(
+                            fromDirectName.getString(fromDirectUids[point]))
+                            .append(" ");
+                }
+
+                JSONObject userinfo = contactsInfo.getJSONObject("userinfo");
+                String uid = userinfo.getString("uid");
+                String phoneNum = userinfo.getString("phone");
+                String nickname = userinfo.getString("nickname");
+                String realname = userinfo.getString("realname");
+                int avatar = Integer.valueOf(userinfo.getString("avatar"));
+                int gender = Integer.valueOf(userinfo.getString("gender"));
+                int astro = Integer.valueOf(userinfo.getString("astro"));
+                int hobby = Integer.valueOf(userinfo.getString("hobby"));
+
+                ContactsInfo contactItem = new ContactsInfo();
+                contactItem.setUid(uid);
+                contactItem.setPhoneNum(phoneNum);
+                contactItem.setNikeName(nickname);
+                contactItem.setRealName(realname);
+                contactItem.setHeadPic(avatar);
+                contactItem.setGender(gender);
+                contactItem.setAstro(astro);
+                contactItem.setHobby(hobby);
+                contactItem.setIndirectId(inDirectId);
+                contactItem.setFirstDirectFriend(firstDirectName);
+                contactItem.setDirectFriends(directFriends.toString());
+                contactItem.setDirectFriendsCount(directFriendsCount);
+                contactsList.add(contactItem);
+            }
+
+            reader.close();
+
+            return contactsList;
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {

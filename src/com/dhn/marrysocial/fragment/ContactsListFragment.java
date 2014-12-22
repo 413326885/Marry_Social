@@ -31,40 +31,23 @@ public class ContactsListFragment extends Fragment {
 
     private static final String[] PROJECTION = {
         MarrySocialDBHelper.KEY_UID,
-        MarrySocialDBHelper.KEY_AVATAR,
-        MarrySocialDBHelper.KEY_NAME,
-        MarrySocialDBHelper.KEY_FRIENDS };
+        MarrySocialDBHelper.KEY_PHONE_NUM,
+        MarrySocialDBHelper.KEY_NIKENAME,
+        MarrySocialDBHelper.KEY_REALNAME,
+        MarrySocialDBHelper.KEY_FIRST_DIRECT_FRIEND,
+        MarrySocialDBHelper.KEY_DIRECT_FRIENDS,
+        MarrySocialDBHelper.KEY_INDIRECT_ID,
+        MarrySocialDBHelper.KEY_DIRECT_FRIENDS_COUNT,
+        MarrySocialDBHelper.KEY_HEADPIC,
+        MarrySocialDBHelper.KEY_GENDER,
+        MarrySocialDBHelper.KEY_ASTRO,
+        MarrySocialDBHelper.KEY_HOBBY };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        MarrySocialDBHelper dbHelper = MarrySocialDBHelper
-                .newInstance(getActivity());
-        Cursor cursor = dbHelper.query(MarrySocialDBHelper.DATABASE_CONTACTS_TABLE,
-                PROJECTION, null, null, null, null, null, null);
-        if (cursor == null) {
-            Log.w(TAG, "nannan query fail!");
-            return;
-        }
-        Log.e(TAG, "nannan count = " + cursor.getCount());
-
-        try {
-            while (cursor.moveToNext()) {
-                String uid = cursor.getString(0);
-                String avatar = cursor.getString(1);
-                String name = cursor.getString(2);
-                String friends = cursor.getString(3);
-                ContactsInfo info = new ContactsInfo();
-                info.setUid(uid);
-                info.setAvatar(avatar);
-                info.setNikeName(name);
-                info.setFriends(friends);
-                mContactMembers.add(info);
-            }
-        } finally {
-            cursor.close();
-        }
+        mContactMembers.clear();
+        mContactMembers.addAll(loadContactsFromDB());
     }
 
     @Override
@@ -93,5 +76,60 @@ public class ContactsListFragment extends Fragment {
             getActivity().finish();
         }
         return true;
+    }
+
+    private ArrayList<ContactsInfo> loadContactsFromDB() {
+
+        ArrayList<ContactsInfo> contactMembers = new ArrayList<ContactsInfo>();
+
+        MarrySocialDBHelper dbHelper = MarrySocialDBHelper
+                .newInstance(getActivity());
+        Cursor cursor = dbHelper.query(MarrySocialDBHelper.DATABASE_CONTACTS_TABLE,
+                PROJECTION, null, null, null, null, null, null);
+        if (cursor == null) {
+            Log.w(TAG, "nannan query fail!");
+            return contactMembers;
+        }
+        Log.e(TAG, "nannan count = " + cursor.getCount());
+
+        try {
+            while (cursor.moveToNext()) {
+                String uid = cursor.getString(0);
+                String phoneNum = cursor.getString(1);
+                String nickname = cursor.getString(2);
+                String realname = cursor.getString(3);
+                String firstDirectFriend = cursor.getString(4);
+                String directFriends = cursor.getString(5);
+                String indirectId = cursor.getString(6);
+                int directFriendsCount = cursor.getInt(7);
+                int avatar = Integer.valueOf(cursor.getInt(8));
+                int gender = Integer.valueOf(cursor.getInt(9));
+                int astro = Integer.valueOf(cursor.getInt(10));
+                int hobby = Integer.valueOf(cursor.getInt(11));
+
+                ContactsInfo contactItem = new ContactsInfo();
+                contactItem.setUid(uid);
+                contactItem.setPhoneNum(phoneNum);
+                contactItem.setNikeName(nickname);
+                contactItem.setRealName(realname);
+                contactItem.setHeadPic(avatar);
+                contactItem.setGender(gender);
+                contactItem.setAstro(astro);
+                contactItem.setHobby(hobby);
+                contactItem.setIndirectId(indirectId);
+                contactItem.setFirstDirectFriend(firstDirectFriend);
+                contactItem.setDirectFriends(directFriends);
+                contactItem.setDirectFriendsCount(directFriendsCount);
+
+                contactMembers.add(contactItem);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return contactMembers;
     }
 }

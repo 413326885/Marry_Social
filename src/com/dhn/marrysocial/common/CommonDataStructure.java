@@ -85,6 +85,10 @@ public class CommonDataStructure {
             + "0QrajZ4Zjh5RHlDUlRTM2F3aWF2Y0U9IiwidmFsdWUiOiJnWCt4bVpnaWpRV0E3aFBjXC9FXC9HRjU1SktwQWRoQ1h"
             + "FdXFTWm9GbHpzZTA9IiwibWFjIjoiYWM0ZDIwYmUyNzc4NzA3YjE0NzVkZTNjNDg0NmRkYzA5NDIzOGJiNjgxMzc2M2ZmZTAwZGE4OTNkY2IwZjI3OCJ9";
 
+    public static final String CMD_INDIRECT_LIST = "eyJpdiI6IlBkc3g3WksxM0xRbnI2bjNrM3FyOW4yMU5GRU5tWmhJb"
+            + "DZcLzd6KzRRMFY4PSIsInZhbHVlIjoiUU1BeUthbmhzRlVERkYyU0g0TjZ5Q1wvTENxR2R4Z0RHRDgyN2dKcmJXUTQ"
+            + "9IiwibWFjIjoiZjA0YWNhZDY0OTM3YWQ3NTQxMjk0OWYzMjdhNzJiMmM5ZmM1YTQ1NTlkOWM4ZmE0ODk2MmZmYzc3NTAxYWE3OSJ9";
+
     public static final String URL_UPLOAD_COMMON = "http://www.pkjiao.com/verify/post/";
 
     public static final String URL_TOKEN_CHECK = URL_UPLOAD_COMMON
@@ -111,6 +115,8 @@ public class CommonDataStructure {
             + CMD_TOPIC_REPLY_POST;
     public static final String URL_TOPIC_COMMENT_WITH_REPLY_LIST = URL_UPLOAD_COMMON
             + CMD_TOPIC_COMMENT_WITH_REPLY_LIST;
+    public static final String URL_INDIRECT_LIST = URL_UPLOAD_COMMON
+            + CMD_INDIRECT_LIST;
 
     public static final Uri COMMENTURL = Uri.parse("content://"
             + DataSetProvider.AUTHORITY + "/"
