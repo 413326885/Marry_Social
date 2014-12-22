@@ -954,7 +954,7 @@ public class Utils {
     }
 
     public static String getAddedTimeTitle(Context context, String time) {
-        Long just_now = System.currentTimeMillis();
+        Long just_now = System.currentTimeMillis() / 1000;
         Long added_time = Long.valueOf(time);
         int timeSpaces = (int) (just_now - added_time);
         if (0 <= timeSpaces
@@ -980,7 +980,7 @@ public class Utils {
             return context.getString(R.string.time_one_day_before);
         } else {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-            Date curDate = new Date(added_time);
+            Date curDate = new Date(added_time * 1000);
             return formatter.format(curDate);
         }
     }

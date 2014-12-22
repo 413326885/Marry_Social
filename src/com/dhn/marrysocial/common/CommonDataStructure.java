@@ -21,17 +21,17 @@ public class CommonDataStructure {
 
     public static final int THREAD_POOL_SIZE = 10;
 
-    public static final int TIME_JUST_NOW = 5 * 60 * 1000; // milliseconds
-    public static final int TIME_FIVE_MINUTES_BEFORE = 5 * 60 * 1000;
-    public static final int TIME_TEN_MINUTES_BEFORE = 10 * 60 * 1000;
-    public static final int TIME_FIFTEEN_MINUTES_BEFORE = 15 * 60 * 1000;
-    public static final int TIME_THIRTY_MINUTES_BEFORE = 30 * 60 * 1000;
-    public static final int TIME_ONE_HOUR_BEFORE = 60 * 60 * 1000;
-    public static final int TIME_TWO_HOURS_BEFORE = 2 * 60 * 60 * 1000;
-    public static final int TIME_THREE_HOURS_BEFORE = 3 * 60 * 60 * 1000;
-    public static final int TIME_FIVE_HOURS_BEFORE = 5 * 60 * 60 * 1000;
-    public static final int TIME_ONE_DAY_BEFORE = 24 * 60 * 60 * 1000;
-    public static final int TIME_TWO_DAY_BEFORE = 2 * 24 * 60 * 60 * 1000;
+    public static final int TIME_JUST_NOW = 5 * 60; // milliseconds
+    public static final int TIME_FIVE_MINUTES_BEFORE = 5 * 60;
+    public static final int TIME_TEN_MINUTES_BEFORE = 10 * 60;
+    public static final int TIME_FIFTEEN_MINUTES_BEFORE = 15 * 60;
+    public static final int TIME_THIRTY_MINUTES_BEFORE = 30 * 60;
+    public static final int TIME_ONE_HOUR_BEFORE = 60 * 60;
+    public static final int TIME_TWO_HOURS_BEFORE = 2 * 60 * 60;
+    public static final int TIME_THREE_HOURS_BEFORE = 3 * 60 * 60;
+    public static final int TIME_FIVE_HOURS_BEFORE = 5 * 60 * 60;
+    public static final int TIME_ONE_DAY_BEFORE = 24 * 60 * 60;
+    public static final int TIME_TWO_DAY_BEFORE = 2 * 24 * 60 * 60;
 
     public static final String CMD_TOKEN_CHECK = "eyJpdiI6IjUydGNkWnlhOUhoVUJ2TmlmRUtUMjhTdlJKcTZLSGVvbzV"
             + "WXC9QRTd0TkVVPSIsInZhbHVlIjoiWmQ0dVFCVWpneWxWZXRwWWFmbEdaMVhLSmlibWgyaVpxSjhDbkJDTmRuRT0iL"

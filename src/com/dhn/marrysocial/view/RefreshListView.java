@@ -284,8 +284,8 @@ public class RefreshListView extends ListView implements OnScrollListener {
                         }
                         Message msg = mHandler.obtainMessage();
                         msg.what = REFRESH_DONE;
-                        mHandler.sendMessageDelayed(msg, 2000);
-//                        mHandler.sendMessage(msg);
+//                        mHandler.sendMessageDelayed(msg, 2000);
+                        mHandler.sendMessage(msg);
                     };
                 }.start();
                 break;
