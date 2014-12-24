@@ -74,10 +74,10 @@ public class DownloadCommentsIntentService extends IntentService {
             return;
         }
 
-        mExecutorService.execute(new DownloadFiles());
+        mExecutorService.execute(new DownloadComments());
     }
 
-    class DownloadFiles implements Runnable {
+    class DownloadComments implements Runnable {
 
         @Override
         public void run() {
@@ -85,8 +85,8 @@ public class DownloadCommentsIntentService extends IntentService {
             Long addedTime = 0l;
             ArrayList<CommentsItem> commentItems = Utils
                     .downloadCommentsList(
-                            CommonDataStructure.URL_TOPIC_COMMENT_WITH_REPLY_LIST,
-                            null);
+                            CommonDataStructure.URL_TOPIC_COMMENT_LIST,
+                            "3", "1,2,3,4,5,6,7,8,9", "", "", "");
             if (commentItems == null || commentItems.size() == 0) {
                 return;
             }
@@ -97,14 +97,14 @@ public class DownloadCommentsIntentService extends IntentService {
                 if (!isCommentIdExistInCommentsDB(comment.getCommentId())) {
                     insertCommentsToDB(comment);
                 }
-                ArrayList<ReplysItem> replyLists = comment.getReplyList();
-                if (replyLists != null && replyLists.size() != 0) {
-                    for (ReplysItem reply : replyLists) {
-                        if (!isReplyIdExistInReplysDB(reply.getReplyId())) {
-                            insertReplysToReplyDB(reply);
-                        }
-                    }
-                }
+//                ArrayList<ReplysItem> replyLists = comment.getReplyList();
+//                if (replyLists != null && replyLists.size() != 0) {
+//                    for (ReplysItem reply : replyLists) {
+//                        if (!isReplyIdExistInReplysDB(reply.getReplyId())) {
+//                            insertReplysToReplyDB(reply);
+//                        }
+//                    }
+//                }
             }
             Editor editor = mPrefs.edit();
             editor.putLong(MarrySocialDBHelper.KEY_ADDED_TIME, addedTime);

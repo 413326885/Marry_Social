@@ -39,8 +39,8 @@ public class WelcomeActivity extends Activity {
 
         Editor editor = prefs.edit();
         editor.putBoolean(CommonDataStructure.IS_FIRST_STARTUP, false);
-        editor.putString(CommonDataStructure.UID, "2");
-        editor.putString(CommonDataStructure.AUTHOR_NAME, "楠楠");
+        editor.putString(CommonDataStructure.UID, "3");
+        editor.putString(CommonDataStructure.AUTHOR_NAME, "nannan");
         editor.commit();
 
         final View view = View.inflate(this, R.layout.welcome_layout, null);

@@ -89,6 +89,18 @@ public class CommonDataStructure {
             + "DZcLzd6KzRRMFY4PSIsInZhbHVlIjoiUU1BeUthbmhzRlVERkYyU0g0TjZ5Q1wvTENxR2R4Z0RHRDgyN2dKcmJXUTQ"
             + "9IiwibWFjIjoiZjA0YWNhZDY0OTM3YWQ3NTQxMjk0OWYzMjdhNzJiMmM5ZmM1YTQ1NTlkOWM4ZmE0ODk2MmZmYzc3NTAxYWE3OSJ9";
 
+    public static final String CMD_REPLY_LIST = "eyJpdiI6IlRLNVZcL1ZUam5zb1VVb28xSk1jMG8ySXpCZWxUQ3ZqWnV2"
+            + "NkhTNE1ZXC9JZz0iLCJ2YWx1ZSI6IlRLMSt1bEJJekhuTGJrK0s2SVwvTjdRTVwvNllGSWxcL1pQV3JUNGZjYTVROU"
+            + "09IiwibWFjIjoiYjM0MTlhNWYwZDEyNDdlZTY1OTNjM2Q5ZDg3Yjg5OGIwZDg2M2NkM2Q5YTQzOWZmNWNhYjM0NjlhMjgzMGY2NiJ9";
+
+    public static final String CMD_NOTICE_LIST = "eyJpdiI6IjhxVnZJVzY4NlpNc2hwbTdmNXQ2SFRBM0tOY2wzS1lZK0N"
+            + "ZNHJiMWpxMFk9IiwidmFsdWUiOiJlTEZGcEcwSXdBQ05yTDNBblhRb2d2QTE4c2hKR1FZek9HV2Q5MUh4aEU0PSIsI"
+            + "m1hYyI6IjA1NDc0ZmI2ODAyMTk5NzczOWY5MTg3ODBkMTA5NWVkMmEzZDczZTNmZmQ4NDc0MjdlZGZhZDBhZTIyYjFiOWQifQ==";
+
+    public static final String CMD_TOPIC_COMMENT_LIST = "eyJpdiI6ImxCbVAwUUdqSjJJbHJoNk9RNlRjektZNnZsbDRGeW5HQm1F"
+            + "ckowUURya2M9IiwidmFsdWUiOiJHY3pcL29iYmo3VklNWkNZSm9oanNnbGdEXC9wcEpvVkhxdXpISnMzc3ArVms9Ii"
+            + "wibWFjIjoiOGU5MGQ1ZWVjYzQxOGU2ZTM2MjIyZTA1M2FhODNhNDNkMGQ0N2YzYjQ3ZmZlMTBlY2Q5NWNlZWYyOGIzZTM3NSJ9";
+
     public static final String URL_UPLOAD_COMMON = "http://www.pkjiao.com/verify/post/";
 
     public static final String URL_TOKEN_CHECK = URL_UPLOAD_COMMON
@@ -117,6 +129,12 @@ public class CommonDataStructure {
             + CMD_TOPIC_COMMENT_WITH_REPLY_LIST;
     public static final String URL_INDIRECT_LIST = URL_UPLOAD_COMMON
             + CMD_INDIRECT_LIST;
+    public static final String URL_REPLY_LIST = URL_UPLOAD_COMMON
+            + CMD_REPLY_LIST;
+    public static final String URL_NOTICE_LIST = URL_UPLOAD_COMMON
+            + CMD_NOTICE_LIST;
+    public static final String URL_TOPIC_COMMENT_LIST = URL_UPLOAD_COMMON
+            + CMD_TOPIC_COMMENT_LIST;
 
     public static final Uri COMMENTURL = Uri.parse("content://"
             + DataSetProvider.AUTHORITY + "/"
@@ -134,6 +152,10 @@ public class CommonDataStructure {
     public static final int KEY_COMMENTS = 100;
     public static final int KEY_BRAVOS = 101;
     public static final int KEY_REPLYS = 102;
+
+    public static final int NOTICE_COMMENT = 1;
+    public static final int NOTICE_REPLY = 2;
+    public static final int NOTICE_BRAVO = 3;
 
     // public static final Uri REPLYURL = Uri.parse("content://"
     // + DataSetProvider.AUTHORITY + "/"

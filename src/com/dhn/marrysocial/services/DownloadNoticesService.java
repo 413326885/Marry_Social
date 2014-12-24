@@ -27,16 +27,25 @@ public class DownloadNoticesService extends Service {
 
     private static final String TAG = "DownloadNoticesService";
 
-    private static final int TIME_TO_DOWNLOAD_NOTICE = 100;
+    private static final int TIME_TO_DOWNLOAD_COMMENTS = 101;
+    private static final int TIME_TO_DOWNLOAD_BRAVOS = 102;
+    private static final int TIME_TO_DOWNLOAD_REPLYS = 103;
+
     private static final int POOL_SIZE = 10;
 
     private static final String[] COMMENTS_PROJECTION = {
             MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_BUCKET_ID,
             MarrySocialDBHelper.KEY_CONTENTS };
 
+    private static final String[] BRAVOS_PROJECTION = {
+        MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_COMMENT_ID };
+
     private static final String[] REPLYS_PROJECTION = {
             MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_COMMENT_ID,
             MarrySocialDBHelper.KEY_REPLY_ID };
+
+    private static final String[] CONTACTS_PROJECTION = {
+        MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_NIKENAME };
 
     private final Timer mTimer = new Timer();
     private TimerTask mTimerTask;
@@ -49,9 +58,21 @@ public class DownloadNoticesService extends Service {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            if (msg.what == TIME_TO_DOWNLOAD_NOTICE) {
-                Log.e(TAG, "nannan time to download notices");
-                mExecutorService.execute(new DownloadNotices());
+            switch(msg.what) {
+            case TIME_TO_DOWNLOAD_COMMENTS: {
+                mExecutorService.execute(new DownloadCommentNotices());
+                break;
+            }
+            case TIME_TO_DOWNLOAD_BRAVOS: {
+                mExecutorService.execute(new DownloadBravoNotices());
+                break;
+            }
+            case TIME_TO_DOWNLOAD_REPLYS: {
+                mExecutorService.execute(new DownloadReplyNotices());
+                break;
+            }
+            default:
+                break;
             }
         }
     };
@@ -67,7 +88,8 @@ public class DownloadNoticesService extends Service {
         mTimerTask = new TimerTask() {
             @Override
             public void run() {
-                mHandler.sendEmptyMessage(TIME_TO_DOWNLOAD_NOTICE);
+                mHandler.sendEmptyMessage(TIME_TO_DOWNLOAD_BRAVOS);
+                mHandler.sendEmptyMessageDelayed(TIME_TO_DOWNLOAD_REPLYS, 2000);
             }
         };
         mTimer.schedule(mTimerTask, 2000, 2000);
@@ -88,63 +110,121 @@ public class DownloadNoticesService extends Service {
         mTimer.cancel();
     }
 
-    class DownloadNotices implements Runnable {
+    class DownloadBravoNotices implements Runnable {
 
         @Override
         public void run() {
+            Log.e(TAG, "nannan DownloadBravoNotices");
             ArrayList<NoticesItem> noticeItems = Utils.downloadNoticesList(
-                    CommonDataStructure.URL_TOPIC_COMMENT_WITH_REPLY_LIST,
-                    null, null);
+                    CommonDataStructure.URL_NOTICE_LIST,
+                    null, null, CommonDataStructure.NOTICE_BRAVO);
             if (noticeItems == null || noticeItems.size() == 0) {
                 return;
             }
+            Log.e(TAG, "nannan DownloadBravoNotices 1111");
             for (NoticesItem notice : noticeItems) {
-
+                String nikename = queryNikenameFromContactsDB(notice.getFromUid());
+                if (nikename == null || nikename.length() ==0) {
+                    nikename = "某神秘的傻逼";
+                }
+                if (!isBravoIdExistInBravosDB(notice.getFromUid(), notice.getCommentId())) {
+                    insertBravoToBravosDB(notice, nikename);
+                }
             }
         }
 
     }
 
-    private void insertReplysToReplyDB(NoticesItem notice) {
-//        ContentValues insertValues = new ContentValues();
-//        insertValues.put(MarrySocialDBHelper.KEY_COMMENT_ID,
-//                reply.getCommentId());
-//        insertValues.put(MarrySocialDBHelper.KEY_UID, mUid);
-//        insertValues.put(MarrySocialDBHelper.KEY_AUTHOR_FULLNAME, mAuthorName);
-//        insertValues.put(MarrySocialDBHelper.KEY_REPLY_CONTENTS,
-//                reply.getReplyContents());
-//        insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
-//                Long.toString(System.currentTimeMillis()));
-//        insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
-//                MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD);
-//
-//        ContentResolver resolver = getApplicationContext().getContentResolver();
-//        resolver.insert(CommonDataStructure.REPLYURL, insertValues);
+    class DownloadReplyNotices implements Runnable {
+
+        @Override
+        public void run() {
+            Log.e(TAG, "nannan DownloadReplyNotices");
+            ArrayList<NoticesItem> noticeItems = Utils.downloadNoticesList(
+                    CommonDataStructure.URL_NOTICE_LIST,
+                    null, null, CommonDataStructure.NOTICE_REPLY);
+            if (noticeItems == null || noticeItems.size() == 0) {
+                return;
+            }
+            Log.e(TAG, "nannan DownloadReplyNotices 1111");
+            for (NoticesItem notice : noticeItems) {
+                ArrayList<ReplysItem> replyItems = Utils.downloadReplysList(
+                        CommonDataStructure.URL_REPLY_LIST, notice.getUid(),
+                        notice.getCommentId(), "1,2,3,4,5,6,7,8,9", null);
+                if (replyItems == null || replyItems.size() == 0) {
+                    continue;
+                }
+                for (ReplysItem reply : replyItems) {
+                    if (!isReplyIdExistInReplysDB(reply.getReplyId())) {
+                        insertReplysToReplyDB(reply);
+                    }
+                }
+            }
+            mHandler.sendEmptyMessage(TIME_TO_DOWNLOAD_COMMENTS);
+        }
+
     }
 
-    private void insertBravoStatusToBravosDB(NoticesItem notice) {
-//        ContentValues insertValues = new ContentValues();
-//        insertValues.put(MarrySocialDBHelper.KEY_COMMENT_ID,
-//                comment.getCommentId());
-//        insertValues.put(MarrySocialDBHelper.KEY_UID, mUid);
-//        insertValues.put(MarrySocialDBHelper.KEY_AUTHOR_FULLNAME, mAuthorName);
-//        insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
-//                Long.toString(System.currentTimeMillis()));
-//        insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
-//                MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD);
-//
-//        ContentResolver resolver = getApplicationContext().getContentResolver();
-//        resolver.insert(CommonDataStructure.BRAVOURL, insertValues);
+    class DownloadCommentNotices implements Runnable {
+
+        @Override
+        public void run() {
+//            ArrayList<NoticesItem> noticeItems = Utils.downloadNoticesList(
+//                    CommonDataStructure.URL_TOPIC_COMMENT_WITH_REPLY_LIST,
+//                    null, null);
+//            if (noticeItems == null || noticeItems.size() == 0) {
+//                return;
+//            }
+//            for (NoticesItem notice : noticeItems) {
+//                String nikename = queryNikenameFromContactsDB(notice.getFromUid());
+//            }
+        }
+
     }
 
-    public boolean isBravoIdExistInBravosDB(String bravoId) {
+    private void insertReplysToReplyDB(ReplysItem reply) {
+        ContentValues insertValues = new ContentValues();
+        insertValues.put(MarrySocialDBHelper.KEY_REPLY_ID,
+                reply.getReplyId());
+        insertValues.put(MarrySocialDBHelper.KEY_COMMENT_ID,
+                reply.getCommentId());
+        insertValues.put(MarrySocialDBHelper.KEY_UID, reply.getUid());
+        insertValues.put(MarrySocialDBHelper.KEY_AUTHOR_FULLNAME, reply.getFullName());
+        insertValues.put(MarrySocialDBHelper.KEY_REPLY_CONTENTS,
+                reply.getReplyContents());
+        insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
+                reply.getReplyTime());
+        insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
+                MarrySocialDBHelper.DOWNLOAD_FROM_CLOUD_SUCCESS);
+
+        ContentResolver resolver = getApplicationContext().getContentResolver();
+        resolver.insert(CommonDataStructure.REPLYURL, insertValues);
+    }
+
+    private void insertBravoToBravosDB(NoticesItem notice, String nikename) {
+        ContentValues insertValues = new ContentValues();
+        insertValues.put(MarrySocialDBHelper.KEY_COMMENT_ID,
+                notice.getCommentId());
+        insertValues.put(MarrySocialDBHelper.KEY_UID, notice.getFromUid());
+        insertValues.put(MarrySocialDBHelper.KEY_AUTHOR_FULLNAME, nikename);
+        insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
+                notice.getTimeLine());
+        insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
+                MarrySocialDBHelper.DOWNLOAD_FROM_CLOUD_SUCCESS);
+
+        ContentResolver resolver = getApplicationContext().getContentResolver();
+        resolver.insert(CommonDataStructure.BRAVOURL, insertValues);
+    }
+
+    public boolean isBravoIdExistInBravosDB(String uId, String commentId) {
         Cursor cursor = null;
         try {
-            String whereclause = MarrySocialDBHelper.KEY_BRAVO_ID + " = "
-                    + bravoId;
+            String whereclause = MarrySocialDBHelper.KEY_UID + " = " + uId
+                    + " AND " + MarrySocialDBHelper.KEY_COMMENT_ID + " = "
+                    + commentId;
             cursor = mDBHelper.query(
-                    MarrySocialDBHelper.DATABASE_COMMENTS_TABLE,
-                    COMMENTS_PROJECTION, whereclause, null, null, null, null,
+                    MarrySocialDBHelper.DATABASE_BRAVOS_TABLE,
+                    BRAVOS_PROJECTION, whereclause, null, null, null, null,
                     null);
             if (cursor == null || cursor.getCount() == 0) {
                 return false;
@@ -178,5 +258,28 @@ public class DownloadNoticesService extends Service {
             }
         }
         return true;
+    }
+
+    public String queryNikenameFromContactsDB(String uId) {
+        String nikename = null;
+        Cursor cursor = null;
+        try {
+            String whereclause = MarrySocialDBHelper.KEY_UID + " = "
+                    + uId;
+            cursor = mDBHelper.query(MarrySocialDBHelper.DATABASE_CONTACTS_TABLE,
+                    CONTACTS_PROJECTION, whereclause, null, null, null, null,
+                    null);
+            if (cursor == null || cursor.getCount() == 0) {
+                return nikename;
+            }
+            nikename = cursor.getString(1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return nikename;
     }
 }

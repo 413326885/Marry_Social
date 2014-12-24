@@ -986,7 +986,7 @@ public class Utils {
         }
     }
 
-    public static ArrayList<CommentsItem> downloadCommentsList(
+    public static ArrayList<CommentsItem> downloadCommentsWithReplyList(
             String RequestURL, DownloadCommentsEntry entry) {
 
         Log.e(TAG, "nannan downloadCommentsList   4444444444");
@@ -1017,8 +1017,8 @@ public class Utils {
             output = new DataOutputStream(stream);
 
             JSONObject commentContent = new JSONObject();
-            commentContent.put("uid", "2");
-            commentContent.put("indirectuids", "2,5,6");
+            commentContent.put("uid", "3");
+            commentContent.put("indirectuids", "1,2,3,4,5,6,7,8,9");
             // commentContent.put("datetime", entry.addedTime);
 
             String content = null;
@@ -1099,7 +1099,7 @@ public class Utils {
     }
 
     public static ArrayList<NoticesItem> downloadNoticesList(String RequestURL,
-            String uId, String timeStamp) {
+            String uId, String timeStamp, int noticeType) {
 
         Log.e(TAG, "nannan downloadNoticesList");
         URL postUrl = null;
@@ -1129,12 +1129,15 @@ public class Utils {
             output = new DataOutputStream(stream);
 
             JSONObject noticeContent = new JSONObject();
-            noticeContent.put("uid", "2");
+            noticeContent.put("uid", "3");
+            noticeContent.put("noticetype", noticeType);
             noticeContent.put("timestamp", "");
 
+            Log.e(TAG, "nannan noticeContent  = " + noticeContent.toString());
             String content = null;
             content = "jsondata="
                     + URLEncoder.encode(noticeContent.toString(), "UTF-8");
+
 
             if (content == null)
                 return null;
@@ -1162,6 +1165,23 @@ public class Utils {
             JSONArray respData = response.getJSONArray("data");
             for (int index = 0; index < respData.length(); index++) {
                 JSONObject notice = respData.getJSONObject(index);
+                String noticeId = notice.getString("lid");
+                String uid = notice.getString("uid");
+                String fromUid = notice.getString("fromuid");
+                String timeLine = notice.getString("timeline");
+                int type = Integer.valueOf(notice.getString("noticetype"));
+                String commentId = notice.getString("tid");
+                int isReceived = Integer.valueOf(notice.getString("recived"));
+
+                NoticesItem item = new NoticesItem();
+                item.setNoticeId(noticeId);
+                item.setUid(uid);
+                item.setFromUid(fromUid);
+                item.setTimeLine(timeLine);
+                item.setNoticeType(type);
+                item.setCommentId(commentId);
+                item.setIsReceived(isReceived);
+                noticeItems.add(item);
             }
 
             reader.close();
@@ -1292,6 +1312,204 @@ public class Utils {
             reader.close();
 
             return contactsList;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+
+        return null;
+    }
+
+    public static ArrayList<ReplysItem> downloadReplysList(String RequestURL,
+            String uId, String commentId, String indirectIds, String timeStamp) {
+
+        Log.e(TAG, "nannan downloadReplysList");
+        URL postUrl = null;
+        HttpURLConnection connection = null;
+        DataOutputStream output = null;
+        ArrayList<ReplysItem> replyItems = new ArrayList<ReplysItem>();
+
+        try {
+            postUrl = new URL(RequestURL);
+            if (postUrl == null)
+                return null;
+
+            connection = (HttpURLConnection) postUrl.openConnection();
+            if (connection == null)
+                return null;
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestMethod("POST");
+            connection.setUseCaches(false);
+            connection.setInstanceFollowRedirects(true);
+            connection.setRequestProperty("Content-Type",
+                    "application/x-www-form-urlencoded");
+            connection.connect();
+
+            OutputStream stream = connection.getOutputStream();
+            output = new DataOutputStream(stream);
+
+            JSONObject replyContent = new JSONObject();
+            replyContent.put("uid", uId);
+            replyContent.put("tid", commentId);
+            replyContent.put("indirectuids", indirectIds);
+            replyContent.put("datetime", timeStamp);
+
+            String content = null;
+            content = "jsondata="
+                    + URLEncoder.encode(replyContent.toString(), "UTF-8");
+
+            if (content == null)
+                return null;
+
+            output.writeBytes(content);
+            output.flush();
+            output.close();
+
+            BufferedReader reader = null;
+            reader = new BufferedReader(new InputStreamReader(
+                    connection.getInputStream()));
+            StringBuffer resp = new StringBuffer();
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                resp.append(line);
+            }
+
+            Log.e(TAG, "nannan resp 555555555555 = " + resp);
+            JSONObject response = new JSONObject(resp.toString());
+            String code = response.getString("code");
+            if (!"200".equalsIgnoreCase(code)) {
+                return null;
+            }
+
+            JSONArray respData = response.getJSONArray("data");
+            for (int index = 0; index < respData.length(); index++) {
+                JSONObject reply = respData.getJSONObject(index);
+                String replyid = reply.getString("rid");
+                String commentid = reply.getString("tid");
+                String uid= reply.getString("uid");
+                String replycontent = reply.getString("content");
+                String addtime = reply.getString("addtime");
+                String fullname = reply.getString("fullname");
+
+                ReplysItem item = new ReplysItem();
+                item.setReplyId(replyid);
+                item.setCommentId(commentid);
+                item.setUid(uid);
+                item.setReplyContents(replycontent);
+                item.setReplyTime(addtime);
+                item.setFullName(fullname);
+
+                replyItems.add(item);
+            }
+
+            reader.close();
+
+            return replyItems;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+
+        return null;
+    }
+
+    public static ArrayList<CommentsItem> downloadCommentsList(
+            String RequestURL, String uid, String indirectid, String tid, String count, String timestamp) {
+
+        Log.e(TAG, "nannan downloadCommentsList   4444444444");
+        URL postUrl = null;
+        HttpURLConnection connection = null;
+        DataOutputStream output = null;
+        ArrayList<CommentsItem> commentItems = new ArrayList<CommentsItem>();
+
+        try {
+            postUrl = new URL(RequestURL);
+            if (postUrl == null)
+                return null;
+
+            connection = (HttpURLConnection) postUrl.openConnection();
+            if (connection == null)
+                return null;
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestMethod("POST");
+            connection.setUseCaches(false);
+            connection.setInstanceFollowRedirects(true);
+            connection.setRequestProperty("Content-Type",
+                    "application/x-www-form-urlencoded");
+            connection.connect();
+
+            OutputStream stream = connection.getOutputStream();
+            output = new DataOutputStream(stream);
+
+            JSONObject commentContent = new JSONObject();
+            commentContent.put("uid", uid);
+            commentContent.put("indirectuids", indirectid);
+            commentContent.put("tid", tid);
+            commentContent.put("count", count);
+            commentContent.put("datetime", timestamp);
+
+            String content = null;
+            content = "jsondata="
+                    + URLEncoder.encode(commentContent.toString(), "UTF-8");
+
+            if (content == null)
+                return null;
+
+            output.writeBytes(content);
+            output.flush();
+            output.close();
+
+            BufferedReader reader = null;
+            reader = new BufferedReader(new InputStreamReader(
+                    connection.getInputStream()));
+            StringBuffer resp = new StringBuffer();
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                resp.append(line);
+            }
+
+            Log.e(TAG, "nannan resp 555555555555 = " + resp);
+            JSONObject response = new JSONObject(resp.toString());
+            String code = response.getString("code");
+            if (!"200".equalsIgnoreCase(code)) {
+                return null;
+            }
+
+            JSONArray respData = response.getJSONArray("data");
+            for (int index = 0; index < respData.length(); index++) {
+                JSONObject comment = respData.getJSONObject(index);
+                CommentsItem commentItem = new CommentsItem();
+                commentItem.setUid(comment.getString("uid"));
+                commentItem.setCommentId(comment.getString("tid"));
+                commentItem.setAddTime(comment.getString("addtime"));
+                commentItem.setContents(comment.getString("content"));
+                commentItem.setFullName(comment.getString("fullname"));
+                commentItem.setPhotoCount(Integer.valueOf(comment
+                        .getString("pics")));
+                commentItems.add(commentItem);
+            }
+
+            reader.close();
+
+            return commentItems;
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
