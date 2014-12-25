@@ -1129,9 +1129,9 @@ public class Utils {
             output = new DataOutputStream(stream);
 
             JSONObject noticeContent = new JSONObject();
-            noticeContent.put("uid", "3");
+            noticeContent.put("uid", uId);
             noticeContent.put("noticetype", noticeType);
-            noticeContent.put("timestamp", "");
+            noticeContent.put("timestamp", timeStamp);
 
             Log.e(TAG, "nannan noticeContent  = " + noticeContent.toString());
             String content = null;
@@ -1233,8 +1233,8 @@ public class Utils {
             output = new DataOutputStream(stream);
 
             JSONObject contactContent = new JSONObject();
-            contactContent.put("uid", "3");
-            contactContent.put("timestamp", "");
+            contactContent.put("uid", uId);
+            contactContent.put("timestamp", timeStamp);
 
             String content = null;
             content = "jsondata="

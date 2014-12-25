@@ -39,7 +39,7 @@ public class DownloadCommentsIntentService extends IntentService {
 
     private MarrySocialDBHelper mDBHelper;
     // private String mToken;
-    // private String mUId;
+     private String mUid;
     private SharedPreferences mPrefs;
 
     private ExecutorService mExecutorService;
@@ -60,7 +60,7 @@ public class DownloadCommentsIntentService extends IntentService {
         mDBHelper = MarrySocialDBHelper.newInstance(this);
         mPrefs = this.getSharedPreferences(PREFS_LAIQIAN_DEFAULT, MODE_PRIVATE);
         // mToken = mPrefs.getString(CommonDataStructure.TOKEN, null);
-        // mUId = mPrefs.getString(CommonDataStructure.UID, null);
+        mUid = mPrefs.getString(CommonDataStructure.UID, null);
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
                 .availableProcessors() * POOL_SIZE);
     }
@@ -86,7 +86,7 @@ public class DownloadCommentsIntentService extends IntentService {
             ArrayList<CommentsItem> commentItems = Utils
                     .downloadCommentsList(
                             CommonDataStructure.URL_TOPIC_COMMENT_LIST,
-                            "3", "1,2,3,4,5,6,7,8,9", "", "", "");
+                            mUid, "1,2,3,4,5,6,7,8,9", "", "", "");
             if (commentItems == null || commentItems.size() == 0) {
                 return;
             }

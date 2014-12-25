@@ -28,6 +28,7 @@ public class DownloadIndirectFriendsIntentServices extends IntentService {
 
     public static final String PREFS_LAIQIAN_DEFAULT = "marrysocial_default";
 
+    private String mUid;
     private MarrySocialDBHelper mDBHelper;
     private SharedPreferences mPrefs;
 
@@ -46,6 +47,7 @@ public class DownloadIndirectFriendsIntentServices extends IntentService {
         super.onCreate();
         mDBHelper = MarrySocialDBHelper.newInstance(this);
         mPrefs = this.getSharedPreferences(PREFS_LAIQIAN_DEFAULT, MODE_PRIVATE);
+        mUid = mPrefs.getString(CommonDataStructure.UID, "");
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
                 .availableProcessors() * POOL_SIZE);
     }
@@ -64,7 +66,7 @@ public class DownloadIndirectFriendsIntentServices extends IntentService {
         @Override
         public void run() {
             ArrayList<ContactsInfo> contactsList = Utils.downloadDirectFriendsList(
-                    CommonDataStructure.URL_INDIRECT_LIST, null, null);
+                    CommonDataStructure.URL_INDIRECT_LIST, mUid, "");
             if (contactsList == null || contactsList.size() == 0) {
                 return;
             }

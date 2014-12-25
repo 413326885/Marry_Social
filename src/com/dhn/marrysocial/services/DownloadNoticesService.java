@@ -17,6 +17,7 @@ import android.app.Service;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Handler;
 import android.os.IBinder;
@@ -50,6 +51,7 @@ public class DownloadNoticesService extends Service {
     private final Timer mTimer = new Timer();
     private TimerTask mTimerTask;
 
+    private String mUid;
     private MarrySocialDBHelper mDBHelper;
     private ExecutorService mExecutorService;
 
@@ -94,6 +96,11 @@ public class DownloadNoticesService extends Service {
         };
         mTimer.schedule(mTimerTask, 2000, 2000);
 
+        SharedPreferences prefs = this.getSharedPreferences(
+                CommonDataStructure.PREFS_LAIQIAN_DEFAULT,
+                this.MODE_PRIVATE);
+        mUid = prefs.getString(CommonDataStructure.UID, "");
+
         mDBHelper = MarrySocialDBHelper.newInstance(getApplicationContext());
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
                 .availableProcessors() * POOL_SIZE);
@@ -117,7 +124,7 @@ public class DownloadNoticesService extends Service {
             Log.e(TAG, "nannan DownloadBravoNotices");
             ArrayList<NoticesItem> noticeItems = Utils.downloadNoticesList(
                     CommonDataStructure.URL_NOTICE_LIST,
-                    null, null, CommonDataStructure.NOTICE_BRAVO);
+                    mUid, "", CommonDataStructure.NOTICE_BRAVO);
             if (noticeItems == null || noticeItems.size() == 0) {
                 return;
             }
@@ -142,7 +149,7 @@ public class DownloadNoticesService extends Service {
             Log.e(TAG, "nannan DownloadReplyNotices");
             ArrayList<NoticesItem> noticeItems = Utils.downloadNoticesList(
                     CommonDataStructure.URL_NOTICE_LIST,
-                    null, null, CommonDataStructure.NOTICE_REPLY);
+                    mUid, "", CommonDataStructure.NOTICE_REPLY);
             if (noticeItems == null || noticeItems.size() == 0) {
                 return;
             }
@@ -150,7 +157,7 @@ public class DownloadNoticesService extends Service {
             for (NoticesItem notice : noticeItems) {
                 ArrayList<ReplysItem> replyItems = Utils.downloadReplysList(
                         CommonDataStructure.URL_REPLY_LIST, notice.getUid(),
-                        notice.getCommentId(), "1,2,3,4,5,6,7,8,9", null);
+                        notice.getCommentId(), "1,2,3,4,5,6,7,8,9", "");
                 if (replyItems == null || replyItems.size() == 0) {
                     continue;
                 }
