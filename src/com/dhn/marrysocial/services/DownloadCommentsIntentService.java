@@ -19,6 +19,7 @@ import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
 import com.dhn.marrysocial.utils.Utils;
 import com.dhn.marrysocial.base.CommentsItem;
+import com.dhn.marrysocial.base.ImagesItem;
 import com.dhn.marrysocial.base.ReplysItem;
 
 public class DownloadCommentsIntentService extends IntentService {
@@ -36,6 +37,10 @@ public class DownloadCommentsIntentService extends IntentService {
     private static final String[] REPLYS_PROJECTION = {
             MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_COMMENT_ID,
             MarrySocialDBHelper.KEY_REPLY_ID };
+
+    private static final String[] IMAGES_PROJECTION = {
+        MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_COMMENT_ID,
+        MarrySocialDBHelper.KEY_PHOTO_ID };
 
     private MarrySocialDBHelper mDBHelper;
     // private String mToken;
@@ -97,14 +102,14 @@ public class DownloadCommentsIntentService extends IntentService {
                 if (!isCommentIdExistInCommentsDB(comment.getCommentId())) {
                     insertCommentsToDB(comment);
                 }
-//                ArrayList<ReplysItem> replyLists = comment.getReplyList();
-//                if (replyLists != null && replyLists.size() != 0) {
-//                    for (ReplysItem reply : replyLists) {
-//                        if (!isReplyIdExistInReplysDB(reply.getReplyId())) {
-//                            insertReplysToReplyDB(reply);
-//                        }
-//                    }
-//                }
+                ArrayList<ImagesItem> imageLists = comment.getImages();
+                if (imageLists != null && imageLists.size() != 0) {
+                    for (ImagesItem image : imageLists) {
+                        if (!isPhotoIdExistInImagesDB(image.getPhotoId())) {
+                            insertImagesToImageDB(image);
+                        }
+                    }
+                }
             }
             Editor editor = mPrefs.edit();
             editor.putLong(MarrySocialDBHelper.KEY_ADDED_TIME, addedTime);
@@ -153,6 +158,26 @@ public class DownloadCommentsIntentService extends IntentService {
         resolver.insert(CommonDataStructure.REPLYURL, insertValues);
     }
 
+    private void insertImagesToImageDB(ImagesItem image) {
+        ContentValues insertValues = new ContentValues();
+        insertValues.put(MarrySocialDBHelper.KEY_COMMENT_ID,
+                image.getCommentId());
+        insertValues.put(MarrySocialDBHelper.KEY_UID, image.getUid());
+        insertValues.put(MarrySocialDBHelper.KEY_BUCKET_ID, image.getBucketId());
+        insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
+                image.getAddTime());
+        insertValues.put(MarrySocialDBHelper.KEY_PHOTO_ID, image.getPhotoId());
+        insertValues.put(MarrySocialDBHelper.KEY_PHOTO_POS, image.getPhotoPosition());
+        insertValues.put(MarrySocialDBHelper.KEY_PHOTO_NAME, image.getPhotoName());
+        insertValues.put(MarrySocialDBHelper.KEY_PHOTO_TYPE, image.getPhotoType());
+        insertValues.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH, image.getPhotoRemoteOrgPath());
+        insertValues.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_THUMB_PATH, image.getPhotoRemoteThumbPath());
+        insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
+                MarrySocialDBHelper.NEED_DOWNLOAD_FROM_CLOUD);
+
+        mDBHelper.insert(MarrySocialDBHelper.DATABASE_IMAGES_TABLE, insertValues);
+    }
+
     public boolean isCommentIdExistInCommentsDB(String commentId) {
         Cursor cursor = null;
         try {
@@ -182,6 +207,27 @@ public class DownloadCommentsIntentService extends IntentService {
                     + replyId;
             cursor = mDBHelper.query(MarrySocialDBHelper.DATABASE_REPLYS_TABLE,
                     REPLYS_PROJECTION, whereclause, null, null, null, null,
+                    null);
+            if (cursor == null || cursor.getCount() == 0) {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return true;
+    }
+
+    public boolean isPhotoIdExistInImagesDB(String photoId) {
+        Cursor cursor = null;
+        try {
+            String whereclause = MarrySocialDBHelper.KEY_PHOTO_ID + " = "
+                    + photoId;
+            cursor = mDBHelper.query(MarrySocialDBHelper.DATABASE_IMAGES_TABLE,
+                    IMAGES_PROJECTION, whereclause, null, null, null, null,
                     null);
             if (cursor == null || cursor.getCount() == 0) {
                 return false;

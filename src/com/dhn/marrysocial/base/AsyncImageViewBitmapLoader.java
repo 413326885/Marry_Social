@@ -81,12 +81,24 @@ public class AsyncImageViewBitmapLoader {
             return bitmap;
 
         String[] paths = url.split("_");
+        String uId = paths[0];
+        String bucketId = paths[1];
+        String commentId = paths[2];
+        String photoPos = paths[3];
         Cursor cursor = null;
+        String whereClause = null;
 
         try {
-            String whereClause = MarrySocialDBHelper.KEY_UID + " = " + paths[0]
-                    + " AND " + MarrySocialDBHelper.KEY_BUCKET_ID + " = " + paths[1]
-                    + " AND " + MarrySocialDBHelper.KEY_PHOTO_POS + " = " + paths[2];
+            if (commentId != null && Integer.valueOf(commentId) > 0) {
+                whereClause = MarrySocialDBHelper.KEY_UID + " = " + uId
+                        + " AND " + MarrySocialDBHelper.KEY_COMMENT_ID + " = " + commentId
+                        + " AND " + MarrySocialDBHelper.KEY_PHOTO_POS + " = " + photoPos;
+            } else {
+                whereClause = MarrySocialDBHelper.KEY_UID + " = " + uId
+                        + " AND " + MarrySocialDBHelper.KEY_BUCKET_ID + " = " + bucketId
+                        + " AND " + MarrySocialDBHelper.KEY_PHOTO_POS + " = " + photoPos;
+            }
+
             cursor = mDBHelper.query(
                     MarrySocialDBHelper.DATABASE_IMAGES_TABLE,
                     IMAGES_PROJECTION, whereClause, null, null, null, null, null);
@@ -95,16 +107,28 @@ public class AsyncImageViewBitmapLoader {
                 return null;
             }
             String photoLocalPath = "";
+            String photoRemoteOrgPath = "";
+            String photoRemoteThumbPath = "";
             if (cursor.moveToNext()) {
                 photoLocalPath = cursor.getString(1);
-                String photoRemoteOrgPath = cursor.getString(2);
-                String photoRemoteThumbPath = cursor.getString(3);
+                photoRemoteOrgPath = cursor.getString(2);
+                photoRemoteThumbPath = cursor.getString(3);
             }
 
 
             Bitmap thumbBitmap = null;
             Bitmap cropBitmap = null;
-            thumbBitmap = Utils.decodeThumbnail(photoLocalPath, null,
+            if (photoLocalPath != null && photoLocalPath.length() != 0) {
+                thumbBitmap = Utils.decodeThumbnail(photoLocalPath, null,
+                        Utils.mThumbPhotoWidth);
+                cropBitmap = Utils.resizeAndCropCenter(thumbBitmap,
+                        Utils.mCropCenterThumbPhotoWidth, true);
+                return cropBitmap;
+            }
+
+         // 最后从指定的url中下载图片
+            File imageFile = Utils.downloadImageAndCache(photoRemoteOrgPath);
+            thumbBitmap = Utils.decodeThumbnail(imageFile.getAbsolutePath(), null,
                     Utils.mThumbPhotoWidth);
             cropBitmap = Utils.resizeAndCropCenter(thumbBitmap,
                     Utils.mCropCenterThumbPhotoWidth, true);
@@ -119,24 +143,24 @@ public class AsyncImageViewBitmapLoader {
 
         }
         // // 最后从指定的url中下载图片
-        // try {
-        // Bitmap bitmap = null;
-        // URL imageUrl = new URL(url);
-        // HttpURLConnection conn = (HttpURLConnection) imageUrl
-        // .openConnection();
-        // conn.setConnectTimeout(30000);
-        // conn.setReadTimeout(30000);
-        // conn.setInstanceFollowRedirects(true);
-        // InputStream is = conn.getInputStream();
-        // OutputStream os = new FileOutputStream(f);
-        // CopyStream(is, os);
-        // os.close();
-        // bitmap = decodeFile(f);
-        // return bitmap;
-        // } catch (Exception ex) {
-        // ex.printStackTrace();
-        // return null;
-        // }
+//         try {
+//         Bitmap bitmap = null;
+//         URL imageUrl = new URL(url);
+//         HttpURLConnection conn = (HttpURLConnection) imageUrl
+//         .openConnection();
+//         conn.setConnectTimeout(30000);
+//         conn.setReadTimeout(30000);
+//         conn.setInstanceFollowRedirects(true);
+//         InputStream is = conn.getInputStream();
+//         OutputStream os = new FileOutputStream(f);
+//         CopyStream(is, os);
+//         os.close();
+//         bitmap = decodeFile(f);
+//         return bitmap;
+//         } catch (Exception ex) {
+//         ex.printStackTrace();
+//         return null;
+//         }
         return null;
     }
 

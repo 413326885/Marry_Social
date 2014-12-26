@@ -24,6 +24,7 @@ import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -106,6 +107,8 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
     private ProgressDialog mUploadProgressDialog;
     private Handler mHandler;
     private String mTid;
+    private String mUid;
+    private String mAuthorName;
 
     private ExecutorService mExecutorService;
 
@@ -188,6 +191,11 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
                 .availableProcessors() * POOL_SIZE);
 
+        SharedPreferences prefs = this.getSharedPreferences(
+                CommonDataStructure.PREFS_LAIQIAN_DEFAULT,
+                this.MODE_PRIVATE);
+        mUid = prefs.getString(CommonDataStructure.UID, "");
+        mAuthorName = prefs.getString(CommonDataStructure.AUTHOR_NAME, "");
     }
 
     @Override
@@ -421,13 +429,13 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
         mCurrentEditTime = Long.toString(time);
 
         ContentValues values = new ContentValues();
-        values.put(MarrySocialDBHelper.KEY_UID, "2");
+        values.put(MarrySocialDBHelper.KEY_UID, mUid);
         values.put(MarrySocialDBHelper.KEY_BUCKET_ID,
                 mCurrentEditTime.hashCode());
         values.put(MarrySocialDBHelper.KEY_ADDED_TIME, mCurrentEditTime);
         values.put(MarrySocialDBHelper.KEY_CONTENTS, mCommentDescription
                 .getText().toString());
-        values.put(MarrySocialDBHelper.KEY_AUTHOR_FULLNAME, "楠楠");
+        values.put(MarrySocialDBHelper.KEY_AUTHOR_FULLNAME, mAuthorName);
         values.put(MarrySocialDBHelper.KEY_PHOTO_COUNT, mOriginalThumbBitmapsPath.size());
         values.put(MarrySocialDBHelper.KEY_BRAVO_COUNT, 0);
         values.put(MarrySocialDBHelper.KEY_BRAVO_STATUS, MarrySocialDBHelper.BRAVO_CANCEL);
@@ -449,7 +457,7 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
             String[] paths = path.split(File.separator);
             int length = paths.length - 1;
             ContentValues values = new ContentValues();
-            values.put(MarrySocialDBHelper.KEY_UID, "2");
+            values.put(MarrySocialDBHelper.KEY_UID, mUid);
             values.put(MarrySocialDBHelper.KEY_BUCKET_ID,
                     mCurrentEditTime.hashCode());
             values.put(MarrySocialDBHelper.KEY_ADDED_TIME, mCurrentEditTime);

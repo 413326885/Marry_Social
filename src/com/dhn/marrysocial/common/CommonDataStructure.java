@@ -15,6 +15,7 @@ public class CommonDataStructure {
     public static final String AUTHOR_NAME = "author_name";
     public static final String COMMENT_ID = "tid";
 
+    public static final String IMAGE_CACHE_DIR = ".com.dhn.marrysocial";
     public static final String IS_FIRST_STARTUP = "is_first_startup";
 
     public static final String PREFS_LAIQIAN_DEFAULT = "marrysocial_default";
@@ -148,6 +149,9 @@ public class CommonDataStructure {
             + DataSetProvider.AUTHORITY + "/"
             + MarrySocialDBHelper.DATABASE_REPLYS_TABLE);
 
+    public static final String REMOTE_ORG_PHOTO_PATH = "http://static.pkjiao.com/topic/";
+    public static final String REMOTE_THUMB_PHOTO_PATH = "http://static.pkjiao.com/thumbnail/topic/";
+    
     public static final String KEY_UPLOAD_TYPE = "upload_type";
     public static final int KEY_COMMENTS = 100;
     public static final int KEY_BRAVOS = 101;

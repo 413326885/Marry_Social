@@ -379,9 +379,10 @@ public class DynamicInfoListAdapter extends BaseAdapter {
 
         String uId = mCommentsData.get(position).getUid();
         String bucketId = mCommentsData.get(position).getBucketId();
+        String commentId = mCommentsData.get(position).getCommentId();
         int count = mCommentsData.get(position).getPhotoCount();
         for (int index = 0; index < count; index++) {
-            String url = uId + "_" + bucketId + "_" + (index + 1);
+            String url = uId + "_" + bucketId + "_" + commentId + "_" + (index + 1);
             commentPics.get(index).setVisibility(View.VISIBLE);
             mAsyncBitmapLoader.loadImageBitmap(commentPics.get(index), url);
         }

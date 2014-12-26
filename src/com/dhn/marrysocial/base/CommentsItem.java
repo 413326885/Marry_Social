@@ -21,7 +21,7 @@ public class CommentsItem {
     private boolean mIsBravo;
 
     private Bitmap mHeadPic;
-    private Bitmap[] mImages;
+    private ArrayList<ImagesItem> mImages;
 
     private ArrayList<ReplysItem> mReplyLists;
 
@@ -113,11 +113,11 @@ public class CommentsItem {
         this.mHeadPic = mHeadPic;
     }
 
-    public Bitmap[] getImages() {
+    public ArrayList<ImagesItem> getImages() {
         return mImages;
     }
 
-    public void setImages(Bitmap[] mImages) {
+    public void setImages(ArrayList<ImagesItem> mImages) {
         this.mImages = mImages;
     }
 

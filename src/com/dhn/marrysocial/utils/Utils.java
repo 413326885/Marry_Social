@@ -1,5 +1,6 @@
 package com.dhn.marrysocial.utils;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
@@ -7,6 +8,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -47,6 +49,7 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.telephony.TelephonyManager;
 import android.util.FloatMath;
@@ -59,6 +62,7 @@ import com.dhn.marrysocial.R;
 import com.dhn.marrysocial.activity.EditCommentsActivity.UploadCommentContentEntry;
 import com.dhn.marrysocial.base.CommentsItem;
 import com.dhn.marrysocial.base.ContactsInfo;
+import com.dhn.marrysocial.base.ImagesItem;
 import com.dhn.marrysocial.base.NoticesItem;
 import com.dhn.marrysocial.base.ReplysItem;
 import com.dhn.marrysocial.common.CommonDataStructure;
@@ -1138,7 +1142,6 @@ public class Utils {
             content = "jsondata="
                     + URLEncoder.encode(noticeContent.toString(), "UTF-8");
 
-
             if (content == null)
                 return null;
 
@@ -1395,7 +1398,7 @@ public class Utils {
                 JSONObject reply = respData.getJSONObject(index);
                 String replyid = reply.getString("rid");
                 String commentid = reply.getString("tid");
-                String uid= reply.getString("uid");
+                String uid = reply.getString("uid");
                 String replycontent = reply.getString("content");
                 String addtime = reply.getString("addtime");
                 String fullname = reply.getString("fullname");
@@ -1430,7 +1433,8 @@ public class Utils {
     }
 
     public static ArrayList<CommentsItem> downloadCommentsList(
-            String RequestURL, String uid, String indirectid, String tid, String count, String timestamp) {
+            String RequestURL, String uid, String indirectid, String tid,
+            String count, String timestamp) {
 
         Log.e(TAG, "nannan downloadCommentsList   4444444444");
         URL postUrl = null;
@@ -1502,8 +1506,40 @@ public class Utils {
                 commentItem.setAddTime(comment.getString("addtime"));
                 commentItem.setContents(comment.getString("content"));
                 commentItem.setFullName(comment.getString("fullname"));
-                commentItem.setPhotoCount(Integer.valueOf(comment
-                        .getString("pics")));
+                int photoCount = Integer.valueOf(comment.getString("pics"));
+                commentItem.setPhotoCount(photoCount);
+                if (photoCount > 0) {
+                    ArrayList<ImagesItem> images = new ArrayList<ImagesItem> ();
+                    JSONObject picsInfo = comment.getJSONObject("pics_info");
+                    Iterator<String> iterator = picsInfo.keys();
+                    while(iterator.hasNext()) {
+                        ImagesItem image = new ImagesItem();
+                        image.setUid(comment.getString("uid"));
+                        image.setCommentId(comment.getString("tid"));
+                        image.setAddTime(comment.getString("addtime"));
+                        image.setBucketId(String.valueOf(comment.getString("addtime").hashCode()));
+                        String position = iterator.next();
+                        image.setPhotoPosition(position);
+                        JSONObject info = picsInfo.getJSONObject(position);
+                        String pid = info.getString("pid");
+                        String type = info.getString("ext");
+                        image.setPhotoId(pid);
+                        image.setPhotoType(type);
+                        image.setPhotoName(comment.getString("tid")+ "_" + position);
+                        image.setPhotoRemoteOrgPath(CommonDataStructure.REMOTE_ORG_PHOTO_PATH
+                                + comment.getString("tid")
+                                + "_"
+                                + position
+                                + "." + type);
+                        image.setPhotoRemoteThumbPath(CommonDataStructure.REMOTE_THUMB_PHOTO_PATH
+                                + comment.getString("tid")
+                                + "_"
+                                + position
+                                + "." + type);
+                        images.add(image);
+                    }
+                    commentItem.setImages(images);
+                }
                 commentItems.add(commentItem);
             }
 
@@ -1527,5 +1563,84 @@ public class Utils {
 
     public static void showMesage(Context context, int resId) {
         Toast.makeText(context, resId, Toast.LENGTH_SHORT).show();
+    }
+
+    public static File getCachedImageFile(String imageUri) {
+        File imageFile = null;
+        try {
+            if (Environment.getExternalStorageState().equals(
+                    Environment.MEDIA_MOUNTED)) {
+                File sdCardDir = Environment.getExternalStorageDirectory();
+                String imageName = getImageName(imageUri);
+
+                File cacheDir = new File(sdCardDir.getAbsolutePath()
+                        + File.separator + CommonDataStructure.IMAGE_CACHE_DIR);
+                if (!cacheDir.exists()) {
+                    cacheDir.mkdirs();
+                    File nomedia = new File(cacheDir, ".nomedia");
+                    nomedia.createNewFile();
+                }
+
+                imageFile = new File(cacheDir, imageName);
+                if (imageFile.isFile() && imageFile.exists()) {
+                    imageFile.delete();
+                }
+                Log.i(TAG, "exists:" + imageFile.exists() + ", cacheDir:"
+                        + cacheDir + ", imageName:" + imageName);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(TAG, "getCacheFileError:" + e.getMessage());
+        }
+
+        return imageFile;
+    }
+
+    public static String getImageName(String path) {
+        int index = path.lastIndexOf(File.separator);
+        return path.substring(index + 1);
+    }
+
+    public static File downloadImageAndCache(String RequestURL) {
+
+        URL postUrl = null;
+        HttpURLConnection connection = null;
+        File imageFile = getCachedImageFile(RequestURL);
+
+        try {
+            postUrl = new URL(RequestURL);
+            if (postUrl == null)
+                return null;
+
+            connection = (HttpURLConnection) postUrl.openConnection();
+            if (connection == null)
+                return null;
+
+            connection.setDoInput(true);
+            connection.connect();
+
+            InputStream input = connection.getInputStream();
+            BufferedOutputStream output = null;
+            output = new BufferedOutputStream(new FileOutputStream(imageFile));
+            Log.e(TAG, "write file to " + imageFile.getAbsolutePath());
+
+            byte[] buf = new byte[1024];
+            int len = 0;
+            // cache the image to local
+            while ((len = input.read(buf)) > 0) {
+                output.write(buf, 0, len);
+            }
+
+            input.close();
+            output.close();
+
+        } catch (IOException exp) {
+            exp.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+        return imageFile;
     }
 }
