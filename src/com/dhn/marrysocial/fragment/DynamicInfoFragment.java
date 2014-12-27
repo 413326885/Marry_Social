@@ -13,7 +13,7 @@ import com.dhn.marrysocial.base.CommentsItem;
 import com.dhn.marrysocial.base.ReplysItem;
 import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
-import com.dhn.marrysocial.provider.DataSetProvider;
+import com.dhn.marrysocial.provider.DBContentChangeProvider;
 import com.dhn.marrysocial.services.DownloadCommentsIntentService;
 import com.dhn.marrysocial.services.ReadContactsIntentService;
 import com.dhn.marrysocial.services.UploadCommentsAndBravosAndReplysIntentService;

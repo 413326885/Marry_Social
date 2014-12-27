@@ -14,7 +14,7 @@ import com.dhn.marrysocial.R;
 import com.dhn.marrysocial.adapter.EditCommentsPhotoViewAdapter;
 import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
-import com.dhn.marrysocial.provider.DataSetProvider;
+import com.dhn.marrysocial.provider.DBContentChangeProvider;
 import com.dhn.marrysocial.roundedimageview.RoundedImageView;
 import com.dhn.marrysocial.utils.Utils;
 

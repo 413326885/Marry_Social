@@ -62,7 +62,7 @@
         </service>
 
         <provider
-            android:name="com.dhn.marrysocial.provider.DataSetProvider"
+            android:name="com.dhn.marrysocial.provider.DBContentChangeProvider"
             android:authorities="com.dhn.marrysocial.provider"
             android:exported="true"
             android:grantUriPermissions="true"

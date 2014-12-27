@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import android.net.Uri;
 
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
-import com.dhn.marrysocial.provider.DataSetProvider;
+import com.dhn.marrysocial.provider.DBContentChangeProvider;
 
 public class CommonDataStructure {
 
@@ -138,16 +138,20 @@ public class CommonDataStructure {
             + CMD_TOPIC_COMMENT_LIST;
 
     public static final Uri COMMENTURL = Uri.parse("content://"
-            + DataSetProvider.AUTHORITY + "/"
+            + DBContentChangeProvider.AUTHORITY + "/"
             + MarrySocialDBHelper.DATABASE_COMMENTS_TABLE);
 
     public static final Uri BRAVOURL = Uri.parse("content://"
-            + DataSetProvider.AUTHORITY + "/"
+            + DBContentChangeProvider.AUTHORITY + "/"
             + MarrySocialDBHelper.DATABASE_BRAVOS_TABLE);
 
     public static final Uri REPLYURL = Uri.parse("content://"
-            + DataSetProvider.AUTHORITY + "/"
+            + DBContentChangeProvider.AUTHORITY + "/"
             + MarrySocialDBHelper.DATABASE_REPLYS_TABLE);
+
+    public static final Uri IMAGEURL = Uri.parse("content://"
+            + DBContentChangeProvider.AUTHORITY + "/"
+            + MarrySocialDBHelper.DATABASE_IMAGES_TABLE);
 
     public static final String REMOTE_ORG_PHOTO_PATH = "http://static.pkjiao.com/topic/";
     public static final String REMOTE_THUMB_PHOTO_PATH = "http://static.pkjiao.com/thumbnail/topic/";
@@ -156,10 +160,12 @@ public class CommonDataStructure {
     public static final int KEY_COMMENTS = 100;
     public static final int KEY_BRAVOS = 101;
     public static final int KEY_REPLYS = 102;
+    public static final int KEY_IMAGES = 103;
 
     public static final int NOTICE_COMMENT = 1;
     public static final int NOTICE_REPLY = 2;
     public static final int NOTICE_BRAVO = 3;
+    public static final int NOTICE_IMAGE = 4;
 
     // public static final Uri REPLYURL = Uri.parse("content://"
     // + DataSetProvider.AUTHORITY + "/"

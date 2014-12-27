@@ -9,13 +9,14 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
 
-public class DataSetProvider extends ContentProvider {
+public class DBContentChangeProvider extends ContentProvider {
 
     private static final String TAG = "DataSetProvider";
 
     private static final int KEY_COMMENTS = 1;
     private static final int KEY_BRAVOS = 2;
     private static final int KEY_REPLYS = 3;
+    private static final int KEY_IAMGES = 4;
 
     public static final String AUTHORITY = "com.dhn.marrysocial.provider";
 
@@ -28,6 +29,7 @@ public class DataSetProvider extends ContentProvider {
         mMatcher.addURI(AUTHORITY, MarrySocialDBHelper.DATABASE_COMMENTS_TABLE, KEY_COMMENTS);
         mMatcher.addURI(AUTHORITY, MarrySocialDBHelper.DATABASE_BRAVOS_TABLE, KEY_BRAVOS);
         mMatcher.addURI(AUTHORITY, MarrySocialDBHelper.DATABASE_REPLYS_TABLE, KEY_REPLYS);
+        mMatcher.addURI(AUTHORITY, MarrySocialDBHelper.DATABASE_IMAGES_TABLE, KEY_IAMGES);
         return true;
     }
 
@@ -60,6 +62,11 @@ public class DataSetProvider extends ContentProvider {
                 this.getContext().getContentResolver().notifyChange(uri, null);
                 return ContentUris.withAppendedId(uri, rowId);
             }
+            case KEY_IAMGES: {
+                long rowId = mDBHelper.insert(MarrySocialDBHelper.DATABASE_IMAGES_TABLE, values);
+                this.getContext().getContentResolver().notifyChange(uri, null);
+                return ContentUris.withAppendedId(uri, rowId);
+            }
             default:
                 break;
         }
@@ -85,6 +92,11 @@ public class DataSetProvider extends ContentProvider {
             this.getContext().getContentResolver().notifyChange(uri, null);
             return rowId;
         }
+        case KEY_IAMGES: {
+            int rowId = mDBHelper.delete(MarrySocialDBHelper.DATABASE_IMAGES_TABLE, selection, selectionArgs);
+            this.getContext().getContentResolver().notifyChange(uri, null);
+            return rowId;
+        }
         default:
             break;
     }
@@ -107,6 +119,11 @@ public class DataSetProvider extends ContentProvider {
         }
         case KEY_REPLYS: {
             int rowId = mDBHelper.update(MarrySocialDBHelper.DATABASE_REPLYS_TABLE, values, selection, selectionArgs);
+            this.getContext().getContentResolver().notifyChange(uri, null);
+            return rowId;
+        }
+        case KEY_IAMGES: {
+            int rowId = mDBHelper.update(MarrySocialDBHelper.DATABASE_IMAGES_TABLE, values, selection, selectionArgs);
             this.getContext().getContentResolver().notifyChange(uri, null);
             return rowId;
         }
