@@ -91,7 +91,7 @@ public class DownloadCommentsIntentService extends IntentService {
             ArrayList<CommentsItem> commentItems = Utils
                     .downloadCommentsList(
                             CommonDataStructure.URL_TOPIC_COMMENT_LIST,
-                            mUid, "1,2,3,4,5,6,7,8,9", "", "", "");
+                            mUid, CommonDataStructure.INDIRECTIDS, "", "", "");
             if (commentItems == null || commentItems.size() == 0) {
                 return;
             }

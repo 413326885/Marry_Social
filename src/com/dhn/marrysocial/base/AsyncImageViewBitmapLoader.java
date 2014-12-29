@@ -92,6 +92,7 @@ public class AsyncImageViewBitmapLoader {
         String whereClause = null;
 
         try {
+
             if (commentId != null && Integer.valueOf(commentId) > 0) {
                 whereClause = MarrySocialDBHelper.KEY_UID + " = " + uId
                         + " AND " + MarrySocialDBHelper.KEY_COMMENT_ID + " = " + commentId

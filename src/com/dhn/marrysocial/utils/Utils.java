@@ -1022,7 +1022,7 @@ public class Utils {
 
             JSONObject commentContent = new JSONObject();
             commentContent.put("uid", "3");
-            commentContent.put("indirectuids", "1,2,3,4,5,6,7,8,9");
+            commentContent.put("indirectuids", CommonDataStructure.INDIRECTIDS);
             // commentContent.put("datetime", entry.addedTime);
 
             String content = null;

@@ -39,7 +39,7 @@ public class WelcomeActivity extends Activity {
 
         Editor editor = prefs.edit();
         editor.putBoolean(CommonDataStructure.IS_FIRST_STARTUP, false);
-        editor.putString(CommonDataStructure.UID, "3");
+        editor.putString(CommonDataStructure.UID, "20");
         editor.putString(CommonDataStructure.AUTHOR_NAME, "nan");
         editor.commit();
 

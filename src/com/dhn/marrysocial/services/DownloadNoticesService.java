@@ -157,7 +157,7 @@ public class DownloadNoticesService extends Service {
             for (NoticesItem notice : noticeItems) {
                 ArrayList<ReplysItem> replyItems = Utils.downloadReplysList(
                         CommonDataStructure.URL_REPLY_LIST, notice.getUid(),
-                        notice.getCommentId(), "1,2,3,4,5,6,7,8,9", "");
+                        notice.getCommentId(), CommonDataStructure.INDIRECTIDS, "");
                 if (replyItems == null || replyItems.size() == 0) {
                     continue;
                 }

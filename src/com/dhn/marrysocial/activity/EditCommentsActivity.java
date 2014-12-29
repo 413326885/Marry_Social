@@ -432,6 +432,7 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
         values.put(MarrySocialDBHelper.KEY_UID, mUid);
         values.put(MarrySocialDBHelper.KEY_BUCKET_ID,
                 mCurrentEditTime.hashCode());
+        values.put(MarrySocialDBHelper.KEY_COMMENT_ID, CommonDataStructure.INVALID_STR);
         values.put(MarrySocialDBHelper.KEY_ADDED_TIME, mCurrentEditTime);
         values.put(MarrySocialDBHelper.KEY_CONTENTS, mCommentDescription
                 .getText().toString());
@@ -460,12 +461,14 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
             values.put(MarrySocialDBHelper.KEY_UID, mUid);
             values.put(MarrySocialDBHelper.KEY_BUCKET_ID,
                     mCurrentEditTime.hashCode());
+            values.put(MarrySocialDBHelper.KEY_COMMENT_ID, CommonDataStructure.INVALID_STR);
             values.put(MarrySocialDBHelper.KEY_ADDED_TIME, mCurrentEditTime);
             values.put(MarrySocialDBHelper.KEY_PHOTO_NAME, paths[length]);
             values.put(MarrySocialDBHelper.KEY_PHOTO_LOCAL_PATH, path);
             values.put(MarrySocialDBHelper.KEY_PHOTO_POS, position ++);
             values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                     MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD);
+
             MarrySocialDBHelper dbHelper = MarrySocialDBHelper
                     .newInstance(this);
             long result = dbHelper.insert(

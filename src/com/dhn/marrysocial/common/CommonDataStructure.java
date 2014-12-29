@@ -167,6 +167,11 @@ public class CommonDataStructure {
     public static final int NOTICE_BRAVO = 3;
     public static final int NOTICE_IMAGE = 4;
 
+    public static final int INVALID_NUM = -1;
+    public static final String INVALID_STR = "-1";
+
+    public static final String INDIRECTIDS = "6";
+
     // public static final Uri REPLYURL = Uri.parse("content://"
     // + DataSetProvider.AUTHORITY + "/"
     // + MarrySocialDBHelper.DATABASE_COMMENTS_TABLE);
