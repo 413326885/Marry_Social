@@ -39,6 +39,7 @@ import com.dhn.marrysocial.base.ReplysItem;
 import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
 import com.dhn.marrysocial.roundedimageview.RoundedImageView;
+import com.dhn.marrysocial.services.DeleteCommentsAndBravosAndReplysIntentServices;
 import com.dhn.marrysocial.services.DownloadCommentsIntentService;
 import com.dhn.marrysocial.services.UploadCommentsAndBravosAndReplysIntentService;
 
@@ -560,9 +561,15 @@ public class DynamicInfoListAdapter extends BaseAdapter {
 
         @Override
         public void run() {
-            insertBravoStatusToBravosDB(comment, isChecked);
             updateBravoStatusOfCommentsDB(comment, isChecked);
-            uploadCommentsOrBravosOrReplys(CommonDataStructure.KEY_BRAVOS);
+            if (isChecked) {
+                insertBravoStatusToBravosDB(comment, isChecked);
+                uploadCommentsOrBravosOrReplys(CommonDataStructure.KEY_BRAVOS);
+            } else {
+                updateBravoStatusToBravosDB(comment, isChecked);
+                deleteCommentsOrBravosOrReplys(CommonDataStructure.KEY_BRAVOS);
+            }
+
         }
     }
 
@@ -580,7 +587,7 @@ public class DynamicInfoListAdapter extends BaseAdapter {
 
     private void insertBravoStatusToBravosDB(CommentsItem comment,
             boolean isChecked) {
-        if (isChecked && !isCommentIdExist(comment.getCommentId())) {
+        if (!isCommentIdExist(comment.getCommentId())) {
             ContentValues insertValues = new ContentValues();
             insertValues.put(MarrySocialDBHelper.KEY_COMMENT_ID,
                     comment.getCommentId());
@@ -594,11 +601,27 @@ public class DynamicInfoListAdapter extends BaseAdapter {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.insert(CommonDataStructure.BRAVOURL, insertValues);
         } else {
-            String whereClause = MarrySocialDBHelper.KEY_COMMENT_ID + " = " + comment.getCommentId()
-                    + " AND " + MarrySocialDBHelper.KEY_UID + " = " + mUid;
+            String whereClause = MarrySocialDBHelper.KEY_COMMENT_ID + " = "
+                    + comment.getCommentId() + " AND "
+                    + MarrySocialDBHelper.KEY_UID + " = " + mUid;
             ContentResolver resolver = mContext.getContentResolver();
-            resolver.delete(CommonDataStructure.BRAVOURL, whereClause, null);
+            ContentValues values = new ContentValues();
+            values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS, MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD);
+            resolver.update(CommonDataStructure.BRAVOURL, values, whereClause, null);
         }
+
+    }
+
+    private void updateBravoStatusToBravosDB(CommentsItem comment,
+            boolean isChecked) {
+
+        String whereClause = MarrySocialDBHelper.KEY_COMMENT_ID + " = "
+                + comment.getCommentId() + " AND "
+                + MarrySocialDBHelper.KEY_UID + " = " + mUid;
+        ContentResolver resolver = mContext.getContentResolver();
+        ContentValues values = new ContentValues();
+        values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS, MarrySocialDBHelper.NEED_DELETE_FROM_CLOUD);
+        resolver.update(CommonDataStructure.BRAVOURL, values, whereClause, null);
 
     }
 
@@ -634,6 +657,13 @@ public class DynamicInfoListAdapter extends BaseAdapter {
         Log.e(TAG, "nannan uploadCommentsOrBravosOrReplys()..");
         Intent serviceIntent = new Intent(mContext,
                 UploadCommentsAndBravosAndReplysIntentService.class);
+        serviceIntent.putExtra(CommonDataStructure.KEY_UPLOAD_TYPE, uploadType);
+        mContext.startService(serviceIntent);
+    }
+
+    private void deleteCommentsOrBravosOrReplys(int uploadType) {
+        Intent serviceIntent = new Intent(mContext,
+                DeleteCommentsAndBravosAndReplysIntentServices.class);
         serviceIntent.putExtra(CommonDataStructure.KEY_UPLOAD_TYPE, uploadType);
         mContext.startService(serviceIntent);
     }

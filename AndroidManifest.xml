@@ -60,6 +60,8 @@
         </service>
         <service android:name=".services.DownloadIndirectFriendsIntentServices" >
         </service>
+        <service android:name=".services.DeleteCommentsAndBravosAndReplysIntentServices" >
+        </service>
 
         <provider
             android:name="com.dhn.marrysocial.provider.DBContentChangeProvider"

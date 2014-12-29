@@ -525,7 +525,9 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
 
         try {
             String whereclause = MarrySocialDBHelper.KEY_COMMENT_ID + " = "
-                    + comment_id;
+                    + comment_id + " AND "
+                    + MarrySocialDBHelper.KEY_CURRENT_STATUS + " != "
+                    + MarrySocialDBHelper.NEED_DELETE_FROM_CLOUD;
             String orderBy = MarrySocialDBHelper.KEY_ID + " ASC";
             cursor = mDBHelper.query(MarrySocialDBHelper.DATABASE_BRAVOS_TABLE,
                     BRAVOS_PROJECTION, whereclause, null, null, null, orderBy,

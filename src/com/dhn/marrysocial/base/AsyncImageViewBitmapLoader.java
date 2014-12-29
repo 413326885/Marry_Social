@@ -133,7 +133,7 @@ public class AsyncImageViewBitmapLoader {
             }
 
          // 最后从指定的url中下载图片
-            File imageFile = Utils.downloadImageAndCache(photoRemoteOrgPath);
+            File imageFile = Utils.downloadImageAndCache(photoRemoteThumbPath);
             thumbBitmap = Utils.decodeThumbnail(imageFile.getAbsolutePath(), null,
                     Utils.mThumbPhotoWidth);
             cropBitmap = Utils.resizeAndCropCenter(thumbBitmap,

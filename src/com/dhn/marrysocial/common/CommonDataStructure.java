@@ -62,9 +62,9 @@ public class CommonDataStructure {
             + "ZjQmZpYzV3b1U9IiwidmFsdWUiOiJINU9PYktaQVEwSElXMmsrcTFvazh2RTFYeXhoMVZ6UzJxQmJ3dUFnWXJZPSIs"
             + "Im1hYyI6IjVlZDE5YjBjNTU2MDk2ZmFmNGI5OThlODUwNmQyY2Q3YTQyYTgzYWE2N2Q2YTNmZjI5M2NlM2NkNjQ3M2U4YzYifQ==";
 
-    public static final String CMD_TOPIC_DISPRAISE = "eyJpdiI6InlrXC95OE5QM0dYWmJqbjc0OVRTSHpBT3FhQ3ZsXC8"
-            + "5WmI2TGRsTDBHMmF3ND0iLCJ2YWx1ZSI6ImwzYndVcHY5bk9salR4YzdNK2ZIQk1ab1BzVkt0UUlUMUhmUjZGUFMwV"
-            + "jA9IiwibWFjIjoiYWY5NzA5OTNlNGZlYjdmM2I4OWI3ZmYxMjI0NjIzNzU5NWRjMjYzYzEyOWRiNTRjZGNhNTJmNWM2NDk4NzI0NSJ9";
+    public static final String CMD_TOPIC_DISPRAISE = "eyJpdiI6IndNaWVDQnNrejNiMlBLR2JYS2hYdkwzektCeTZTeGd"
+            + "nTWJUNzMrUklIQzA9IiwidmFsdWUiOiI0M1oxR2RLNUJscFwvNGhpZGRSREJhMWlwakdPd0tnb2JxUUt4QyttcHlpV"
+            + "T0iLCJtYWMiOiJjOWY2ODQ4YjBkMTY0ZjZjM2M5NDYyYjY5MmRmYTE1ZTFhMzA5NjAwMjk3MDlkMTU0MmEzOGE4ZDAzYzNkMjZkIn0=";
 
     public static final String CMD_PROFILE = "eyJpdiI6InJKTGc1V3AreHBOS0hveHVRbEx0ZXptMWxYb09MTmtBRDNJS3R"
             + "UN2g3Z0k9IiwidmFsdWUiOiJmK1lLOTVpcnp4ZENqMG5xUElzSGpVMzlRNVp1SHNRSUdTUW03Ymd3OGpFPSIsIm1hY"
@@ -155,8 +155,10 @@ public class CommonDataStructure {
 
     public static final String REMOTE_ORG_PHOTO_PATH = "http://static.pkjiao.com/topic/";
     public static final String REMOTE_THUMB_PHOTO_PATH = "http://static.pkjiao.com/thumbnail/topic/";
-    
+
     public static final String KEY_UPLOAD_TYPE = "upload_type";
+    public static final String KEY_DELETE_TYPE = "delete_type";
+
     public static final int KEY_COMMENTS = 100;
     public static final int KEY_BRAVOS = 101;
     public static final int KEY_REPLYS = 102;
@@ -170,7 +172,7 @@ public class CommonDataStructure {
     public static final int INVALID_NUM = -1;
     public static final String INVALID_STR = "-1";
 
-    public static final String INDIRECTIDS = "6";
+    public static final String INDIRECTIDS = "2,3,4,5,6,7,8,9";
 
     // public static final Uri REPLYURL = Uri.parse("content://"
     // + DataSetProvider.AUTHORITY + "/"

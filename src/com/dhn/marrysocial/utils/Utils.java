@@ -701,6 +701,87 @@ public class Utils {
         return resultCode;
     }
 
+    public static boolean deleteBravoFileFromCloud(String RequestURL, String uId,
+            String commentId) {
+
+        Log.e(TAG, "nannan deleteBravoFileFromCloud ");
+        boolean resultCode = false;
+
+        URL postUrl = null;
+        DataOutputStream outputStream = null;
+        HttpURLConnection connection = null;
+        OutputStreamWriter outputWriter = null;
+        BufferedReader inputReader = null;
+
+        try {
+            postUrl = new URL(RequestURL);
+            if (postUrl == null)
+                return resultCode;
+
+            connection = (HttpURLConnection) postUrl.openConnection();
+            if (connection == null)
+                return resultCode;
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestMethod("POST");
+            connection.setUseCaches(false);
+            connection.setInstanceFollowRedirects(true);
+            connection.setRequestProperty("Content-Type",
+                    "application/x-www-form-urlencoded");
+
+            connection.connect();
+
+            outputStream = new DataOutputStream(connection.getOutputStream());
+            JSONObject bravoContent = new JSONObject();
+            bravoContent.put(CommonDataStructure.UID, uId);
+            bravoContent.put(CommonDataStructure.COMMENT_ID, commentId);
+
+            String content = "jsondata="
+                    + URLEncoder.encode(bravoContent.toString(), "UTF-8");
+            Log.e(TAG, "nannan bravoContent = " + bravoContent.toString());
+            Log.e(TAG, "nannan content = " + content);
+            if (content == null)
+                return resultCode;
+
+            outputStream.writeBytes(content);
+            outputStream.flush();
+            outputStream.close();
+
+            inputReader = new BufferedReader(new InputStreamReader(
+                    connection.getInputStream()));
+            StringBuffer resp = new StringBuffer();
+            String line = null;
+            while ((line = inputReader.readLine()) != null) {
+                resp.append(line);
+            }
+            // String line = inputReader.readLine();
+            // inputReader.close();
+
+            Log.e(TAG, "nannan resp = " + resp.toString());
+            JSONObject response = new JSONObject(resp.toString());
+            String code = response.getString("code");
+            if (!"200".equalsIgnoreCase(code)) {
+                return resultCode;
+            }
+
+            resultCode = "true".equalsIgnoreCase(response.getString("data"));
+
+            inputReader.close();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+        return resultCode;
+    }
+
     public static UploadReplysResultEntry uploadReplyFile(String RequestURL,
             String uId, String commentId, String reply) {
 
