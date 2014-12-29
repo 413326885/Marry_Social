@@ -279,6 +279,7 @@ public class DownloadNoticesService extends Service {
             if (cursor == null || cursor.getCount() == 0) {
                 return nikename;
             }
+            cursor.moveToNext();
             nikename = cursor.getString(1);
         } catch (Exception e) {
             e.printStackTrace();

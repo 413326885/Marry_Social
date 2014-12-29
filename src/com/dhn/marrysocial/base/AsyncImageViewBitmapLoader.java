@@ -10,10 +10,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.dhn.marrysocial.R;
+import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
 import com.dhn.marrysocial.utils.Utils;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -28,7 +30,8 @@ public class AsyncImageViewBitmapLoader {
     private final String[] IMAGES_PROJECTION = { MarrySocialDBHelper.KEY_PHOTO_NAME,
             MarrySocialDBHelper.KEY_PHOTO_LOCAL_PATH,
             MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH,
-            MarrySocialDBHelper.KEY_PHOTO_REMOTE_THUMB_PATH 
+            MarrySocialDBHelper.KEY_PHOTO_REMOTE_THUMB_PATH,
+            MarrySocialDBHelper.KEY_PHOTO_ID
             };
 
     private MemoryCache mMemoryCache = new MemoryCache();
@@ -109,10 +112,12 @@ public class AsyncImageViewBitmapLoader {
             String photoLocalPath = "";
             String photoRemoteOrgPath = "";
             String photoRemoteThumbPath = "";
+            String photoId = "";
             if (cursor.moveToNext()) {
                 photoLocalPath = cursor.getString(1);
                 photoRemoteOrgPath = cursor.getString(2);
                 photoRemoteThumbPath = cursor.getString(3);
+                photoId = cursor.getString(4);
             }
 
 
@@ -132,6 +137,10 @@ public class AsyncImageViewBitmapLoader {
                     Utils.mThumbPhotoWidth);
             cropBitmap = Utils.resizeAndCropCenter(thumbBitmap,
                     Utils.mCropCenterThumbPhotoWidth, true);
+
+            updateImageStatusOfImagesDB(uId, commentId, photoId,
+                    imageFile.getAbsolutePath(),
+                    MarrySocialDBHelper.DOWNLOAD_FROM_CLOUD_SUCCESS);
 
             return cropBitmap;
         } catch (Exception e) {
@@ -279,5 +288,18 @@ public class AsyncImageViewBitmapLoader {
             }
         } catch (Exception ex) {
         }
+    }
+
+    private void updateImageStatusOfImagesDB(String uid, String comment_id, String photo_id,
+            String localPath, int updateStatus) {
+        String whereClause = MarrySocialDBHelper.KEY_UID + " = " + uid
+                + " AND " + MarrySocialDBHelper.KEY_COMMENT_ID + " = "
+                + comment_id + " AND " + MarrySocialDBHelper.KEY_PHOTO_ID
+                + " = " + photo_id;
+        ContentValues values = new ContentValues();
+        values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS, updateStatus);
+        values.put(MarrySocialDBHelper.KEY_PHOTO_LOCAL_PATH, localPath);
+        mDBHelper.update(MarrySocialDBHelper.DATABASE_IMAGES_TABLE, values,
+                whereClause, null);
     }
 }
