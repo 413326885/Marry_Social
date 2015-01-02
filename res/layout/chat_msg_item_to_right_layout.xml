@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="6dp" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/chat_msg_sendtime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#bfbfbf"
+            android:padding="2dp"
+            android:text="1970-01-01"
+            android:textColor="#ffffff"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="10dp" >
+
+        <TextView
+            android:id="@+id/chat_msg_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/chat_to_bkg_selector"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="left|center"
+            android:lineSpacingExtra="2dp"
+            android:minHeight="50dp"
+            android:textColor="#ff000000"
+            android:textSize="15sp" />
+
+    </RelativeLayout>
+
+</LinearLayout>

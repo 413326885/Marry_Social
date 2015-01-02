@@ -17,6 +17,8 @@ public class MarrySocialDBHelper {
     public static final String DATABASE_IMAGES_TABLE = "images";
     public static final String DATABASE_BRAVOS_TABLE = "bravos";
     public static final String DATABASE_REPLYS_TABLE = "replys";
+    public static final String DATABASE_CHATS_TABLE = "chats";
+    public static final String DATABASE_BRIEF_CHAT_TABLE = "briefchat";
     public static final int DATABASE_VERSION = 1;
 
     public static final int UPLOAD_TO_CLOUD_FAIL = -1;
@@ -71,28 +73,43 @@ public class MarrySocialDBHelper {
     // for bravos table
     public static final String KEY_BRAVO_ID = "bravo_id";
 
+    // for chats table
+    public static final String KEY_CHAT_ID = "chat_id";
+    public static final String KEY_FROM_UID = "from_uid";
+    public static final String KEY_TO_UID = "to_uid";
+    public static final String KEY_CHAT_CONTENT = "chat_content";
+    public static final String KEY_MSG_TYPE = "msg_type";
+
     private static final String DATABASE_CREATE_CONTACTS = "create table contacts ( "
             + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, phoneNum text, nikename text, realname text, "
             + "hobby integer, gender integer, astro integer, directfriendscount integer, "
             + "firstdirectfriend text, directfriends text, indirect_id text, avatar integer )";
 
     private static final String DATABASE_CREATE_COMMENTS = "create table comments ( "
-            + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, comment_id text, bucket_id text, "
+            + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, bucket_id text, comment_id text, "
             + "added_time text, contents text, author_fullname text, photo_count integer, "
             + "bravo_count integer, bravo_status integer, current_status integer )";
 
     private static final String DATABASE_CREATE_IMAGES = "create table images ( "
-            + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, comment_id text, bucket_id text, "
-            + "added_time text, photo_position integer, photo_id text, photo_type text, photo_name text, photo_local_path text, "
+            + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, bucket_id text, comment_id text, "
+            + "photo_id text, added_time text, photo_position integer, photo_type text, photo_name text, photo_local_path text, "
             + "photo_remote_org_path text, photo_remote_thumb_path text, current_status integer )";
 
     private static final String DATABASE_CREATE_BRAVOS = "create table bravos ("
-            + "_id integer PRIMARY KEY AUTOINCREMENT, comment_id text, uid text, "
+            + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, bucket_id text, comment_id text, "
             + "author_fullname text, added_time text, current_status integer )";
 
     private static final String DATABASE_CREATE_REPLYS = "create table replys ("
-            + "_id integer PRIMARY KEY AUTOINCREMENT, reply_id text, comment_id text, uid text, "
+            + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, bucket_id text, comment_id text, reply_id text, "
             + "author_fullname text, reply_contents text, added_time text, current_status integer )";
+
+    private static final String DATABASE_CREATE_CHATS = "create table chats ("
+            + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, chat_id text, from_uid text, to_uid text, "
+            + "chat_content text, msg_type integer, added_time text, current_status integer )";
+
+    private static final String DATABASE_CREATE_BRIEF_CHAT = "create table briefchat ("
+            + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, chat_id text, nikename text, "
+            + "chat_content text, added_time text )";
 
     private final Context mContext;
     private DataBaseOpenHelper mDataBaseHelper;
@@ -127,6 +144,8 @@ public class MarrySocialDBHelper {
             db.execSQL(DATABASE_CREATE_IMAGES);
             db.execSQL(DATABASE_CREATE_BRAVOS);
             db.execSQL(DATABASE_CREATE_REPLYS);
+            db.execSQL(DATABASE_CREATE_CHATS);
+            db.execSQL(DATABASE_CREATE_BRIEF_CHAT);
             Log.e(TAG, "nannan onCreate");
         }
 

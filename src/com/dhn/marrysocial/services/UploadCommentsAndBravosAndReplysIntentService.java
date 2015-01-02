@@ -11,6 +11,7 @@ import com.dhn.marrysocial.database.MarrySocialDBHelper;
 import com.dhn.marrysocial.utils.Utils;
 
 import android.app.IntentService;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -28,7 +29,7 @@ public class UploadCommentsAndBravosAndReplysIntentService extends
 
     private static final String[] COMMENTS_PROJECTION = {
             MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_BUCKET_ID,
-            MarrySocialDBHelper.KEY_CONTENTS };
+            MarrySocialDBHelper.KEY_CONTENTS, MarrySocialDBHelper.KEY_ID };
 
     private static final String[] IMAGES_PROJECTION = {
             MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_PHOTO_NAME,
@@ -151,9 +152,10 @@ public class UploadCommentsAndBravosAndReplysIntentService extends
         try {
             String whereclause = MarrySocialDBHelper.KEY_CURRENT_STATUS + " = "
                     + MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD;
+            String orderBy = MarrySocialDBHelper.KEY_ID + " ASC ";
             cursor = mDBHelper.query(
                     MarrySocialDBHelper.DATABASE_COMMENTS_TABLE,
-                    COMMENTS_PROJECTION, whereclause, null, null, null, null,
+                    COMMENTS_PROJECTION, whereclause, null, null, null, orderBy,
                     null);
             if (cursor == null) {
                 return commentEntrys;
@@ -226,8 +228,10 @@ public class UploadCommentsAndBravosAndReplysIntentService extends
         values.put(MarrySocialDBHelper.KEY_COMMENT_ID, tid);
         values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 MarrySocialDBHelper.UPLOAD_TO_CLOUD_SUCCESS);
-        mDBHelper.update(MarrySocialDBHelper.DATABASE_COMMENTS_TABLE, values,
-                whereClause, null);
+        ContentResolver  resolver = this.getContentResolver();
+        resolver.update(CommonDataStructure.COMMENTURL, values, whereClause, null);
+//        mDBHelper.update(MarrySocialDBHelper.DATABASE_COMMENTS_TABLE, values,
+//                whereClause, null);
     }
 
     private void updateCommentIdOfImages(String uid, String bucket_id,

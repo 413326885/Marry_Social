@@ -28,9 +28,12 @@ public class DownloadNoticesService extends Service {
 
     private static final String TAG = "DownloadNoticesService";
 
-    private static final int TIME_TO_DOWNLOAD_COMMENTS = 101;
-    private static final int TIME_TO_DOWNLOAD_BRAVOS = 102;
-    private static final int TIME_TO_DOWNLOAD_REPLYS = 103;
+    private static final int TIME_TO_DOWNLOAD_INDIRECT_COMMENTS = 101;
+    private static final int TIME_TO_DOWNLOAD_INDIRECT_BRAVOS = 102;
+    private static final int TIME_TO_DOWNLOAD_INDIRECT_REPLYS = 103;
+    private static final int TIME_TO_DOWNLOAD_MYSELF_COMMENTS = 104;
+    private static final int TIME_TO_DOWNLOAD_MYSELF_BRAVOS = 105;
+    private static final int TIME_TO_DOWNLOAD_MYSELF_REPLYS = 106;
 
     private static final int POOL_SIZE = 10;
 
@@ -52,6 +55,7 @@ public class DownloadNoticesService extends Service {
     private TimerTask mTimerTask;
 
     private String mUid;
+    private String mAuthorName;
     private MarrySocialDBHelper mDBHelper;
     private ExecutorService mExecutorService;
 
@@ -61,16 +65,28 @@ public class DownloadNoticesService extends Service {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch(msg.what) {
-            case TIME_TO_DOWNLOAD_COMMENTS: {
-                mExecutorService.execute(new DownloadCommentNotices());
+            case TIME_TO_DOWNLOAD_INDIRECT_COMMENTS: {
+                mExecutorService.execute(new DownloadIndirectCommentNotices());
                 break;
             }
-            case TIME_TO_DOWNLOAD_BRAVOS: {
-                mExecutorService.execute(new DownloadBravoNotices());
+            case TIME_TO_DOWNLOAD_INDIRECT_BRAVOS: {
+                mExecutorService.execute(new DownloadIndirectBravoNotices());
                 break;
             }
-            case TIME_TO_DOWNLOAD_REPLYS: {
-                mExecutorService.execute(new DownloadReplyNotices());
+            case TIME_TO_DOWNLOAD_INDIRECT_REPLYS: {
+                mExecutorService.execute(new DownloadIndirectReplyNotices());
+                break;
+            }
+            case TIME_TO_DOWNLOAD_MYSELF_COMMENTS: {
+                mExecutorService.execute(new DownloadMyselfCommentNotices());
+                break;
+            }
+            case TIME_TO_DOWNLOAD_MYSELF_BRAVOS: {
+                mExecutorService.execute(new DownloadMyselfBravoNotices());
+                break;
+            }
+            case TIME_TO_DOWNLOAD_MYSELF_REPLYS: {
+                mExecutorService.execute(new DownloadMyselfReplyNotices());
                 break;
             }
             default:
@@ -90,8 +106,10 @@ public class DownloadNoticesService extends Service {
         mTimerTask = new TimerTask() {
             @Override
             public void run() {
-                mHandler.sendEmptyMessage(TIME_TO_DOWNLOAD_BRAVOS);
-                mHandler.sendEmptyMessageDelayed(TIME_TO_DOWNLOAD_REPLYS, 2000);
+                mHandler.sendEmptyMessage(TIME_TO_DOWNLOAD_INDIRECT_BRAVOS);
+                mHandler.sendEmptyMessage(TIME_TO_DOWNLOAD_MYSELF_BRAVOS);
+                mHandler.sendEmptyMessageDelayed(TIME_TO_DOWNLOAD_INDIRECT_REPLYS, 2000);
+                mHandler.sendEmptyMessageDelayed(TIME_TO_DOWNLOAD_MYSELF_REPLYS, 2000);
             }
         };
         mTimer.schedule(mTimerTask, 2000, 2000);
@@ -100,6 +118,7 @@ public class DownloadNoticesService extends Service {
                 CommonDataStructure.PREFS_LAIQIAN_DEFAULT,
                 this.MODE_PRIVATE);
         mUid = prefs.getString(CommonDataStructure.UID, "");
+        mAuthorName = prefs.getString(CommonDataStructure.AUTHOR_NAME, "");
 
         mDBHelper = MarrySocialDBHelper.newInstance(getApplicationContext());
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
@@ -117,18 +136,18 @@ public class DownloadNoticesService extends Service {
         mTimer.cancel();
     }
 
-    class DownloadBravoNotices implements Runnable {
+    class DownloadIndirectBravoNotices implements Runnable {
 
         @Override
         public void run() {
-            Log.e(TAG, "nannan DownloadBravoNotices");
-            ArrayList<NoticesItem> noticeItems = Utils.downloadNoticesList(
-                    CommonDataStructure.URL_NOTICE_LIST,
+            Log.e(TAG, "nannan DownloadIndirectBravoNotices");
+            ArrayList<NoticesItem> noticeItems = Utils.downloadIndirectNoticesList(
+                    CommonDataStructure.URL_INDIRECT_NOTICE_LIST,
                     mUid, "", CommonDataStructure.NOTICE_BRAVO);
             if (noticeItems == null || noticeItems.size() == 0) {
                 return;
             }
-            Log.e(TAG, "nannan DownloadBravoNotices 1111");
+            Log.e(TAG, "nannan DownloadIndirectBravoNotices 1111");
             for (NoticesItem notice : noticeItems) {
                 String nikename = queryNikenameFromContactsDB(notice.getFromUid());
                 if (nikename == null || nikename.length() ==0) {
@@ -142,13 +161,34 @@ public class DownloadNoticesService extends Service {
 
     }
 
-    class DownloadReplyNotices implements Runnable {
+    class DownloadMyselfBravoNotices implements Runnable {
+
+        @Override
+        public void run() {
+            Log.e(TAG, "nannan DownloadMyselfBravoNotices");
+            ArrayList<NoticesItem> noticeItems = Utils.downloadMyselfNoticesList(
+                    CommonDataStructure.URL_MYSELF_NOTICE_LIST,
+                    mUid, "", CommonDataStructure.NOTICE_BRAVO);
+            if (noticeItems == null || noticeItems.size() == 0) {
+                return;
+            }
+            Log.e(TAG, "nannan DownloadMyselfBravoNotices 1111");
+            for (NoticesItem notice : noticeItems) {
+                if (!isBravoIdExistInBravosDB(mUid, notice.getCommentId())) {
+                    insertBravoToBravosDB(notice, mAuthorName);
+                }
+            }
+        }
+
+    }
+
+    class DownloadIndirectReplyNotices implements Runnable {
 
         @Override
         public void run() {
             Log.e(TAG, "nannan DownloadReplyNotices");
-            ArrayList<NoticesItem> noticeItems = Utils.downloadNoticesList(
-                    CommonDataStructure.URL_NOTICE_LIST,
+            ArrayList<NoticesItem> noticeItems = Utils.downloadIndirectNoticesList(
+                    CommonDataStructure.URL_INDIRECT_NOTICE_LIST,
                     mUid, "", CommonDataStructure.NOTICE_REPLY);
             if (noticeItems == null || noticeItems.size() == 0) {
                 return;
@@ -167,12 +207,59 @@ public class DownloadNoticesService extends Service {
                     }
                 }
             }
-            mHandler.sendEmptyMessage(TIME_TO_DOWNLOAD_COMMENTS);
+//            mHandler.sendEmptyMessage(TIME_TO_DOWNLOAD_INDIRECT_COMMENTS);
         }
 
     }
 
-    class DownloadCommentNotices implements Runnable {
+    class DownloadMyselfReplyNotices implements Runnable {
+
+        @Override
+        public void run() {
+            Log.e(TAG, "nannan DownloadMyselfReplyNotices");
+            ArrayList<NoticesItem> noticeItems = Utils.downloadMyselfNoticesList(
+                    CommonDataStructure.URL_MYSELF_NOTICE_LIST,
+                    mUid, "", CommonDataStructure.NOTICE_REPLY);
+            if (noticeItems == null || noticeItems.size() == 0) {
+                return;
+            }
+            Log.e(TAG, "nannan DownloadMyselfReplyNotices 1111");
+            for (NoticesItem notice : noticeItems) {
+                ArrayList<ReplysItem> replyItems = Utils.downloadReplysList(
+                        CommonDataStructure.URL_REPLY_LIST, notice.getUid(),
+                        notice.getCommentId(), CommonDataStructure.INDIRECTIDS, "");
+                if (replyItems == null || replyItems.size() == 0) {
+                    continue;
+                }
+                for (ReplysItem reply : replyItems) {
+                    if (!isReplyIdExistInReplysDB(reply.getReplyId())) {
+                        insertReplysToReplyDB(reply);
+                    }
+                }
+            }
+//            mHandler.sendEmptyMessage(TIME_TO_DOWNLOAD_INDIRECT_COMMENTS);
+        }
+
+    }
+
+    class DownloadIndirectCommentNotices implements Runnable {
+
+        @Override
+        public void run() {
+//            ArrayList<NoticesItem> noticeItems = Utils.downloadNoticesList(
+//                    CommonDataStructure.URL_TOPIC_COMMENT_WITH_REPLY_LIST,
+//                    null, null);
+//            if (noticeItems == null || noticeItems.size() == 0) {
+//                return;
+//            }
+//            for (NoticesItem notice : noticeItems) {
+//                String nikename = queryNikenameFromContactsDB(notice.getFromUid());
+//            }
+        }
+
+    }
+
+    class DownloadMyselfCommentNotices implements Runnable {
 
         @Override
         public void run() {

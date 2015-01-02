@@ -39,6 +39,7 @@ public class ViewPhotoActivity extends Activity {
 
     private String mUId;
     private String mBucketId;
+    private String mCommentId;
     private int mOrgPosition;
 
     @Override
@@ -50,6 +51,7 @@ public class ViewPhotoActivity extends Activity {
         Intent intent = getIntent();
         mUId = intent.getStringExtra(MarrySocialDBHelper.KEY_UID);
         mBucketId = intent.getStringExtra(MarrySocialDBHelper.KEY_BUCKET_ID);
+        mCommentId = intent.getStringExtra(MarrySocialDBHelper.KEY_COMMENT_ID);
         mOrgPosition = intent.getIntExtra(MarrySocialDBHelper.KEY_PHOTO_POS, 0);
         mDBHelper = MarrySocialDBHelper.newInstance(this);
 
@@ -71,10 +73,18 @@ public class ViewPhotoActivity extends Activity {
     private void loadPhotoItemsFromDB() {
         ArrayList<CommentsItem> commentEntrys = new ArrayList<CommentsItem>();
         Cursor cursor = null;
+        String whereClause = null;
+
+        if (Integer.valueOf(mCommentId) == -1) {
+            whereClause = MarrySocialDBHelper.KEY_UID + " = " + mUId
+                    + " AND " + MarrySocialDBHelper.KEY_BUCKET_ID + " = " + mBucketId;
+        } else {
+            whereClause = MarrySocialDBHelper.KEY_UID + " = " + mUId
+                    + " AND " + MarrySocialDBHelper.KEY_COMMENT_ID + " = " + mCommentId;
+        }
 
         try {
-            String whereClause = MarrySocialDBHelper.KEY_UID + " = " + mUId
-                    + " AND " + MarrySocialDBHelper.KEY_BUCKET_ID + " = " + mBucketId;
+
             String orderBy = MarrySocialDBHelper.KEY_PHOTO_POS + " ASC";
             cursor = mDBHelper.query(MarrySocialDBHelper.DATABASE_IMAGES_TABLE,
                     IMAGES_PROJECTION, whereClause, null, null, null, orderBy, null);

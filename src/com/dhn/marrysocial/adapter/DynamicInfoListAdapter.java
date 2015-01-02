@@ -169,6 +169,8 @@ public class DynamicInfoListAdapter extends BaseAdapter {
         }
 
         holder.mFullName.setText(mCommentsData.get(position).getFulName());
+        holder.mDynamicBravo.setEnabled(!CommonDataStructure.INVALID_STR
+                .equalsIgnoreCase(mCommentsData.get(position).getCommentId()));
         holder.mDynamicBravo.setChecked(mCommentsData.get(position).isBravo());
         holder.mDynamicBravo.setOnClickListener(new OnClickListener() {
 
@@ -179,6 +181,8 @@ public class DynamicInfoListAdapter extends BaseAdapter {
                         .get(position), holder.mDynamicBravo.isChecked()));
             }
         });
+        holder.mReplyBtn.setEnabled(!CommonDataStructure.INVALID_STR
+                .equalsIgnoreCase(mCommentsData.get(position).getCommentId()));
         holder.mReplyBtn.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -464,6 +468,8 @@ public class DynamicInfoListAdapter extends BaseAdapter {
                 .get(position).getUid());
         intent.putExtra(MarrySocialDBHelper.KEY_BUCKET_ID,
                 mCommentsData.get(position).getBucketId());
+        intent.putExtra(MarrySocialDBHelper.KEY_COMMENT_ID,
+                mCommentsData.get(position).getCommentId());
         intent.putExtra(MarrySocialDBHelper.KEY_PHOTO_POS, photoIndex);
 
         mContext.startActivity(intent);
@@ -561,13 +567,16 @@ public class DynamicInfoListAdapter extends BaseAdapter {
 
         @Override
         public void run() {
+
             updateBravoStatusOfCommentsDB(comment, isChecked);
             if (isChecked) {
-                insertBravoStatusToBravosDB(comment, isChecked);
-                uploadCommentsOrBravosOrReplys(CommonDataStructure.KEY_BRAVOS);
+                insertBravoStatusToBravosDB(comment);
+                uploadCommentsOrBravosOrReplysToCloud(CommonDataStructure.KEY_BRAVOS);
             } else {
-                updateBravoStatusToBravosDB(comment, isChecked);
-                deleteCommentsOrBravosOrReplys(CommonDataStructure.KEY_BRAVOS);
+                updateBravoStatusToBravosDB(comment);
+                if (Integer.valueOf(comment.getCommentId()) != -1) {
+                    deleteCommentsOrBravosOrReplysFromCloud(CommonDataStructure.KEY_BRAVOS);
+                }
             }
 
         }
@@ -575,8 +584,14 @@ public class DynamicInfoListAdapter extends BaseAdapter {
 
     private void updateBravoStatusOfCommentsDB(CommentsItem comment,
             boolean isChecked) {
-        String whereClause = MarrySocialDBHelper.KEY_COMMENT_ID + " = "
-                + comment.getCommentId();
+        String whereClause = null;
+        if (Integer.valueOf(comment.getCommentId()) == -1) {
+            whereClause = MarrySocialDBHelper.KEY_BUCKET_ID + " = "
+                    + comment.getBucketId();
+        } else {
+            whereClause = MarrySocialDBHelper.KEY_COMMENT_ID + " = "
+                    + comment.getCommentId();
+        }
         ContentValues values = new ContentValues();
         values.put(MarrySocialDBHelper.KEY_BRAVO_STATUS,
                 isChecked ? MarrySocialDBHelper.BRAVO_CONFIRM
@@ -585,13 +600,13 @@ public class DynamicInfoListAdapter extends BaseAdapter {
                 whereClause, null);
     }
 
-    private void insertBravoStatusToBravosDB(CommentsItem comment,
-            boolean isChecked) {
+    private void insertBravoStatusToBravosDB(CommentsItem comment) {
         if (!isCommentIdExist(comment.getCommentId())) {
             ContentValues insertValues = new ContentValues();
+            insertValues.put(MarrySocialDBHelper.KEY_UID, mUid);
+            insertValues.put(MarrySocialDBHelper.KEY_BUCKET_ID, comment.getBucketId());
             insertValues.put(MarrySocialDBHelper.KEY_COMMENT_ID,
                     comment.getCommentId());
-            insertValues.put(MarrySocialDBHelper.KEY_UID, mUid);
             insertValues.put(MarrySocialDBHelper.KEY_AUTHOR_FULLNAME,
                     mAuthorName);
             insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
@@ -601,9 +616,16 @@ public class DynamicInfoListAdapter extends BaseAdapter {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.insert(CommonDataStructure.BRAVOURL, insertValues);
         } else {
-            String whereClause = MarrySocialDBHelper.KEY_COMMENT_ID + " = "
-                    + comment.getCommentId() + " AND "
-                    + MarrySocialDBHelper.KEY_UID + " = " + mUid;
+            String whereClause = null;
+            if (Integer.valueOf(comment.getCommentId()) == -1) {
+                whereClause = MarrySocialDBHelper.KEY_BUCKET_ID + " = "
+                        + comment.getBucketId() + " AND "
+                        + MarrySocialDBHelper.KEY_UID + " = " + mUid;
+            } else {
+                whereClause = MarrySocialDBHelper.KEY_COMMENT_ID + " = "
+                        + comment.getCommentId() + " AND "
+                        + MarrySocialDBHelper.KEY_UID + " = " + mUid;
+            }
             ContentResolver resolver = mContext.getContentResolver();
             ContentValues values = new ContentValues();
             values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS, MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD);
@@ -612,17 +634,23 @@ public class DynamicInfoListAdapter extends BaseAdapter {
 
     }
 
-    private void updateBravoStatusToBravosDB(CommentsItem comment,
-            boolean isChecked) {
+    private void updateBravoStatusToBravosDB(CommentsItem comment) {
 
-        String whereClause = MarrySocialDBHelper.KEY_COMMENT_ID + " = "
-                + comment.getCommentId() + " AND "
-                + MarrySocialDBHelper.KEY_UID + " = " + mUid;
+        String whereClause = null;
         ContentResolver resolver = mContext.getContentResolver();
-        ContentValues values = new ContentValues();
-        values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS, MarrySocialDBHelper.NEED_DELETE_FROM_CLOUD);
-        resolver.update(CommonDataStructure.BRAVOURL, values, whereClause, null);
-
+        if (Integer.valueOf(comment.getCommentId()) == -1) {
+            whereClause = MarrySocialDBHelper.KEY_BUCKET_ID + " = "
+                    + comment.getBucketId() + " AND "
+                    + MarrySocialDBHelper.KEY_UID + " = " + mUid;
+            resolver.delete(CommonDataStructure.BRAVOURL, whereClause, null);
+        } else {
+            whereClause = MarrySocialDBHelper.KEY_COMMENT_ID + " = "
+                    + comment.getCommentId() + " AND "
+                    + MarrySocialDBHelper.KEY_UID + " = " + mUid;
+            ContentValues values = new ContentValues();
+            values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS, MarrySocialDBHelper.NEED_DELETE_FROM_CLOUD);
+            resolver.update(CommonDataStructure.BRAVOURL, values, whereClause, null);
+        }
     }
 
     public boolean isCommentIdExist(String commentId) {
@@ -653,7 +681,7 @@ public class DynamicInfoListAdapter extends BaseAdapter {
         mContext.startActivity(intent);
     }
 
-    private void uploadCommentsOrBravosOrReplys(int uploadType) {
+    private void uploadCommentsOrBravosOrReplysToCloud(int uploadType) {
         Log.e(TAG, "nannan uploadCommentsOrBravosOrReplys()..");
         Intent serviceIntent = new Intent(mContext,
                 UploadCommentsAndBravosAndReplysIntentService.class);
@@ -661,7 +689,7 @@ public class DynamicInfoListAdapter extends BaseAdapter {
         mContext.startService(serviceIntent);
     }
 
-    private void deleteCommentsOrBravosOrReplys(int uploadType) {
+    private void deleteCommentsOrBravosOrReplysFromCloud(int uploadType) {
         Intent serviceIntent = new Intent(mContext,
                 DeleteCommentsAndBravosAndReplysIntentServices.class);
         serviceIntent.putExtra(CommonDataStructure.KEY_UPLOAD_TYPE, uploadType);

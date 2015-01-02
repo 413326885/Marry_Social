@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
@@ -1183,7 +1184,7 @@ public class Utils {
         return null;
     }
 
-    public static ArrayList<NoticesItem> downloadNoticesList(String RequestURL,
+    public static ArrayList<NoticesItem> downloadIndirectNoticesList(String RequestURL,
             String uId, String timeStamp, int noticeType) {
 
         Log.e(TAG, "nannan downloadNoticesList");
@@ -1265,6 +1266,106 @@ public class Utils {
                 item.setNoticeType(type);
                 item.setCommentId(commentId);
                 item.setIsReceived(isReceived);
+                noticeItems.add(item);
+            }
+
+            reader.close();
+
+            return noticeItems;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+
+        return null;
+    }
+
+    public static ArrayList<NoticesItem> downloadMyselfNoticesList(String RequestURL,
+            String uId, String timeStamp, int noticeType) {
+
+        Log.e(TAG, "nannan downloadNoticesList");
+        URL postUrl = null;
+        HttpURLConnection connection = null;
+        DataOutputStream output = null;
+        ArrayList<NoticesItem> noticeItems = new ArrayList<NoticesItem>();
+
+        try {
+            postUrl = new URL(RequestURL);
+            if (postUrl == null)
+                return null;
+
+            connection = (HttpURLConnection) postUrl.openConnection();
+            if (connection == null)
+                return null;
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestMethod("POST");
+            connection.setUseCaches(false);
+            connection.setInstanceFollowRedirects(true);
+            connection.setRequestProperty("Content-Type",
+                    "application/x-www-form-urlencoded");
+            connection.connect();
+
+            OutputStream stream = connection.getOutputStream();
+            output = new DataOutputStream(stream);
+
+            JSONObject noticeContent = new JSONObject();
+            noticeContent.put("uid", uId);
+            noticeContent.put("noticetype", noticeType);
+            noticeContent.put("timestamp", timeStamp);
+
+            Log.e(TAG, "nannan noticeContent  = " + noticeContent.toString());
+            String content = null;
+            content = "jsondata="
+                    + URLEncoder.encode(noticeContent.toString(), "UTF-8");
+
+            if (content == null)
+                return null;
+
+            output.writeBytes(content);
+            output.flush();
+            output.close();
+
+            BufferedReader reader = null;
+            reader = new BufferedReader(new InputStreamReader(
+                    connection.getInputStream()));
+            StringBuffer resp = new StringBuffer();
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                resp.append(line);
+            }
+
+            Log.e(TAG, "nannan resp 555555555555 = " + resp);
+            JSONObject response = new JSONObject(resp.toString());
+            String code = response.getString("code");
+            if (!"200".equalsIgnoreCase(code)) {
+                return null;
+            }
+
+            JSONArray respData = response.getJSONArray("data");
+            for (int index = 0; index < respData.length(); index++) {
+                JSONObject notice = respData.getJSONObject(index);
+                String noticeId = notice.getString("iid");
+                String uid = notice.getString("uid");
+                String timeLine = notice.getString("addtime");
+                int type = Integer.valueOf(notice.getString("logtype"));
+                String commentId = notice.getString("tid");
+
+                NoticesItem item = new NoticesItem();
+                item.setNoticeId(noticeId);
+                item.setUid(uid);
+                item.setFromUid(uid);
+                item.setTimeLine(timeLine);
+                item.setNoticeType(type);
+                item.setCommentId(commentId);
                 noticeItems.add(item);
             }
 
@@ -1723,5 +1824,106 @@ public class Utils {
             }
         }
         return imageFile;
+    }
+
+    public static String uploadChatMsg(String RequestURL,
+            String fromUid, String toUid, String chatContent) {
+
+        Log.e(TAG, "nannan uploadChatMsg ");
+        String chatTime = "";
+
+        URL postUrl = null;
+        DataOutputStream outputStream = null;
+        HttpURLConnection connection = null;
+        OutputStreamWriter outputWriter = null;
+        BufferedReader inputReader = null;
+
+        try {
+            postUrl = new URL(RequestURL);
+            if (postUrl == null)
+                return chatTime;
+
+            connection = (HttpURLConnection) postUrl.openConnection();
+            if (connection == null)
+                return chatTime;
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestMethod("POST");
+            connection.setUseCaches(false);
+            connection.setInstanceFollowRedirects(true);
+            connection.setRequestProperty("Content-Type",
+                    "application/x-www-form-urlencoded");
+
+            connection.connect();
+
+            outputStream = new DataOutputStream(connection.getOutputStream());
+            JSONObject chatMsg = new JSONObject();
+            chatMsg.put(CommonDataStructure.UID, fromUid);
+            chatMsg.put(CommonDataStructure.TOUID, toUid);
+            chatMsg.put(CommonDataStructure.COMMENT_CONTENT, chatContent);
+
+            String content = "jsondata="
+                    + URLEncoder.encode(chatMsg.toString(), "UTF-8");
+            Log.e(TAG, "nannan chatMsg = " + chatMsg.toString());
+            Log.e(TAG, "nannan content = " + content);
+            if (content == null)
+                return chatTime;
+
+            outputStream.writeBytes(content);
+            outputStream.flush();
+            outputStream.close();
+
+            inputReader = new BufferedReader(new InputStreamReader(
+                    connection.getInputStream()));
+            StringBuffer resp = new StringBuffer();
+            String line = null;
+            while ((line = inputReader.readLine()) != null) {
+                resp.append(line);
+            }
+            // String line = inputReader.readLine();
+            // inputReader.close();
+
+            Log.e(TAG, "nannan resp = " + resp.toString());
+            JSONObject response = new JSONObject(resp.toString());
+            String code = response.getString("code");
+            if (!"200".equalsIgnoreCase(code)) {
+                return chatTime;
+            }
+
+            chatTime = response.getString("data");
+
+            inputReader.close();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+        return chatTime;
+    }
+
+    public static void waitWithoutInterrupt(Object object) {
+        try {
+            object.wait();
+        } catch (InterruptedException e) {
+            Log.w(TAG, "unexpected interrupt: " + object);
+        }
+    }
+
+    public static boolean handleInterrruptedException(Throwable e) {
+        // A helper to deal with the interrupt exception
+        // If an interrupt detected, we will setup the bit again.
+        if (e instanceof InterruptedIOException
+                || e instanceof InterruptedException) {
+            Thread.currentThread().interrupt();
+            return true;
+        }
+        return false;
     }
 }
