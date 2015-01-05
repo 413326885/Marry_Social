@@ -66,6 +66,9 @@ public class ChatMsgViewAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         ChatMsgItem msgItem = mData.get(position);
 
+        if (msgItem == null) {
+            return convertView;
+        }
         ViewHolder holder = null;
         if (convertView == null) {
             if (msgItem.getMsgType() == IMsgViewType.IMVT_COM_MSG) {
@@ -81,13 +84,16 @@ public class ChatMsgViewAdapter extends BaseAdapter {
                     .findViewById(R.id.chat_msg_sendtime);
             holder.chat_msg_content = (TextView) convertView
                     .findViewById(R.id.chat_msg_content);
+            convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
         String chat_time = msgItem.getAddedTime();
-        holder.chat_msg_send_time.setText(Utils.getAddedTimeTitle(mContext,
-                chat_time.substring(0, chat_time.length() - 4)));
+        if(chat_time != null) {
+            holder.chat_msg_send_time.setText(Utils.getAddedTimeTitle(mContext,
+                    chat_time.substring(0, chat_time.length() - 7)));
+        }
         holder.chat_msg_content.setText(msgItem.getChatContent());
 
         return convertView;

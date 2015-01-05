@@ -8,6 +8,7 @@ import com.dhn.marrysocial.database.MarrySocialDBHelper;
 import com.dhn.marrysocial.utils.Utils;
 import com.dhn.marrysocial.R;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -59,6 +60,7 @@ public class ChatMsgFragment extends Fragment {
         mListView.setEmptyView(emptyView);
 
         mDBHelper = MarrySocialDBHelper.newInstance(getActivity());
+//        insertBriefChatMsgToBriefChatDB();
         return view;
     }
 
@@ -66,6 +68,7 @@ public class ChatMsgFragment extends Fragment {
     public void onResume() {
         super.onResume();
         loadBriefChatMsgsFromBriefChatDB();
+        mListViewAdapter.notifyDataSetChanged();
     }
 
     private long mExitTime = 0;
@@ -121,5 +124,19 @@ public class ChatMsgFragment extends Fragment {
         public String nikename;
         public String chatContent;
         public String addTime;
+    }
+
+    private void insertBriefChatMsgToBriefChatDB() {
+        ContentValues insertValues = new ContentValues();
+        insertValues.put(MarrySocialDBHelper.KEY_UID, "3");
+        insertValues.put(MarrySocialDBHelper.KEY_CHAT_ID, "3_20");
+        insertValues.put(MarrySocialDBHelper.KEY_NIKENAME, "nan");
+        insertValues.put(MarrySocialDBHelper.KEY_CHAT_CONTENT,
+                "你个大傻逼。。。");
+        insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
+                Long.valueOf(System.currentTimeMillis()) + "000");
+
+        mDBHelper.insert(MarrySocialDBHelper.DATABASE_BRIEF_CHAT_TABLE,
+                insertValues);
     }
 }

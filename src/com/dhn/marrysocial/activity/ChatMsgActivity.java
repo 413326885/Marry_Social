@@ -21,9 +21,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Process;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -51,6 +53,9 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
     private static final int START_TO_UPLOAD_CHAT_MSG = 100;
     private static final int UPLOAD_CHAT_MSG_FINISH = 101;
 
+    private static final int TOUCH_FING_UP = 110;
+    private static final int TOUCH_FING_DOWN = 111;
+
     private ListView mListView;
     private ChatMsgViewAdapter mListViewAdapter;
     private RelativeLayout mChatReturnBtn;
@@ -62,6 +67,10 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
     private String mAuthorName;
     private String mToUid;
     private String mChatId;
+
+    private float mTouchDownY = 0.0f;
+    private float mTouchMoveY = 0.0f;
+    private boolean mIsFingUp = false;
 
     private MarrySocialDBHelper mDBHelper;
     private ArrayList<ChatMsgItem> mChatMsgList = new ArrayList<ChatMsgItem>();
@@ -76,7 +85,7 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
             switch (msg.what) {
             case START_TO_UPLOAD_CHAT_MSG: {
                 mListViewAdapter.notifyDataSetChanged();
-                Utils.hideSoftInputMethod(mChatContent);
+//                Utils.hideSoftInputMethod(mChatContent);
                 mChatContent.setText(null);
                 mListView.setSelection(mListView.getCount() - 1);
                 break;
@@ -84,6 +93,14 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
             case UPLOAD_CHAT_MSG_FINISH: {
                 ChatMsgSmallItem task = (ChatMsgSmallItem) msg.obj;
                 // todo something
+                break;
+            }
+            case TOUCH_FING_UP: {
+                Utils.hideSoftInputMethod(mChatContent);
+                break;
+            }
+            case TOUCH_FING_DOWN: {
+                Utils.hideSoftInputMethod(mChatContent);
                 break;
             }
             default:
@@ -108,6 +125,8 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
         mChatSendBtn = (ImageView) this.findViewById(R.id.chat_msg_chat_send);
         mChatContent = (EditText) this
                 .findViewById(R.id.chat_msg_chat_contents);
+        mChatContent.setOnClickListener(this);
+
         mEmptyView = (TextView) this.findViewById(R.id.chat_msg_no_content);
         mChatReturnBtn.setOnClickListener(this);
         mChatSendBtn.setOnClickListener(this);
@@ -117,6 +136,40 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
         mListViewAdapter.setChatDataSource(mChatMsgList);
         mListView.setAdapter(mListViewAdapter);
         mListView.setEmptyView(mEmptyView);
+        mListView.setOnTouchListener(new OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    mTouchDownY = event.getY();
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    mTouchMoveY = event.getY() - mTouchDownY;
+                    if (Math.abs(mTouchMoveY) < 50) {
+                        break;
+                    }
+                    if (mTouchMoveY < 0) {
+                        if (!mIsFingUp) {
+                            mIsFingUp = true;
+                            mHandler.sendEmptyMessageDelayed(TOUCH_FING_UP, 50);
+                        }
+                    } else {
+                        if (mIsFingUp) {
+                            mIsFingUp = false;
+                            mHandler.sendEmptyMessageDelayed(TOUCH_FING_DOWN,
+                                    50);
+                        }
+                    }
+                    break;
+                case MotionEvent.ACTION_UP:
+                    break;
+                default:
+                    break;
+                }
+                return false;
+            }
+        });
 
         mDBHelper = MarrySocialDBHelper.newInstance(this);
         SharedPreferences prefs = this.getSharedPreferences(
@@ -131,6 +184,7 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
     protected void onResume() {
         super.onResume();
         loadChatMsgsFromChatsDB(mChatId);
+        mListViewAdapter.notifyDataSetChanged();
         mUploadChatMsgsTask = new UploadChatMsgsTask();
         mUploadChatMsgsTask.start();
     }
@@ -179,6 +233,11 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
             }
             break;
         }
+        case R.id.chat_msg_chat_contents: {
+            mChatContent.setFocusable(true);
+            mChatContent.requestFocus();
+            break;
+        }
         default:
             break;
         }
@@ -210,7 +269,7 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
 
         try {
             String whereclause = MarrySocialDBHelper.KEY_CHAT_ID + " = "
-                    + chat_id;
+                    + '"' + chat_id + '"';
             String orderBy = MarrySocialDBHelper.KEY_ADDED_TIME + " ASC";
 
             cursor = mDBHelper.query(MarrySocialDBHelper.DATABASE_CHATS_TABLE,
@@ -324,7 +383,7 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
         values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 MarrySocialDBHelper.UPLOAD_TO_CLOUD_SUCCESS);
         String whereClause = MarrySocialDBHelper.KEY_CHAT_ID + " = "
-                + task.msg.getChatId() + " AND " + MarrySocialDBHelper.KEY_ID
+                + '"' + task.msg.getChatId() + '"' + " AND " + MarrySocialDBHelper.KEY_ID
                 + " = " + task.msg.getDBId();
         mDBHelper.update(MarrySocialDBHelper.DATABASE_CHATS_TABLE, values,
                 whereClause, null);
@@ -343,7 +402,7 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
         Cursor cursor = null;
         try {
             String whereclause = MarrySocialDBHelper.KEY_CHAT_ID + " = "
-                    + chatId;
+                    + '"' + chatId + '"';
             cursor = mDBHelper.query(MarrySocialDBHelper.DATABASE_BRIEF_CHAT_TABLE,
                     BRIEF_CHAT_PROJECTION, whereclause, null, null, null, null,
                     null);
@@ -383,7 +442,7 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
         values.put(MarrySocialDBHelper.KEY_ADDED_TIME,
                 chat.addTime);
 
-        String whereClause = MarrySocialDBHelper.KEY_CHAT_ID + " = " + chat.chatId;
+        String whereClause = MarrySocialDBHelper.KEY_CHAT_ID + " = " + '"' + chat.chatId + '"';
         mDBHelper.update(MarrySocialDBHelper.DATABASE_BRIEF_CHAT_TABLE, values, whereClause, null);
     }
 

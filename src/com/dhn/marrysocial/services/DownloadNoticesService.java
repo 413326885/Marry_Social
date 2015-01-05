@@ -36,6 +36,7 @@ public class DownloadNoticesService extends Service {
     private static final int TIME_TO_DOWNLOAD_MYSELF_REPLYS = 106;
 
     private static final int POOL_SIZE = 10;
+    private static final int TIME_SCHEDULE = 10000;
 
     private static final String[] COMMENTS_PROJECTION = {
             MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_BUCKET_ID,
@@ -108,11 +109,11 @@ public class DownloadNoticesService extends Service {
             public void run() {
                 mHandler.sendEmptyMessage(TIME_TO_DOWNLOAD_INDIRECT_BRAVOS);
                 mHandler.sendEmptyMessage(TIME_TO_DOWNLOAD_MYSELF_BRAVOS);
-                mHandler.sendEmptyMessageDelayed(TIME_TO_DOWNLOAD_INDIRECT_REPLYS, 2000);
-                mHandler.sendEmptyMessageDelayed(TIME_TO_DOWNLOAD_MYSELF_REPLYS, 2000);
+                mHandler.sendEmptyMessageDelayed(TIME_TO_DOWNLOAD_INDIRECT_REPLYS, TIME_SCHEDULE);
+                mHandler.sendEmptyMessageDelayed(TIME_TO_DOWNLOAD_MYSELF_REPLYS, TIME_SCHEDULE);
             }
         };
-        mTimer.schedule(mTimerTask, 2000, 2000);
+        mTimer.schedule(mTimerTask, TIME_SCHEDULE, TIME_SCHEDULE);
 
         SharedPreferences prefs = this.getSharedPreferences(
                 CommonDataStructure.PREFS_LAIQIAN_DEFAULT,
