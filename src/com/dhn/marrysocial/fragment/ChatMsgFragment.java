@@ -85,6 +85,7 @@ public class ChatMsgFragment extends Fragment {
 
     private void loadBriefChatMsgsFromBriefChatDB() {
 
+        mBriefChatItems.clear();
         Cursor cursor = null;
 
         try {
