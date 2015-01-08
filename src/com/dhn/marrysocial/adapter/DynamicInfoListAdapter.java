@@ -610,7 +610,7 @@ public class DynamicInfoListAdapter extends BaseAdapter {
             insertValues.put(MarrySocialDBHelper.KEY_AUTHOR_FULLNAME,
                     mAuthorName);
             insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
-                    Long.toString(System.currentTimeMillis()));
+                    Long.toString(System.currentTimeMillis() / 1000));
             insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS, MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD);
 
             ContentResolver resolver = mContext.getContentResolver();

@@ -111,6 +111,10 @@ public class CommonDataStructure {
             + "U80TWhvV2hzPSIsInZhbHVlIjoiQnRPUXBlV3hEWGltaW12cDhtM2J1YzZJU3FTa0ZTXC9BbkVNYzRBQXJ3dE09Iiw"
             + "ibWFjIjoiZGE5YmQ1NjU0MjUyNzZkYmUxNGU1NjZjYmE0ZDQ4NDgwYjlhYWE3MzQyNDc2MWI4NzM0MDAxNzhlZjZiYTlkZiJ9";
 
+    public static final String CMD_GET_CHAT_TEXT = "eyJpdiI6IjJ3MDE3RDArVW5CdG1oN0c3YXJRcDBDeVpuWmdFelp5e"
+            + "lkyZWgxbTV2MGs9IiwidmFsdWUiOiJ1bDkzYXNiWTdqSjAyNXczVDA5dlduc0FOT2pzRGlvZTAxczAyeGlMb3E4PSI"
+            + "sIm1hYyI6IjA2NzQ2MmM2MDdkMDZiNTRlMzM0NjA1NDFkODQ5NmZmN2NiMWY5YzljNWUwNmE0ZjM0NjQ2ODYzNmE1Y2Q3NDAifQ==";
+
     public static final String URL_UPLOAD_COMMON = "http://www.pkjiao.com/verify/post/";
 
     public static final String URL_TOKEN_CHECK = URL_UPLOAD_COMMON
@@ -149,6 +153,8 @@ public class CommonDataStructure {
             + CMD_TOPIC_COMMENT_LIST;
     public static final String URL_CHAT_TEXT = URL_UPLOAD_COMMON
             + CMD_CHAT_TEXT;
+    public static final String URL_GET_CHAT_TEXT = URL_UPLOAD_COMMON
+            + CMD_GET_CHAT_TEXT;
 
     public static final Uri COMMENTURL = Uri.parse("content://"
             + DBContentChangeProvider.AUTHORITY + "/"
@@ -165,6 +171,14 @@ public class CommonDataStructure {
     public static final Uri IMAGEURL = Uri.parse("content://"
             + DBContentChangeProvider.AUTHORITY + "/"
             + MarrySocialDBHelper.DATABASE_IMAGES_TABLE);
+
+    public static final Uri CHATURL = Uri.parse("content://"
+            + DBContentChangeProvider.AUTHORITY + "/"
+            + MarrySocialDBHelper.DATABASE_CHATS_TABLE);
+
+    public static final Uri BRIEFCHATURL = Uri.parse("content://"
+            + DBContentChangeProvider.AUTHORITY + "/"
+            + MarrySocialDBHelper.DATABASE_BRIEF_CHAT_TABLE);
 
     public static final String REMOTE_ORG_PHOTO_PATH = "http://static.pkjiao.com/topic/";
     public static final String REMOTE_THUMB_PHOTO_PATH = "http://static.pkjiao.com/thumbnail/topic/";

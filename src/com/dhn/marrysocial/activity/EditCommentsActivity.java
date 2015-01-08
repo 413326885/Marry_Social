@@ -425,7 +425,7 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
     }
 
     public void insertCommentsToDB() {
-        long time = System.currentTimeMillis();
+        long time = System.currentTimeMillis() / 1000;
         mCurrentEditTime = Long.toString(time);
 
         ContentValues values = new ContentValues();

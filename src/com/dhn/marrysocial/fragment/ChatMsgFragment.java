@@ -4,13 +4,16 @@ import java.util.ArrayList;
 
 import com.dhn.marrysocial.adapter.ChatMsgListAdapter;
 import com.dhn.marrysocial.base.ChatMsgItem;
+import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
 import com.dhn.marrysocial.utils.Utils;
 import com.dhn.marrysocial.R;
 
 import android.content.ContentValues;
+import android.database.ContentObserver;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -27,22 +30,45 @@ public class ChatMsgFragment extends Fragment {
     @SuppressWarnings("unused")
     private static final String TAG = "ChatMsgFragment";
 
+    private static final int UPDATE_CHAT_MSG = 100;
+
     private static final String[] BRIEF_CHAT_PROJECTION = {
-        MarrySocialDBHelper.KEY_UID,
-        MarrySocialDBHelper.KEY_CHAT_ID,
-        MarrySocialDBHelper.KEY_NIKENAME,
-        MarrySocialDBHelper.KEY_CHAT_CONTENT,
-        MarrySocialDBHelper.KEY_ADDED_TIME};
-    
+            MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_CHAT_ID,
+            MarrySocialDBHelper.KEY_NIKENAME,
+            MarrySocialDBHelper.KEY_CHAT_CONTENT,
+            MarrySocialDBHelper.KEY_ADDED_TIME };
+
     private ListView mListView;
     private ChatMsgListAdapter mListViewAdapter;
 
     private MarrySocialDBHelper mDBHelper;
-    private ArrayList<BriefChatItem> mBriefChatItems = new ArrayList<BriefChatItem> ();
+    private ArrayList<BriefChatItem> mBriefChatItems = new ArrayList<BriefChatItem>();
+
+    private DataSetChangeObserver mChangeObserver;
+
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(android.os.Message msg) {
+            switch (msg.what) {
+            case UPDATE_CHAT_MSG: {
+                loadBriefChatMsgsFromBriefChatDB();
+                mListViewAdapter.notifyDataSetChanged();
+                break;
+            }
+            default:
+                break;
+            }
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mChangeObserver = new DataSetChangeObserver(mHandler);
+        this.getActivity()
+                .getContentResolver()
+                .registerContentObserver(CommonDataStructure.BRIEFCHATURL, true,
+                        mChangeObserver);
     }
 
     @Override
@@ -52,8 +78,7 @@ public class ChatMsgFragment extends Fragment {
         View view = inflater.inflate(R.layout.chat_msg_fragment_layout,
                 container, false);
         mListView = (ListView) view.findViewById(R.id.chat_msg_listView);
-        TextView emptyView = (TextView) view
-                .findViewById(R.id.chat_list_empty);
+        TextView emptyView = (TextView) view.findViewById(R.id.chat_list_empty);
         mListViewAdapter = new ChatMsgListAdapter(getActivity());
         mListViewAdapter.setDataSource(mBriefChatItems);
         mListView.setAdapter(mListViewAdapter);
@@ -71,7 +96,15 @@ public class ChatMsgFragment extends Fragment {
         mListViewAdapter.notifyDataSetChanged();
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        this.getActivity().getContentResolver()
+                .unregisterContentObserver(mChangeObserver);
+    }
+
     private long mExitTime = 0;
+
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         Log.e(TAG, "nannan ChatMsgFragment onKeyDown......");
         if ((System.currentTimeMillis() - mExitTime) > 2000) {
@@ -91,12 +124,14 @@ public class ChatMsgFragment extends Fragment {
         try {
             String orderBy = MarrySocialDBHelper.KEY_ADDED_TIME + " ASC";
 
-            cursor = mDBHelper.query(MarrySocialDBHelper.DATABASE_BRIEF_CHAT_TABLE,
+            cursor = mDBHelper.query(
+                    MarrySocialDBHelper.DATABASE_BRIEF_CHAT_TABLE,
                     BRIEF_CHAT_PROJECTION, null, null, null, null, orderBy,
                     null);
 
             if (cursor == null) {
-                Log.e(TAG, "nannan loadBriefChatMsgsFromBriefChatDB()..  cursor == null");
+                Log.e(TAG,
+                        "nannan loadBriefChatMsgsFromBriefChatDB()..  cursor == null");
                 return;
             }
 
@@ -106,7 +141,10 @@ public class ChatMsgFragment extends Fragment {
                 item.chatId = cursor.getString(1);
                 item.nikename = cursor.getString(2);
                 item.chatContent = cursor.getString(3);
-                item.addTime = cursor.getString(4);
+                String chat_time = cursor.getString(4);
+                // item.addTime = chat_time.substring(0, chat_time.length() -
+                // 6);
+                item.addTime = chat_time;
                 mBriefChatItems.add(item);
             }
 
@@ -130,14 +168,30 @@ public class ChatMsgFragment extends Fragment {
     private void insertBriefChatMsgToBriefChatDB() {
         ContentValues insertValues = new ContentValues();
         insertValues.put(MarrySocialDBHelper.KEY_UID, "3");
-        insertValues.put(MarrySocialDBHelper.KEY_CHAT_ID, "3_20");
+        insertValues.put(MarrySocialDBHelper.KEY_CHAT_ID, "3_4");
         insertValues.put(MarrySocialDBHelper.KEY_NIKENAME, "nan");
-        insertValues.put(MarrySocialDBHelper.KEY_CHAT_CONTENT,
-                "你个大傻逼。。。");
-        insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
-                Long.valueOf(System.currentTimeMillis()) + "000");
+        insertValues.put(MarrySocialDBHelper.KEY_CHAT_CONTENT, "你个大傻逼。。。");
+        String addtime = Long.toString(System.currentTimeMillis() * 1000);
+        insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME, addtime);
 
         mDBHelper.insert(MarrySocialDBHelper.DATABASE_BRIEF_CHAT_TABLE,
                 insertValues);
+    }
+
+    private class DataSetChangeObserver extends ContentObserver {
+
+        private Handler handler;
+
+        public DataSetChangeObserver(Handler handler) {
+            super(handler);
+            this.handler = handler;
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            super.onChange(selfChange);
+            handler.sendEmptyMessage(UPDATE_CHAT_MSG);
+            Log.e(TAG, "nannan onChange()..");
+        }
     }
 }

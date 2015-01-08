@@ -89,11 +89,9 @@ public class ChatMsgViewAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        String chat_time = msgItem.getAddedTime();
-        if(chat_time != null) {
-            holder.chat_msg_send_time.setText(Utils.getAddedTimeTitle(mContext,
-                    chat_time.substring(0, chat_time.length() - 7)));
-        }
+        String time = msgItem.getAddedTime();
+        String chat_time = time.substring(0, time.length() - 6);
+        holder.chat_msg_send_time.setText(Utils.getAddedTimeTitle(mContext, chat_time));
         holder.chat_msg_content.setText(msgItem.getChatContent());
 
         return convertView;

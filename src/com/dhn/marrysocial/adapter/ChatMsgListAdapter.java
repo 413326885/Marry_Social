@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import com.dhn.marrysocial.activity.ChatMsgActivity;
 import com.dhn.marrysocial.base.ChatMsgItem;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
 import com.dhn.marrysocial.fragment.ChatMsgFragment;
+import com.dhn.marrysocial.utils.Utils;
 
 public class ChatMsgListAdapter extends BaseAdapter {
 
@@ -79,8 +81,8 @@ public class ChatMsgListAdapter extends BaseAdapter {
         holder.chat_person_name.setText(chatItem.nikename);
         holder.chat_description.setText(chatItem.chatContent);
         String time = chatItem.addTime;
-        String chat_time = time.substring(0, time.length() - 4);
-        holder.chat_time.setText(chat_time);
+        String chat_time = time.substring(0, time.length() - 6);
+        holder.chat_time.setText(Utils.getAddedTimeTitle(mContext, chat_time));
 
         holder.chat_item_entry.setOnClickListener(new View.OnClickListener() {
 

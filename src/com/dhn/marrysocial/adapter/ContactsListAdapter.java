@@ -3,6 +3,7 @@ package com.dhn.marrysocial.adapter;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -11,9 +12,11 @@ import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.RadioButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.dhn.marrysocial.R;
+import com.dhn.marrysocial.activity.ContactsInfoActivity;
 import com.dhn.marrysocial.base.ContactsInfo;
 
 public class ContactsListAdapter extends BaseAdapter {
@@ -57,6 +60,8 @@ public class ContactsListAdapter extends BaseAdapter {
             convertView = mInflater.inflate(R.layout.contacts_list_item_layout,
                     parent, false);
             holder = new ViewHolder();
+            holder.contacts_item_entry = (RelativeLayout) convertView
+                    .findViewById(R.id.contacts_item_entry);
             holder.person_pic = (ImageView) convertView
                     .findViewById(R.id.contacts_person_pic);
             holder.person_name = (TextView) convertView
@@ -70,6 +75,13 @@ public class ContactsListAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
+        holder.contacts_item_entry.setOnClickListener(new View.OnClickListener() {
+            
+            @Override
+            public void onClick(View arg0) {
+                startToViewContactsInfo();
+            }
+        });
         holder.person_name.setText(mData.get(position).getNikeName());
         holder.person_pic.setImageResource(R.drawable.person_default_small_pic);
         holder.person_description.setText(String.format(mContext.getResources()
@@ -103,12 +115,17 @@ public class ContactsListAdapter extends BaseAdapter {
     }
 
     class ViewHolder {
+        RelativeLayout contacts_item_entry;
         ImageView person_pic;
         TextView person_name;
         TextView person_description;
         CheckBox person_description_more;
     }
 
+    private void startToViewContactsInfo() {
+        Intent intent = new Intent(mContext, ContactsInfoActivity.class);
+        mContext.startActivity(intent);
+    }
 //    private String transArray2String(String[] friends) {
 //        String friend = "";
 //        for (String str : friends) {

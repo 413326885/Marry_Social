@@ -174,7 +174,7 @@ public class ReplyListsActivity extends Activity implements OnClickListener {
         insertValues.put(MarrySocialDBHelper.KEY_REPLY_CONTENTS,
                 reply.getReplyContents());
         insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
-                Long.toString(System.currentTimeMillis()));
+                Long.toString(System.currentTimeMillis() / 1000));
         insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS, MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD);
 
         ContentResolver resolver = this.getContentResolver();

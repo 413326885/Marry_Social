@@ -15,6 +15,7 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.ContentObserver;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,6 +26,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.view.View.OnTouchListener;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -32,7 +34,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class ChatMsgActivity extends Activity implements OnClickListener {
+public class ChatMsgActivity extends Activity implements OnClickListener{
 
     private static final String TAG = "ChatMsgActivity";
 
@@ -52,6 +54,9 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
 
     private static final int START_TO_UPLOAD_CHAT_MSG = 100;
     private static final int UPLOAD_CHAT_MSG_FINISH = 101;
+    private static final int SHOW_LISTVIEW_FROM_BACK = 102;
+
+    private static final int UPDATE_CHAT_MSG = 103;
 
     private static final int TOUCH_FING_UP = 110;
     private static final int TOUCH_FING_DOWN = 111;
@@ -78,6 +83,8 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
     private ArrayList<ChatMsgSmallItem> mChatMsgQueue;
     private UploadChatMsgsTask mUploadChatMsgsTask;
 
+    private DataSetChangeObserver mChangeObserver;
+
     private Handler mHandler = new Handler() {
 
         @Override
@@ -101,6 +108,16 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
             }
             case TOUCH_FING_DOWN: {
                 Utils.hideSoftInputMethod(mChatContent);
+                break;
+            }
+            case SHOW_LISTVIEW_FROM_BACK: {
+                mListView.setSelection(mListView.getCount() - 1);
+                break;
+            }
+            case UPDATE_CHAT_MSG: {
+                loadChatMsgsFromChatsDB(mChatId);
+                mListViewAdapter.notifyDataSetChanged();
+                mListView.setSelection(mListView.getCount() - 1);
                 break;
             }
             default:
@@ -178,6 +195,10 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
         mAuthorName = prefs.getString(CommonDataStructure.AUTHOR_NAME, "");
 
         mChatMsgQueue = new ArrayList<ChatMsgSmallItem>();
+
+        mChangeObserver = new DataSetChangeObserver(mHandler);
+        this.getContentResolver().registerContentObserver(
+                CommonDataStructure.CHATURL, true, mChangeObserver);
     }
 
     @Override
@@ -200,6 +221,13 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        this.getContentResolver()
+                .unregisterContentObserver(mChangeObserver);
+    }
+
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
@@ -219,8 +247,7 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
                 chatMsg.setToUid(mToUid);
                 chatMsg.setChatContent(chatContents);
                 chatMsg.setMsgType(IMsgViewType.IMVT_TO_MSG);
-                chatMsg.setAddedTime(Long.toString(System.currentTimeMillis())
-                        + "000");
+                chatMsg.setAddedTime(Long.toString(System.currentTimeMillis() * 1000));
                 chatMsg.setCurrentStatus(MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD);
                 int mDBId = insertChatMsgToChatsDB(chatMsg);
                 chatMsg.setDBId(mDBId);
@@ -236,6 +263,7 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
         case R.id.chat_msg_chat_contents: {
             mChatContent.setFocusable(true);
             mChatContent.requestFocus();
+//            mHandler.sendEmptyMessageDelayed(SHOW_LISTVIEW_FROM_BACK, 3000);
             break;
         }
         default:
@@ -290,8 +318,8 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
                 item.setChatContent(cursor.getString(4));
                 item.setMsgType(cursor.getInt(5));
                 String time = cursor.getString(6);
-                String chat_time = time.substring(0, time.length() - 4);
-                item.setAddedTime(Utils.getAddedTimeTitle(this, chat_time));
+//                String chat_time = time.substring(0, time.length() - 6);
+                item.setAddedTime(time);
                 item.setCurrentStatus(cursor.getInt(7));
 
                 mChatMsgList.add(item);
@@ -471,17 +499,38 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
     }
 
     private void updateBriefChatDBWhenQuit() {
+        if (mChatMsgList == null || mChatMsgList.size() == 0) {
+            return;
+        }
         ChatMsgItem lastChatMsg = mChatMsgList.get(mChatMsgList.size() - 1);
         BriefChatItem briefChat = new BriefChatItem();
         if (lastChatMsg.getMsgType() == IMsgViewType.IMVT_COM_MSG) {
             briefChat.uId = mToUid;
+            briefChat.nikename = queryNikenameFromContactsDB(briefChat.uId);
         } else {
             briefChat.uId = mUid;
+            briefChat.nikename = mAuthorName;
         }
         briefChat.chatId = mChatId;
-        briefChat.nikename = queryNikenameFromContactsDB(briefChat.uId);
         briefChat.chatContent = lastChatMsg.getChatContent();
         briefChat.addTime = lastChatMsg.getAddedTime();
         updateLatestBriefChatMsgToBriefChatDB(briefChat);
+    }
+
+    private class DataSetChangeObserver extends ContentObserver {
+
+        private Handler handler;
+
+        public DataSetChangeObserver(Handler handler) {
+            super(handler);
+            this.handler = handler;
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            super.onChange(selfChange);
+            handler.sendEmptyMessage(UPDATE_CHAT_MSG);
+            Log.e(TAG, "nannan onChange()..");
+        }
     }
 }

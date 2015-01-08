@@ -59,8 +59,11 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import com.dhn.marrysocial.MarrySocialApplication;
 import com.dhn.marrysocial.R;
 import com.dhn.marrysocial.activity.EditCommentsActivity.UploadCommentContentEntry;
+import com.dhn.marrysocial.adapter.ChatMsgViewAdapter.IMsgViewType;
+import com.dhn.marrysocial.base.ChatMsgItem;
 import com.dhn.marrysocial.base.CommentsItem;
 import com.dhn.marrysocial.base.ContactsInfo;
 import com.dhn.marrysocial.base.ImagesItem;
@@ -69,6 +72,7 @@ import com.dhn.marrysocial.base.ReplysItem;
 import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.common.CommonDataStructure.DownloadCommentsEntry;
 import com.dhn.marrysocial.common.CommonDataStructure.UploadReplysResultEntry;
+import com.dhn.marrysocial.database.MarrySocialDBHelper;
 
 public class Utils {
 
@@ -1043,6 +1047,7 @@ public class Utils {
     public static String getAddedTimeTitle(Context context, String time) {
         Long just_now = System.currentTimeMillis() / 1000;
         Long added_time = Long.valueOf(time);
+
         int timeSpaces = (int) (just_now - added_time);
         if (0 <= timeSpaces
                 && timeSpaces < CommonDataStructure.TIME_FIVE_MINUTES_BEFORE) {
@@ -1884,7 +1889,7 @@ public class Utils {
             // String line = inputReader.readLine();
             // inputReader.close();
 
-            Log.e(TAG, "nannan resp = " + resp.toString());
+            Log.e(TAG, "nannan resp = " + resp.toString() + "#################");
             JSONObject response = new JSONObject(resp.toString());
             String code = response.getString("code");
             if (!"200".equalsIgnoreCase(code)) {
@@ -1926,4 +1931,98 @@ public class Utils {
         }
         return false;
     }
+
+    public static ChatMsgItem downloadChatMsg(String RequestURL, String uId) {
+
+        Log.e(TAG, "nannan downloadChatMsg");
+        URL postUrl = null;
+        HttpURLConnection connection = null;
+        DataOutputStream output = null;
+        ChatMsgItem chatItems = new ChatMsgItem();
+
+        try {
+            postUrl = new URL(RequestURL);
+            if (postUrl == null)
+                return null;
+
+            connection = (HttpURLConnection) postUrl.openConnection();
+            if (connection == null)
+                return null;
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestMethod("POST");
+            connection.setUseCaches(false);
+            connection.setInstanceFollowRedirects(true);
+            connection.setRequestProperty("Content-Type",
+                    "application/x-www-form-urlencoded");
+            connection.connect();
+
+            OutputStream stream = connection.getOutputStream();
+            output = new DataOutputStream(stream);
+
+            JSONObject replyContent = new JSONObject();
+            replyContent.put("uid", uId);
+
+            String content = null;
+            content = "jsondata="
+                    + URLEncoder.encode(replyContent.toString(), "UTF-8");
+
+            if (content == null)
+                return null;
+
+            output.writeBytes(content);
+            output.flush();
+            output.close();
+
+            BufferedReader reader = null;
+            reader = new BufferedReader(new InputStreamReader(
+                    connection.getInputStream()));
+            StringBuffer resp = new StringBuffer();
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                resp.append(line);
+            }
+
+            Log.e(TAG, "nannan resp 555555555555 = " + resp);
+            JSONObject response = new JSONObject(resp.toString());
+            String code = response.getString("code");
+            if (!"200".equalsIgnoreCase(code)) {
+                return null;
+            }
+
+            JSONObject reply = response.getJSONObject("data");
+            String fromUid = reply.getString("from");
+            String toUid = reply.getString("to");
+            String chatmsg = reply.getString("content");
+            String chattime = reply.getString("timeline");
+            String chatId = toUid + "_" + fromUid;
+
+            chatItems.setUid(uId);
+            chatItems.setFromUid(fromUid);
+            chatItems.setToUid(toUid);
+            chatItems.setMsgType(IMsgViewType.IMVT_COM_MSG);
+            chatItems.setChatContent(chatmsg);
+            chatItems.setChatId(chatId);
+            chatItems.setAddedTime(chattime);
+            chatItems.setCurrentStatus(MarrySocialDBHelper.DOWNLOAD_FROM_CLOUD_SUCCESS);
+
+            reader.close();
+
+            return chatItems;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+
+        return null;
+    }
+
 }

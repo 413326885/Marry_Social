@@ -17,6 +17,8 @@ public class DBContentChangeProvider extends ContentProvider {
     private static final int KEY_BRAVOS = 2;
     private static final int KEY_REPLYS = 3;
     private static final int KEY_IAMGES = 4;
+    private static final int KEY_CHATS = 5;
+    private static final int KEY_BRIEFCHATS = 6;
 
     public static final String AUTHORITY = "com.dhn.marrysocial.provider";
 
@@ -30,6 +32,8 @@ public class DBContentChangeProvider extends ContentProvider {
         mMatcher.addURI(AUTHORITY, MarrySocialDBHelper.DATABASE_BRAVOS_TABLE, KEY_BRAVOS);
         mMatcher.addURI(AUTHORITY, MarrySocialDBHelper.DATABASE_REPLYS_TABLE, KEY_REPLYS);
         mMatcher.addURI(AUTHORITY, MarrySocialDBHelper.DATABASE_IMAGES_TABLE, KEY_IAMGES);
+        mMatcher.addURI(AUTHORITY, MarrySocialDBHelper.DATABASE_CHATS_TABLE, KEY_CHATS);
+        mMatcher.addURI(AUTHORITY, MarrySocialDBHelper.DATABASE_BRIEF_CHAT_TABLE, KEY_BRIEFCHATS);
         return true;
     }
 
@@ -67,6 +71,16 @@ public class DBContentChangeProvider extends ContentProvider {
                 this.getContext().getContentResolver().notifyChange(uri, null);
                 return ContentUris.withAppendedId(uri, rowId);
             }
+            case KEY_CHATS: {
+                long rowId = mDBHelper.insert(MarrySocialDBHelper.DATABASE_CHATS_TABLE, values);
+                this.getContext().getContentResolver().notifyChange(uri, null);
+                return ContentUris.withAppendedId(uri, rowId);
+            }
+            case KEY_BRIEFCHATS: {
+                long rowId = mDBHelper.insert(MarrySocialDBHelper.DATABASE_BRIEF_CHAT_TABLE, values);
+                this.getContext().getContentResolver().notifyChange(uri, null);
+                return ContentUris.withAppendedId(uri, rowId);
+            }
             default:
                 break;
         }
@@ -97,6 +111,16 @@ public class DBContentChangeProvider extends ContentProvider {
             this.getContext().getContentResolver().notifyChange(uri, null);
             return rowId;
         }
+        case KEY_CHATS: {
+            int rowId = mDBHelper.delete(MarrySocialDBHelper.DATABASE_CHATS_TABLE, selection, selectionArgs);
+            this.getContext().getContentResolver().notifyChange(uri, null);
+            return rowId;
+        }
+        case KEY_BRIEFCHATS: {
+            int rowId = mDBHelper.delete(MarrySocialDBHelper.DATABASE_BRIEF_CHAT_TABLE, selection, selectionArgs);
+            this.getContext().getContentResolver().notifyChange(uri, null);
+            return rowId;
+        }
         default:
             break;
     }
@@ -124,6 +148,16 @@ public class DBContentChangeProvider extends ContentProvider {
         }
         case KEY_IAMGES: {
             int rowId = mDBHelper.update(MarrySocialDBHelper.DATABASE_IMAGES_TABLE, values, selection, selectionArgs);
+            this.getContext().getContentResolver().notifyChange(uri, null);
+            return rowId;
+        }
+        case KEY_CHATS: {
+            int rowId = mDBHelper.update(MarrySocialDBHelper.DATABASE_CHATS_TABLE, values, selection, selectionArgs);
+            this.getContext().getContentResolver().notifyChange(uri, null);
+            return rowId;
+        }
+        case KEY_BRIEFCHATS: {
+            int rowId = mDBHelper.update(MarrySocialDBHelper.DATABASE_BRIEF_CHAT_TABLE, values, selection, selectionArgs);
             this.getContext().getContentResolver().notifyChange(uri, null);
             return rowId;
         }

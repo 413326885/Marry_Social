@@ -36,7 +36,7 @@ public class DownloadNoticesService extends Service {
     private static final int TIME_TO_DOWNLOAD_MYSELF_REPLYS = 106;
 
     private static final int POOL_SIZE = 10;
-    private static final int TIME_SCHEDULE = 10000;
+    private static final int TIME_SCHEDULE = 60000;
 
     private static final String[] COMMENTS_PROJECTION = {
             MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_BUCKET_ID,

@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <RelativeLayout
+        android:id="@+id/contacts_info_head_bar"
+        android:layout_width="match_parent"
+        android:layout_height="85px"
+        android:layout_alignParentTop="true" >
+
+        <RelativeLayout
+            android:id="@+id/contacts_info_return"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/gray_bkg_selector"
+            android:clickable="true" >
+
+            <ImageView
+                android:id="@+id/contacts_info_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:paddingLeft="12dp"
+                android:paddingRight="2dp"
+                android:src="@drawable/ic_return_button" />
+
+            <TextView
+                android:id="@+id/contacts_info_person_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/contacts_info_arrow"
+                android:alpha="0.8"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:text="楠楠"
+                android:textSize="16dp" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/contacts_info_head"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/contacts_info_head_bar"
+        android:background="@color/gray_background_color" >
+
+        <LinearLayout
+            android:id="@+id/contacts_info_head_01"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <com.dhn.marrysocial.roundedimageview.RoundedImageView
+                android:id="@+id/chat_msg_person_pic"
+                android:layout_width="162px"
+                android:layout_height="162px"
+                android:layout_gravity="center_horizontal"
+                android:padding="4dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/head"
+                app:border_width="0dp"
+                app:corner_radius="100dp"
+                app:oval="false" />
+
+            <TextView
+                android:id="@+id/contacts_info_friend_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:padding="4dp"
+                android:text="焦立东"
+                android:textSize="18dp" />
+
+            <TextView
+                android:id="@+id/contacts_info_friends_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:alpha="0.6"
+                android:padding="4dp"
+                android:text="来自 楠楠 等3人的通信录"
+                android:textSize="14dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/contacts_info_head_02"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/contacts_info_head_01"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/contacts_info_gender"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:padding="4dp"
+                    android:text="焦立东"
+                    android:textSize="18dp" />
+
+                <ImageView
+                    android:id="@+id/contacts_info_gender_pic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:paddingLeft="12dp"
+                    android:paddingRight="2dp"
+                    android:src="@drawable/ic_return_button" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/contacts_info_astro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:padding="4dp"
+                    android:text="焦立东"
+                    android:textSize="18dp" />
+
+                <ImageView
+                    android:id="@+id/contacts_info_astro_pic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:paddingLeft="12dp"
+                    android:paddingRight="2dp"
+                    android:src="@drawable/ic_return_button" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/contacts_info_hobby"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:padding="4dp"
+                    android:text="焦立东"
+                    android:textSize="18dp" />
+
+                <ImageView
+                    android:id="@+id/contacts_info_hobby_pic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:paddingLeft="12dp"
+                    android:paddingRight="2dp"
+                    android:src="@drawable/ic_return_button" />
+            </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/contacts_info_foot_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/base_action_bar_bg" >
+
+        <Button
+            android:id="@+id/contacts_info_chat_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:clickable="true"
+            android:padding="4dp"
+            android:text="发消息" />
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/contacts_info_listview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/contacts_info_foot_bar"
+        android:layout_below="@id/contacts_info_head"
+        android:cacheColorHint="#0000"
+        android:divider="@null"
+        android:dividerHeight="5dp"
+        android:listSelector="@android:color/transparent"
+        android:scrollbarStyle="outsideOverlay"
+        android:stackFromBottom="true" >
+    </ListView>
+
+</RelativeLayout>
