@@ -33,4 +33,5 @@
     <string name="dynamic_bravo_tips_title">共 %1$d 个人点赞</string>
     <string name="dynamic_reply_tips_title">显示全部 %1$d 条评论</string>
 
+    <string name="chat_msg_friends_more">来自 %1$s 等%2$d位好友的通信录</string>
 </resources>

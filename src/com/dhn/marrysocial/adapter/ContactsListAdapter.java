@@ -15,9 +15,11 @@ import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.dhn.marrysocial.MarrySocialApplication;
 import com.dhn.marrysocial.R;
 import com.dhn.marrysocial.activity.ContactsInfoActivity;
 import com.dhn.marrysocial.base.ContactsInfo;
+import com.dhn.marrysocial.database.MarrySocialDBHelper;
 
 public class ContactsListAdapter extends BaseAdapter {
 
@@ -75,13 +77,15 @@ public class ContactsListAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
+        final int pos = position;
         holder.contacts_item_entry.setOnClickListener(new View.OnClickListener() {
             
             @Override
             public void onClick(View arg0) {
-                startToViewContactsInfo();
+                startToViewContactsInfo(mData.get(pos).getUid());
             }
         });
+
         holder.person_name.setText(mData.get(position).getNikeName());
         holder.person_pic.setImageResource(R.drawable.person_default_small_pic);
         holder.person_description.setText(String.format(mContext.getResources()
@@ -122,10 +126,12 @@ public class ContactsListAdapter extends BaseAdapter {
         CheckBox person_description_more;
     }
 
-    private void startToViewContactsInfo() {
+    private void startToViewContactsInfo(String uid) {
         Intent intent = new Intent(mContext, ContactsInfoActivity.class);
+        intent.putExtra(MarrySocialDBHelper.KEY_UID, uid);
         mContext.startActivity(intent);
     }
+
 //    private String transArray2String(String[] friends) {
 //        String friend = "";
 //        for (String str : friends) {

@@ -22,8 +22,8 @@ public class ContactsInfo {
         VIRGO, // 处女座
         LIBRA, // 天秤座
         SCORPIO, // 天蝎座
-        SAGITTARIUS, // 人马座
-        CAPRICPRN, // 山羊座
+        SAGITTARIUS, // 射手座
+        CAPRICPRN, // 摩羯座
         AQUARIUS, // 水瓶座
         PISCES // 双鱼座
     }
