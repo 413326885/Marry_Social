@@ -1,50 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/contacts_info_head"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
     <RelativeLayout
-        android:id="@+id/contacts_info_head_bar"
-        android:layout_width="match_parent"
-        android:layout_height="85px"
-        android:layout_alignParentTop="true" >
-
-        <RelativeLayout
-            android:id="@+id/contacts_info_return"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:background="@drawable/gray_bkg_selector"
-            android:clickable="true" >
-
-            <ImageView
-                android:id="@+id/contacts_info_arrow"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_centerVertical="true"
-                android:paddingLeft="12dp"
-                android:paddingRight="2dp"
-                android:src="@drawable/ic_return_button" />
-
-            <TextView
-                android:id="@+id/contacts_info_person_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/contacts_info_arrow"
-                android:alpha="0.8"
-                android:paddingLeft="12dp"
-                android:paddingRight="12dp"
-                android:text="楠楠"
-                android:textSize="16dp" />
-        </RelativeLayout>
-    </RelativeLayout>
-
-<!--     <RelativeLayout
-        android:id="@+id/contacts_info_head"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/contacts_info_head_bar"
         android:background="@color/gray_background_color" >
 
         <LinearLayout
@@ -190,46 +153,6 @@
                     android:src="@drawable/ic_female_selected" />
             </LinearLayout>
         </LinearLayout>
-    </RelativeLayout> -->
-
-    <RelativeLayout
-        android:id="@+id/contacts_info_foot_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="-45dp"
-        android:layout_alignParentBottom="true" >
-
-        <Button
-            android:id="@+id/contacts_info_chat_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:clickable="true"
-            android:paddingLeft="28dp"
-            android:paddingRight="28dp"
-            android:background="@drawable/contacts_info_btn_selector"
-            android:text="开始聊天"
-            android:textSize="16dp"
-            android:textColor="@color/gray" />
     </RelativeLayout>
-
-<!--     <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_below="@id/contacts_info_head"
-        android:alpha="0.5"
-        android:background="@color/darkgray" >
-    </ImageView> -->
-
-    <ListView
-        android:id="@+id/contacts_info_listview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/contacts_info_foot_bar"
-        android:layout_below="@id/contacts_info_head_bar"
-        android:cacheColorHint="#0000"
-        android:listSelector="@android:color/transparent"
-        android:scrollbarStyle="outsideOverlay" >
-    </ListView>
 
 </RelativeLayout>

@@ -544,6 +544,121 @@ public class Utils {
         return resultEntry;
     }
 
+    public static CommonDataStructure.UploadHeadPicResultEntry uploadHeadPicBitmap(
+            String requestURL, String uid, Bitmap bitmap, String bitmapName) {
+
+        HttpURLConnection connection = null;
+
+        String BOUNDARY = UUID.randomUUID().toString(); // 边界标识 随机生成
+        String PREFIX = "--";
+        String LINE_END = "\r\n";
+        String CONTENT_TYPE = "multipart/form-data"; // 内容类型
+
+        CommonDataStructure.UploadHeadPicResultEntry resultEntry = new CommonDataStructure.UploadHeadPicResultEntry();
+
+        try {
+            URL url = new URL(requestURL);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setReadTimeout(TIME_OUT);
+            connection.setConnectTimeout(TIME_OUT);
+            connection.setDoInput(true); // 允许输入流
+            connection.setDoOutput(true); // 允许输出流
+            connection.setUseCaches(false); // 不允许使用缓存
+            connection.setRequestMethod("POST"); // 请求方式
+            connection.setRequestProperty("Charset", CHARSET); // 设置编码
+            connection.setRequestProperty("connection", "keep-alive");
+            connection.setRequestProperty("Content-Type", CONTENT_TYPE
+                    + ";boundary=" + BOUNDARY);
+
+            if (bitmap != null) {
+                /**
+                 * 当bitmap不为空，把bitmap包装并且上传
+                 */
+                DataOutputStream dos = new DataOutputStream(
+                        connection.getOutputStream());
+                StringBuffer sb = new StringBuffer();
+
+                // 首先组拼文本类型的参数
+                sb.append(PREFIX);
+                sb.append(BOUNDARY);
+                sb.append(LINE_END);
+                sb.append("Content-Disposition: form-data; name=\"" + "uid"
+                        + "\"" + LINE_END);
+                sb.append("Content-Type: text/plain; charset=" + CHARSET
+                        + LINE_END);
+                sb.append("Content-Transfer-Encoding: 8bit" + LINE_END);
+                sb.append(LINE_END);
+                sb.append(uid);
+                sb.append(LINE_END);
+
+                // 上传图片内容
+                sb.append(PREFIX);
+                sb.append(BOUNDARY);
+                sb.append(LINE_END);
+                /**
+                 * 这里重点注意： name里面的值为服务端需要key 只有这个key 才可以得到对应的文件
+                 * filename是文件的名字，包含后缀名的 比如:abc.png
+                 */
+                sb.append("Content-Disposition: form-data; name=\"upfile\"; filename=\""
+                        + bitmapName + "\"" + LINE_END);
+                sb.append("Content-Type: application/octet-stream; charset="
+                        + CHARSET + LINE_END);
+                sb.append(LINE_END);
+
+                dos.write(sb.toString().getBytes());
+
+                byte[] bytes = Bitmap2Bytes(bitmap);
+                dos.write(bytes);
+
+                dos.write(LINE_END.getBytes());
+                byte[] end_data = (PREFIX + BOUNDARY + PREFIX + LINE_END)
+                        .getBytes();
+                dos.write(end_data);
+
+                dos.flush();
+                dos.close();
+
+                BufferedReader inputReader = new BufferedReader(
+                        new InputStreamReader(connection.getInputStream()));
+                StringBuffer resp = new StringBuffer();
+                String line = null;
+                while ((line = inputReader.readLine()) != null) {
+                    resp.append(line);
+                }
+                inputReader.close();
+
+                Log.e(TAG, "nannan response = " + resp);
+                JSONObject response = new JSONObject(resp.toString());
+                String code = response.getString("code");
+                if (!"200".equalsIgnoreCase(code)) {
+                    return resultEntry;
+                }
+
+                JSONObject respData = response.getJSONObject("data");
+                String orginal = respData.getString("url");
+                String bigThumb = respData.getString("bigurl");
+                String smallThumb = respData.getString("smallurl");
+                resultEntry.uid = uid;
+                resultEntry.orgUrl = orginal;
+                resultEntry.bigThumbUrl = bigThumb;
+                resultEntry.smallThumbUrl = smallThumb;
+
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+
+        return resultEntry;
+    }
+
     public static String uploadCommentContentFile(String RequestURL,
             String uId, String contents) {
 
@@ -706,8 +821,8 @@ public class Utils {
         return resultCode;
     }
 
-    public static boolean deleteBravoFileFromCloud(String RequestURL, String uId,
-            String commentId) {
+    public static boolean deleteBravoFileFromCloud(String RequestURL,
+            String uId, String commentId) {
 
         Log.e(TAG, "nannan deleteBravoFileFromCloud ");
         boolean resultCode = false;
@@ -1189,8 +1304,8 @@ public class Utils {
         return null;
     }
 
-    public static ArrayList<NoticesItem> downloadIndirectNoticesList(String RequestURL,
-            String uId, String timeStamp, int noticeType) {
+    public static ArrayList<NoticesItem> downloadIndirectNoticesList(
+            String RequestURL, String uId, String timeStamp, int noticeType) {
 
         Log.e(TAG, "nannan downloadNoticesList");
         URL postUrl = null;
@@ -1292,8 +1407,8 @@ public class Utils {
         return null;
     }
 
-    public static ArrayList<NoticesItem> downloadMyselfNoticesList(String RequestURL,
-            String uId, String timeStamp, int noticeType) {
+    public static ArrayList<NoticesItem> downloadMyselfNoticesList(
+            String RequestURL, String uId, String timeStamp, int noticeType) {
 
         Log.e(TAG, "nannan downloadNoticesList");
         URL postUrl = null;
@@ -1392,7 +1507,7 @@ public class Utils {
         return null;
     }
 
-    public static ArrayList<ContactsInfo> downloadDirectFriendsList(
+    public static ArrayList<ContactsInfo> downloadInDirectFriendsList(
             String RequestURL, String uId, String timeStamp) {
 
         Log.e(TAG, "nannan downloadDirectFriendsList ");
@@ -1502,6 +1617,107 @@ public class Utils {
             reader.close();
 
             return contactsList;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+
+        return null;
+    }
+
+    public static ContactsInfo downloadUserInfo(String RequestURL, String uId) {
+
+        Log.e(TAG, "nannan downloadUserInfo ");
+        URL postUrl = null;
+        HttpURLConnection connection = null;
+        DataOutputStream output = null;
+        ContactsInfo contact = new ContactsInfo();
+
+        try {
+            postUrl = new URL(RequestURL);
+            if (postUrl == null)
+                return null;
+
+            connection = (HttpURLConnection) postUrl.openConnection();
+            if (connection == null)
+                return null;
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestMethod("POST");
+            connection.setUseCaches(false);
+            connection.setInstanceFollowRedirects(true);
+            connection.setRequestProperty("Content-Type",
+                    "application/x-www-form-urlencoded");
+            connection.connect();
+
+            OutputStream stream = connection.getOutputStream();
+            output = new DataOutputStream(stream);
+
+            JSONObject contactContent = new JSONObject();
+            contactContent.put("uid", uId);
+
+            String content = null;
+            content = "jsondata="
+                    + URLEncoder.encode(contactContent.toString(), "UTF-8");
+
+            if (content == null)
+                return null;
+
+            output.writeBytes(content);
+            output.flush();
+            output.close();
+
+            BufferedReader reader = null;
+            reader = new BufferedReader(new InputStreamReader(
+                    connection.getInputStream()));
+            StringBuffer resp = new StringBuffer();
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                resp.append(line);
+            }
+
+            Log.e(TAG, "nannan resp 555555555555 = " + resp);
+            JSONObject response = new JSONObject(resp.toString());
+            String code = response.getString("code");
+            if (!"200".equalsIgnoreCase(code)) {
+                return null;
+            }
+
+            JSONObject respData = response.getJSONObject("data");
+
+            String uid = respData.getString("uid");
+            String phoneNum = respData.getString("phone");
+            String nickname = respData.getString("nickname");
+            String realname = respData.getString("realname");
+            int avatar = Integer.valueOf(respData.getString("avatar"));
+            int gender = Integer.valueOf(respData.getString("gender"));
+            int astro = Integer.valueOf(respData.getString("astro"));
+            int hobby = Integer.valueOf(respData.getString("hobby"));
+
+            contact.setUid(uid);
+            contact.setPhoneNum(phoneNum);
+            contact.setNikeName(nickname);
+            contact.setRealName(realname);
+            contact.setHeadPic(avatar);
+            contact.setGender(gender);
+            contact.setAstro(astro);
+            contact.setHobby(hobby);
+            contact.setIndirectId("-1");
+            contact.setFirstDirectFriend(nickname);
+            contact.setDirectFriends(nickname);
+            contact.setDirectFriendsCount(0);
+
+            reader.close();
+
+            return contact;
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -1696,15 +1912,16 @@ public class Utils {
                 int photoCount = Integer.valueOf(comment.getString("pics"));
                 commentItem.setPhotoCount(photoCount);
                 if (photoCount > 0) {
-                    ArrayList<ImagesItem> images = new ArrayList<ImagesItem> ();
+                    ArrayList<ImagesItem> images = new ArrayList<ImagesItem>();
                     JSONObject picsInfo = comment.getJSONObject("pics_info");
                     Iterator<String> iterator = picsInfo.keys();
-                    while(iterator.hasNext()) {
+                    while (iterator.hasNext()) {
                         ImagesItem image = new ImagesItem();
                         image.setUid(comment.getString("uid"));
                         image.setCommentId(comment.getString("tid"));
                         image.setAddTime(comment.getString("addtime"));
-                        image.setBucketId(String.valueOf(comment.getString("addtime").hashCode()));
+                        image.setBucketId(String.valueOf(comment.getString(
+                                "addtime").hashCode()));
                         String position = iterator.next();
                         image.setPhotoPosition(position);
                         JSONObject info = picsInfo.getJSONObject(position);
@@ -1712,7 +1929,8 @@ public class Utils {
                         String type = info.getString("ext");
                         image.setPhotoId(pid);
                         image.setPhotoType(type);
-                        image.setPhotoName(comment.getString("tid")+ "_" + position);
+                        image.setPhotoName(comment.getString("tid") + "_"
+                                + position);
                         image.setPhotoRemoteOrgPath(CommonDataStructure.REMOTE_ORG_PHOTO_PATH
                                 + comment.getString("tid")
                                 + "_"
@@ -1761,7 +1979,9 @@ public class Utils {
                 String imageName = getImageName(imageUri);
 
                 File cacheDir = new File(sdCardDir.getAbsolutePath()
-                        + File.separator + CommonDataStructure.IMAGE_CACHE_DIR);
+                        + File.separator + CommonDataStructure.IMAGE_CACHE_DIR
+                        + File.separator
+                        + CommonDataStructure.DOWNLOAD_PICS_DIR);
                 if (!cacheDir.exists()) {
                     cacheDir.mkdirs();
                     File nomedia = new File(cacheDir, ".nomedia");
@@ -1831,8 +2051,41 @@ public class Utils {
         return imageFile;
     }
 
-    public static String uploadChatMsg(String RequestURL,
-            String fromUid, String toUid, String chatContent) {
+    public static Bitmap downloadHeadPicBitmap(String RequestURL) {
+
+        URL postUrl = null;
+        HttpURLConnection connection = null;
+        Bitmap headPicBitmap = null;
+
+        try {
+            postUrl = new URL(RequestURL);
+            if (postUrl == null)
+                return null;
+
+            connection = (HttpURLConnection) postUrl.openConnection();
+            if (connection == null)
+                return null;
+
+            connection.setDoInput(true);
+            connection.connect();
+
+            InputStream input = connection.getInputStream();
+            headPicBitmap = ImageUtils.inputStreamToBitmap(input);
+
+            input.close();
+
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+        return headPicBitmap;
+    }
+
+    public static String uploadChatMsg(String RequestURL, String fromUid,
+            String toUid, String chatContent) {
 
         Log.e(TAG, "nannan uploadChatMsg ");
         String chatTime = "";
@@ -2005,7 +2258,8 @@ public class Utils {
             chatItems.setChatContent(chatmsg);
             chatItems.setChatId(chatId);
             chatItems.setAddedTime(chattime);
-            chatItems.setCurrentStatus(MarrySocialDBHelper.DOWNLOAD_FROM_CLOUD_SUCCESS);
+            chatItems
+                    .setCurrentStatus(MarrySocialDBHelper.DOWNLOAD_FROM_CLOUD_SUCCESS);
 
             reader.close();
 

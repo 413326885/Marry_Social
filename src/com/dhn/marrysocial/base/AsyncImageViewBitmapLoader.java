@@ -42,7 +42,7 @@ public class AsyncImageViewBitmapLoader {
     private Map<ImageView, String> mImageViews = Collections
             .synchronizedMap(new WeakHashMap<ImageView, String>());
 
-    ExecutorService mExecutorService;
+    private ExecutorService mExecutorService;
 
     public AsyncImageViewBitmapLoader(Context context) {
         mContext = context;

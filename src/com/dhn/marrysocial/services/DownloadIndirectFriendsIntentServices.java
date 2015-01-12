@@ -15,6 +15,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.widget.Toast;
 
 public class DownloadIndirectFriendsIntentServices extends IntentService {
@@ -22,7 +23,13 @@ public class DownloadIndirectFriendsIntentServices extends IntentService {
     private static final String TAG = "DownloadIndirectFriendsIntentServices";
 
     private static final String[] CONTACTS_PROJECTION = {
-        MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_INDIRECT_ID };
+            MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_INDIRECT_ID };
+
+    private static final String[] HEAD_PICS_PROJECTION = {
+            MarrySocialDBHelper.KEY_UID,
+            MarrySocialDBHelper.KEY_HEAD_PIC_BITMAP,
+            MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH,
+            MarrySocialDBHelper.KEY_PHOTO_REMOTE_THUMB_PATH };
 
     private static final int POOL_SIZE = 10;
 
@@ -65,8 +72,28 @@ public class DownloadIndirectFriendsIntentServices extends IntentService {
 
         @Override
         public void run() {
-            ArrayList<ContactsInfo> contactsList = Utils.downloadDirectFriendsList(
-                    CommonDataStructure.URL_INDIRECT_LIST, mUid, "");
+
+            if (!isContactExistInContactsDB(mUid)) {
+                ContactsInfo authorInfo = Utils.downloadUserInfo(
+                        CommonDataStructure.URL_GET_USER_PROFILE, mUid);
+                if (authorInfo != null) {
+                    insertContactToContactsDB(authorInfo);
+                    String headPicOrgUrl = CommonDataStructure.HEAD_PICS_ORG_PATH + authorInfo.getUid() + ".jpg";
+                    String headPicThumbUrl = CommonDataStructure.HEAD_PICS_THUMB_PATH + authorInfo.getUid() + ".jpg";
+                    Bitmap headPicBitmap = Utils.downloadHeadPicBitmap(headPicOrgUrl);
+                    if (headPicBitmap != null) {
+                        if (!isUidExistInHeadPicDB(authorInfo.getUid())) {
+                            insertHeadPicToHeadPicsDB(headPicBitmap, authorInfo.getUid(), headPicOrgUrl, headPicThumbUrl);
+                        } else {
+                            updateHeadPicToHeadPicsDB(headPicBitmap, authorInfo.getUid(), headPicOrgUrl, headPicThumbUrl);
+                        }
+                    }
+                }
+            }
+
+            ArrayList<ContactsInfo> contactsList = Utils
+                    .downloadInDirectFriendsList(
+                            CommonDataStructure.URL_INDIRECT_LIST, mUid, "");
             if (contactsList == null || contactsList.size() == 0) {
                 return;
             }
@@ -74,6 +101,17 @@ public class DownloadIndirectFriendsIntentServices extends IntentService {
                 if (!isContactExistInContactsDB(contact.getUid())) {
                     insertContactToContactsDB(contact);
                 }
+                String headPicOrgUrl = CommonDataStructure.HEAD_PICS_ORG_PATH + contact.getUid() + ".jpg";
+                String headPicThumbUrl = CommonDataStructure.HEAD_PICS_THUMB_PATH + contact.getUid() + ".jpg";
+                Bitmap headPicBitmap = Utils.downloadHeadPicBitmap(headPicOrgUrl);
+                if (headPicBitmap != null) {
+                    if (!isUidExistInHeadPicDB(contact.getUid())) {
+                        insertHeadPicToHeadPicsDB(headPicBitmap, contact.getUid(), headPicOrgUrl, headPicThumbUrl);
+                    } else {
+                        updateHeadPicToHeadPicsDB(headPicBitmap, contact.getUid(), headPicOrgUrl, headPicThumbUrl);
+                    }
+                }
+
             }
         }
 
@@ -102,11 +140,72 @@ public class DownloadIndirectFriendsIntentServices extends IntentService {
     public boolean isContactExistInContactsDB(String uId) {
         Cursor cursor = null;
         try {
-            String whereclause = MarrySocialDBHelper.KEY_UID + " = "
-                    + uId;
+            String whereclause = MarrySocialDBHelper.KEY_UID + " = " + uId;
             cursor = mDBHelper.query(
                     MarrySocialDBHelper.DATABASE_CONTACTS_TABLE,
                     CONTACTS_PROJECTION, whereclause, null, null, null, null,
+                    null);
+            if (cursor == null || cursor.getCount() == 0) {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return true;
+    }
+
+    private int insertHeadPicToHeadPicsDB(
+            Bitmap headPicBitmap, String uid, String orgUrl, String thumbUrl) {
+
+        String headPicName = "head_pic_" + uid + ".jpg";
+
+        ContentValues insertValues = new ContentValues();
+        insertValues.put(MarrySocialDBHelper.KEY_UID, uid);
+        insertValues.put(MarrySocialDBHelper.KEY_HEAD_PIC_BITMAP,
+                Utils.Bitmap2Bytes(headPicBitmap));
+        insertValues.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH,
+                orgUrl);
+        insertValues.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_THUMB_PATH,
+                thumbUrl);
+        insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
+                MarrySocialDBHelper.UPLOAD_TO_CLOUD_SUCCESS);
+
+        long rowId = mDBHelper.insert(
+                MarrySocialDBHelper.DATABASE_HEAD_PICS_TABLE, insertValues);
+        return (int) (rowId);
+    }
+
+    private void updateHeadPicToHeadPicsDB(
+            Bitmap headPicBitmap, String uid, String orgUrl, String thumbUrl) {
+
+        String headPicName = "head_pic_" + uid + ".jpg";
+
+        ContentValues insertValues = new ContentValues();
+        insertValues.put(MarrySocialDBHelper.KEY_HEAD_PIC_BITMAP,
+                Utils.Bitmap2Bytes(headPicBitmap));
+        insertValues.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH,
+                orgUrl);
+        insertValues.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_THUMB_PATH,
+                thumbUrl);
+        insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
+                MarrySocialDBHelper.UPLOAD_TO_CLOUD_SUCCESS);
+
+        String whereClause = MarrySocialDBHelper.KEY_UID + " = " + uid;
+        mDBHelper.update(MarrySocialDBHelper.DATABASE_HEAD_PICS_TABLE,
+                insertValues, whereClause, null);
+    }
+
+    public boolean isUidExistInHeadPicDB(String uid) {
+        Cursor cursor = null;
+        try {
+            String whereclause = MarrySocialDBHelper.KEY_UID + " = " + uid;
+            cursor = mDBHelper.query(
+                    MarrySocialDBHelper.DATABASE_HEAD_PICS_TABLE,
+                    HEAD_PICS_PROJECTION, whereclause, null, null, null, null,
                     null);
             if (cursor == null || cursor.getCount() == 0) {
                 return false;

@@ -29,8 +29,8 @@ public class ContactsInfo {
     }
 
     public enum GENDER {
-        MALE, // 男
-        FEMALE // 女
+        FEMALE, // 女
+        MALE // 男
     }
 
     private String mUid;

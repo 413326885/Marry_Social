@@ -19,6 +19,8 @@ public class MarrySocialDBHelper {
     public static final String DATABASE_REPLYS_TABLE = "replys";
     public static final String DATABASE_CHATS_TABLE = "chats";
     public static final String DATABASE_BRIEF_CHAT_TABLE = "briefchat";
+    public static final String DATABASE_HEAD_PICS_TABLE = "headpics";
+    
     public static final int DATABASE_VERSION = 1;
 
     public static final int UPLOAD_TO_CLOUD_FAIL = -1;
@@ -80,6 +82,9 @@ public class MarrySocialDBHelper {
     public static final String KEY_CHAT_CONTENT = "chat_content";
     public static final String KEY_MSG_TYPE = "msg_type";
 
+    // for head pics table
+    public static final String KEY_HEAD_PIC_BITMAP = "headpicbitmap";
+
     private static final String DATABASE_CREATE_CONTACTS = "create table contacts ( "
             + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, phoneNum text, nikename text, realname text, "
             + "hobby integer, gender integer, astro integer, directfriendscount integer, "
@@ -110,6 +115,10 @@ public class MarrySocialDBHelper {
     private static final String DATABASE_CREATE_BRIEF_CHAT = "create table briefchat ("
             + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, chat_id text, nikename text, "
             + "chat_content text, added_time text )";
+
+    private static final String DATABASE_CREATE_HEAD_PICS = "create table headpics ("
+            + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, headpicbitmap blob, "
+            + "photo_remote_org_path text, photo_remote_thumb_path text, current_status integer )";
 
     private final Context mContext;
     private DataBaseOpenHelper mDataBaseHelper;
@@ -146,6 +155,7 @@ public class MarrySocialDBHelper {
             db.execSQL(DATABASE_CREATE_REPLYS);
             db.execSQL(DATABASE_CREATE_CHATS);
             db.execSQL(DATABASE_CREATE_BRIEF_CHAT);
+            db.execSQL(DATABASE_CREATE_HEAD_PICS);
             Log.e(TAG, "nannan onCreate");
         }
 

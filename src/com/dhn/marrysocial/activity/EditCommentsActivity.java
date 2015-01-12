@@ -69,9 +69,9 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
     public static final String DEFAULT_IMAGE_STORE_DIR = "/sdcard/DCIM/100MEDIA/";
     public static final String COMMENT_POST_URL = "http://www.pkjiao.com/topic/post";
 
-//    public static final Uri mCommentUri = Uri.parse("content://"
-//            + DataSetProvider.AUTHORITY + "/"
-//            + MarrySocialDBHelper.DATABASE_COMMENTS_TABLE);
+    // public static final Uri mCommentUri = Uri.parse("content://"
+    // + DataSetProvider.AUTHORITY + "/"
+    // + MarrySocialDBHelper.DATABASE_COMMENTS_TABLE);
 
     private static final int INDEX_DATA = 3;
 
@@ -192,8 +192,7 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
                 .availableProcessors() * POOL_SIZE);
 
         SharedPreferences prefs = this.getSharedPreferences(
-                CommonDataStructure.PREFS_LAIQIAN_DEFAULT,
-                this.MODE_PRIVATE);
+                CommonDataStructure.PREFS_LAIQIAN_DEFAULT, this.MODE_PRIVATE);
         mUid = prefs.getString(CommonDataStructure.UID, "");
         mAuthorName = prefs.getString(CommonDataStructure.AUTHOR_NAME, "");
     }
@@ -432,14 +431,17 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
         values.put(MarrySocialDBHelper.KEY_UID, mUid);
         values.put(MarrySocialDBHelper.KEY_BUCKET_ID,
                 mCurrentEditTime.hashCode());
-        values.put(MarrySocialDBHelper.KEY_COMMENT_ID, CommonDataStructure.INVALID_STR);
+        values.put(MarrySocialDBHelper.KEY_COMMENT_ID,
+                CommonDataStructure.INVALID_STR);
         values.put(MarrySocialDBHelper.KEY_ADDED_TIME, mCurrentEditTime);
         values.put(MarrySocialDBHelper.KEY_CONTENTS, mCommentDescription
                 .getText().toString());
         values.put(MarrySocialDBHelper.KEY_AUTHOR_FULLNAME, mAuthorName);
-        values.put(MarrySocialDBHelper.KEY_PHOTO_COUNT, mOriginalThumbBitmapsPath.size());
+        values.put(MarrySocialDBHelper.KEY_PHOTO_COUNT,
+                mOriginalThumbBitmapsPath.size());
         values.put(MarrySocialDBHelper.KEY_BRAVO_COUNT, 0);
-        values.put(MarrySocialDBHelper.KEY_BRAVO_STATUS, MarrySocialDBHelper.BRAVO_CANCEL);
+        values.put(MarrySocialDBHelper.KEY_BRAVO_STATUS,
+                MarrySocialDBHelper.BRAVO_CANCEL);
         values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD);
 
@@ -461,11 +463,12 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
             values.put(MarrySocialDBHelper.KEY_UID, mUid);
             values.put(MarrySocialDBHelper.KEY_BUCKET_ID,
                     mCurrentEditTime.hashCode());
-            values.put(MarrySocialDBHelper.KEY_COMMENT_ID, CommonDataStructure.INVALID_STR);
+            values.put(MarrySocialDBHelper.KEY_COMMENT_ID,
+                    CommonDataStructure.INVALID_STR);
             values.put(MarrySocialDBHelper.KEY_ADDED_TIME, mCurrentEditTime);
             values.put(MarrySocialDBHelper.KEY_PHOTO_NAME, paths[length]);
             values.put(MarrySocialDBHelper.KEY_PHOTO_LOCAL_PATH, path);
-            values.put(MarrySocialDBHelper.KEY_PHOTO_POS, position ++);
+            values.put(MarrySocialDBHelper.KEY_PHOTO_POS, position++);
             values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                     MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD);
 

@@ -1,8 +1,10 @@
 package com.dhn.marrysocial.common;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import android.net.Uri;
+import android.os.Environment;
 
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
 import com.dhn.marrysocial.provider.DBContentChangeProvider;
@@ -17,8 +19,24 @@ public class CommonDataStructure {
     public static final String TOUID = "touid";
 
     public static final String IMAGE_CACHE_DIR = ".com.dhn.marrysocial";
-    public static final String IS_FIRST_STARTUP = "is_first_startup";
+    public static final String DOWNLOAD_PICS_DIR = "downloadPics";
+    public static final String HEAD_PICS_DIR = "headPics";
 
+    public static final String HEAD_PICS_ORG_PATH = "http://static.pkjiao.com/avatar/";
+    public static final String HEAD_PICS_THUMB_PATH = "http://static.pkjiao.com/102x102/avatar/";
+
+    public static final String DOWNLOAD_PICS_DIR_URL = Environment
+            .getExternalStorageDirectory().getAbsolutePath()
+            + File.separator
+            + IMAGE_CACHE_DIR + File.separator + DOWNLOAD_PICS_DIR;
+    public static final String HEAD_PICS_DIR_URL = Environment
+            .getExternalStorageDirectory().getAbsolutePath()
+            + File.separator
+            + IMAGE_CACHE_DIR + File.separator + HEAD_PICS_DIR;
+
+    public static final String HEAD_PIC_NAME = "head_pic_name";
+    public static final String HEAD_PIC_CROP_NAME = "head_pic_crop_name";
+    public static final String IS_FIRST_STARTUP = "is_first_startup";
     public static final String PREFS_LAIQIAN_DEFAULT = "marrysocial_default";
 
     public static final int THREAD_POOL_SIZE = 10;
@@ -115,6 +133,14 @@ public class CommonDataStructure {
             + "lkyZWgxbTV2MGs9IiwidmFsdWUiOiJ1bDkzYXNiWTdqSjAyNXczVDA5dlduc0FOT2pzRGlvZTAxczAyeGlMb3E4PSI"
             + "sIm1hYyI6IjA2NzQ2MmM2MDdkMDZiNTRlMzM0NjA1NDFkODQ5NmZmN2NiMWY5YzljNWUwNmE0ZjM0NjQ2ODYzNmE1Y2Q3NDAifQ==";
 
+    public static final String CMD_GET_USER_PROFILE = "eyJpdiI6IlJiMmdMNFwvS0drSE5rVnVsWHNudVdxVDVTdlEwWW"
+            + "g1aHhmY1hrU3E3eHFRPSIsInZhbHVlIjoicEM1dzNkXC9PbE9oQVpDYlNkUkI5WU45YXJEbmkyXC9La3YxM3c2YnJO"
+            + "aHBZPSIsIm1hYyI6IjRmOWU4YmM4ZWNkMGJlMTEzMWI5ZjljYWY3MTQ2OTZhN2NhNTc0ZDExNzgwYTUzMmE0MWVjYzllYjM1ODJjYWQifQ==";
+
+    public static final String CMD_GET_USER_HEAD_PIC = "eyJpdiI6IkVabHBub21weW5jSlJnYlVzTlJJMnVsVjZ1RXFZc"
+            + "FY4U0VTZWUraEc4Rlk9IiwidmFsdWUiOiJTdHV2bzlpUnNVXC9tcFJMU0JYSU03Z2c4RDAyWmZEdjVodjdyRGhmUkt"
+            + "cL2c9IiwibWFjIjoiYTVlNjMwZGY0MzUxMDg2MDY4MmNkYzQ0N2NmNzk4Y2E3ZmVhNDFhMjg4YzAxMTg2MmRmMmY4MmYyZmM0ZTA3YyJ9";
+
     public static final String URL_UPLOAD_COMMON = "http://www.pkjiao.com/verify/post/";
 
     public static final String URL_TOKEN_CHECK = URL_UPLOAD_COMMON
@@ -155,6 +181,11 @@ public class CommonDataStructure {
             + CMD_CHAT_TEXT;
     public static final String URL_GET_CHAT_TEXT = URL_UPLOAD_COMMON
             + CMD_GET_CHAT_TEXT;
+    public static final String URL_GET_USER_PROFILE = URL_UPLOAD_COMMON
+            + CMD_GET_USER_PROFILE;
+    public static final String URL_GET_USER_HEAD_PIC = URL_UPLOAD_COMMON
+            + CMD_GET_USER_HEAD_PIC;
+    public static final String URL_UPLOAD_HEAD_PIC = "http://www.pkjiao.com/upload/avatar";
 
     public static final Uri COMMENTURL = Uri.parse("content://"
             + DBContentChangeProvider.AUTHORITY + "/"
@@ -217,6 +248,13 @@ public class CommonDataStructure {
         public int pos;
         public String orgUrl;
         public String thumbUrl;
+    }
+
+    public static class UploadHeadPicResultEntry {
+        public String uid;
+        public String orgUrl;
+        public String bigThumbUrl;
+        public String smallThumbUrl;
     }
 
     public static class DownloadCommentsEntry {

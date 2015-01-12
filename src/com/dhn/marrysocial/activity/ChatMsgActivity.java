@@ -9,6 +9,7 @@ import com.dhn.marrysocial.base.ChatMsgItem;
 import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
 import com.dhn.marrysocial.fragment.ChatMsgFragment.BriefChatItem;
+import com.dhn.marrysocial.roundedimageview.RoundedImageView;
 import com.dhn.marrysocial.utils.Utils;
 
 import android.app.Activity;
@@ -34,7 +35,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class ChatMsgActivity extends Activity implements OnClickListener{
+public class ChatMsgActivity extends Activity implements OnClickListener {
 
     private static final String TAG = "ChatMsgActivity";
 
@@ -47,10 +48,10 @@ public class ChatMsgActivity extends Activity implements OnClickListener{
             MarrySocialDBHelper.KEY_CURRENT_STATUS };
 
     private static final String[] BRIEF_CHAT_PROJECTION = {
-        MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_CHAT_ID };
+            MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_CHAT_ID };
 
     private static final String[] CONTACTS_PROJECTION = {
-        MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_NIKENAME };
+            MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_NIKENAME };
 
     private static final int START_TO_UPLOAD_CHAT_MSG = 100;
     private static final int UPLOAD_CHAT_MSG_FINISH = 101;
@@ -64,11 +65,14 @@ public class ChatMsgActivity extends Activity implements OnClickListener{
     private ListView mListView;
     private ChatMsgViewAdapter mListViewAdapter;
     private RelativeLayout mChatReturnBtn;
+    private RoundedImageView mChatPersonHeadPic;
+    private TextView mChatPersonName;
     private ImageView mChatSendBtn;
     private EditText mChatContent;
     private TextView mEmptyView;
 
-    private String mUid;
+    private String mAuthorUid;
+    private String mChatUserName;
     private String mAuthorName;
     private String mToUid;
     private String mChatId;
@@ -92,7 +96,7 @@ public class ChatMsgActivity extends Activity implements OnClickListener{
             switch (msg.what) {
             case START_TO_UPLOAD_CHAT_MSG: {
                 mListViewAdapter.notifyDataSetChanged();
-//                Utils.hideSoftInputMethod(mChatContent);
+                // Utils.hideSoftInputMethod(mChatContent);
                 mChatContent.setText(null);
                 mListView.setSelection(mListView.getCount() - 1);
                 break;
@@ -137,8 +141,22 @@ public class ChatMsgActivity extends Activity implements OnClickListener{
         String[] ids = mChatId.split("_");
         mToUid = ids[1];
 
+        mDBHelper = MarrySocialDBHelper.newInstance(this);
+        SharedPreferences prefs = this.getSharedPreferences(
+                CommonDataStructure.PREFS_LAIQIAN_DEFAULT, this.MODE_PRIVATE);
+        mAuthorUid = prefs.getString(CommonDataStructure.UID, "");
+        mAuthorName = prefs.getString(CommonDataStructure.AUTHOR_NAME, "");
+
+        mChatUserName = queryNikenameFromContactsDB(mToUid);
+
         mChatReturnBtn = (RelativeLayout) this
                 .findViewById(R.id.chat_msg_return);
+        mChatPersonHeadPic = (RoundedImageView) this
+                .findViewById(R.id.chat_msg_person_pic);
+        mChatPersonName = (TextView) this
+                .findViewById(R.id.chat_msg_person_name);
+        mChatPersonName.setText(mChatUserName);
+
         mChatSendBtn = (ImageView) this.findViewById(R.id.chat_msg_chat_send);
         mChatContent = (EditText) this
                 .findViewById(R.id.chat_msg_chat_contents);
@@ -188,12 +206,6 @@ public class ChatMsgActivity extends Activity implements OnClickListener{
             }
         });
 
-        mDBHelper = MarrySocialDBHelper.newInstance(this);
-        SharedPreferences prefs = this.getSharedPreferences(
-                CommonDataStructure.PREFS_LAIQIAN_DEFAULT, this.MODE_PRIVATE);
-        mUid = prefs.getString(CommonDataStructure.UID, "");
-        mAuthorName = prefs.getString(CommonDataStructure.AUTHOR_NAME, "");
-
         mChatMsgQueue = new ArrayList<ChatMsgSmallItem>();
 
         mChangeObserver = new DataSetChangeObserver(mHandler);
@@ -223,8 +235,7 @@ public class ChatMsgActivity extends Activity implements OnClickListener{
     @Override
     public void onDestroy() {
         super.onDestroy();
-        this.getContentResolver()
-                .unregisterContentObserver(mChangeObserver);
+        this.getContentResolver().unregisterContentObserver(mChangeObserver);
     }
 
     @Override
@@ -239,11 +250,11 @@ public class ChatMsgActivity extends Activity implements OnClickListener{
         case R.id.chat_msg_chat_send: {
             String chatContents = mChatContent.getText().toString();
             if (chatContents != null && chatContents.length() != 0) {
-                String chatId = mUid + "_" + mToUid;
+                String chatId = mAuthorUid + "_" + mToUid;
                 ChatMsgItem chatMsg = new ChatMsgItem();
-                chatMsg.setUid(mUid);
+                chatMsg.setUid(mAuthorUid);
                 chatMsg.setChatId(chatId);
-                chatMsg.setFromUid(mUid);
+                chatMsg.setFromUid(mAuthorUid);
                 chatMsg.setToUid(mToUid);
                 chatMsg.setChatContent(chatContents);
                 chatMsg.setMsgType(IMsgViewType.IMVT_TO_MSG);
@@ -263,7 +274,7 @@ public class ChatMsgActivity extends Activity implements OnClickListener{
         case R.id.chat_msg_chat_contents: {
             mChatContent.setFocusable(true);
             mChatContent.requestFocus();
-//            mHandler.sendEmptyMessageDelayed(SHOW_LISTVIEW_FROM_BACK, 3000);
+            // mHandler.sendEmptyMessageDelayed(SHOW_LISTVIEW_FROM_BACK, 3000);
             break;
         }
         default:
@@ -296,8 +307,8 @@ public class ChatMsgActivity extends Activity implements OnClickListener{
         Cursor cursor = null;
 
         try {
-            String whereclause = MarrySocialDBHelper.KEY_CHAT_ID + " = "
-                    + '"' + chat_id + '"';
+            String whereclause = MarrySocialDBHelper.KEY_CHAT_ID + " = " + '"'
+                    + chat_id + '"';
             String orderBy = MarrySocialDBHelper.KEY_ADDED_TIME + " ASC";
 
             cursor = mDBHelper.query(MarrySocialDBHelper.DATABASE_CHATS_TABLE,
@@ -318,7 +329,7 @@ public class ChatMsgActivity extends Activity implements OnClickListener{
                 item.setChatContent(cursor.getString(4));
                 item.setMsgType(cursor.getInt(5));
                 String time = cursor.getString(6);
-//                String chat_time = time.substring(0, time.length() - 6);
+                // String chat_time = time.substring(0, time.length() - 6);
                 item.setAddedTime(time);
                 item.setCurrentStatus(cursor.getInt(7));
 
@@ -410,9 +421,9 @@ public class ChatMsgActivity extends Activity implements OnClickListener{
         values.put(MarrySocialDBHelper.KEY_ADDED_TIME, task.chatTime);
         values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 MarrySocialDBHelper.UPLOAD_TO_CLOUD_SUCCESS);
-        String whereClause = MarrySocialDBHelper.KEY_CHAT_ID + " = "
-                + '"' + task.msg.getChatId() + '"' + " AND " + MarrySocialDBHelper.KEY_ID
-                + " = " + task.msg.getDBId();
+        String whereClause = MarrySocialDBHelper.KEY_CHAT_ID + " = " + '"'
+                + task.msg.getChatId() + '"' + " AND "
+                + MarrySocialDBHelper.KEY_ID + " = " + task.msg.getDBId();
         mDBHelper.update(MarrySocialDBHelper.DATABASE_CHATS_TABLE, values,
                 whereClause, null);
     }
@@ -429,9 +440,10 @@ public class ChatMsgActivity extends Activity implements OnClickListener{
     public boolean isChatIdExistInBriefChatDB(String chatId) {
         Cursor cursor = null;
         try {
-            String whereclause = MarrySocialDBHelper.KEY_CHAT_ID + " = "
-                    + '"' + chatId + '"';
-            cursor = mDBHelper.query(MarrySocialDBHelper.DATABASE_BRIEF_CHAT_TABLE,
+            String whereclause = MarrySocialDBHelper.KEY_CHAT_ID + " = " + '"'
+                    + chatId + '"';
+            cursor = mDBHelper.query(
+                    MarrySocialDBHelper.DATABASE_BRIEF_CHAT_TABLE,
                     BRIEF_CHAT_PROJECTION, whereclause, null, null, null, null,
                     null);
             if (cursor == null || cursor.getCount() == 0) {
@@ -463,24 +475,25 @@ public class ChatMsgActivity extends Activity implements OnClickListener{
 
     private void updateLatestBriefChatMsgToBriefChatDB(BriefChatItem chat) {
         ContentValues values = new ContentValues();
-        values.put(MarrySocialDBHelper.KEY_UID, chat.uId);;
+        values.put(MarrySocialDBHelper.KEY_UID, chat.uId);
+        ;
         values.put(MarrySocialDBHelper.KEY_NIKENAME, chat.nikename);
-        values.put(MarrySocialDBHelper.KEY_CHAT_CONTENT,
-                chat.chatContent);
-        values.put(MarrySocialDBHelper.KEY_ADDED_TIME,
-                chat.addTime);
+        values.put(MarrySocialDBHelper.KEY_CHAT_CONTENT, chat.chatContent);
+        values.put(MarrySocialDBHelper.KEY_ADDED_TIME, chat.addTime);
 
-        String whereClause = MarrySocialDBHelper.KEY_CHAT_ID + " = " + '"' + chat.chatId + '"';
-        mDBHelper.update(MarrySocialDBHelper.DATABASE_BRIEF_CHAT_TABLE, values, whereClause, null);
+        String whereClause = MarrySocialDBHelper.KEY_CHAT_ID + " = " + '"'
+                + chat.chatId + '"';
+        mDBHelper.update(MarrySocialDBHelper.DATABASE_BRIEF_CHAT_TABLE, values,
+                whereClause, null);
     }
 
     private String queryNikenameFromContactsDB(String uId) {
         String nikename = null;
         Cursor cursor = null;
         try {
-            String whereclause = MarrySocialDBHelper.KEY_UID + " = "
-                    + uId;
-            cursor = mDBHelper.query(MarrySocialDBHelper.DATABASE_CONTACTS_TABLE,
+            String whereclause = MarrySocialDBHelper.KEY_UID + " = " + uId;
+            cursor = mDBHelper.query(
+                    MarrySocialDBHelper.DATABASE_CONTACTS_TABLE,
                     CONTACTS_PROJECTION, whereclause, null, null, null, null,
                     null);
             if (cursor == null || cursor.getCount() == 0) {
@@ -506,9 +519,9 @@ public class ChatMsgActivity extends Activity implements OnClickListener{
         BriefChatItem briefChat = new BriefChatItem();
         if (lastChatMsg.getMsgType() == IMsgViewType.IMVT_COM_MSG) {
             briefChat.uId = mToUid;
-            briefChat.nikename = queryNikenameFromContactsDB(briefChat.uId);
+            briefChat.nikename = mChatUserName;
         } else {
-            briefChat.uId = mUid;
+            briefChat.uId = mAuthorUid;
             briefChat.nikename = mAuthorName;
         }
         briefChat.chatId = mChatId;

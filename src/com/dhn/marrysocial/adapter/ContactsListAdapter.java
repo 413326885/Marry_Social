@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.dhn.marrysocial.MarrySocialApplication;
 import com.dhn.marrysocial.R;
 import com.dhn.marrysocial.activity.ContactsInfoActivity;
+import com.dhn.marrysocial.base.AsyncHeadPicBitmapLoader;
 import com.dhn.marrysocial.base.ContactsInfo;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
 
@@ -29,10 +30,12 @@ public class ContactsListAdapter extends BaseAdapter {
     private Context mContext;
     private LayoutInflater mInflater;
     private ArrayList<ContactsInfo> mData;
+    private AsyncHeadPicBitmapLoader mHeadPicBitmapLoader;
 
     public ContactsListAdapter(Context context) {
         mContext = context;
         mInflater = LayoutInflater.from(mContext);
+        mHeadPicBitmapLoader = new AsyncHeadPicBitmapLoader(mContext);
     }
 
     public void setDataSource(ArrayList<ContactsInfo> source) {
@@ -87,7 +90,7 @@ public class ContactsListAdapter extends BaseAdapter {
         });
 
         holder.person_name.setText(mData.get(position).getNikeName());
-        holder.person_pic.setImageResource(R.drawable.person_default_small_pic);
+        mHeadPicBitmapLoader.loadImageBitmap(holder.person_pic, mData.get(position).getUid());
         holder.person_description.setText(String.format(mContext.getResources()
                 .getString(R.string.contacts_detail), mData.get(position).getFirstDirectFriend()));
         holder.person_description_more.setChecked(false);

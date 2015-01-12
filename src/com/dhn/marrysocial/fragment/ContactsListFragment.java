@@ -4,10 +4,12 @@ import java.util.ArrayList;
 
 import com.dhn.marrysocial.adapter.ContactsListAdapter;
 import com.dhn.marrysocial.base.ContactsInfo;
+import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
 import com.dhn.marrysocial.utils.Utils;
 import com.dhn.marrysocial.R;
 
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -25,27 +27,31 @@ public class ContactsListFragment extends Fragment {
     @SuppressWarnings("unused")
     private static final String TAG = "ContactsListFragment";
 
+    private String mAuthorUid;
+
     private ListView mListView;
     private ContactsListAdapter mListViewAdapter;
     private ArrayList<ContactsInfo> mContactMembers = new ArrayList<ContactsInfo>();
 
-    private static final String[] PROJECTION = {
-        MarrySocialDBHelper.KEY_UID,
-        MarrySocialDBHelper.KEY_PHONE_NUM,
-        MarrySocialDBHelper.KEY_NIKENAME,
-        MarrySocialDBHelper.KEY_REALNAME,
-        MarrySocialDBHelper.KEY_FIRST_DIRECT_FRIEND,
-        MarrySocialDBHelper.KEY_DIRECT_FRIENDS,
-        MarrySocialDBHelper.KEY_INDIRECT_ID,
-        MarrySocialDBHelper.KEY_DIRECT_FRIENDS_COUNT,
-        MarrySocialDBHelper.KEY_HEADPIC,
-        MarrySocialDBHelper.KEY_GENDER,
-        MarrySocialDBHelper.KEY_ASTRO,
-        MarrySocialDBHelper.KEY_HOBBY };
+    private static final String[] PROJECTION = { MarrySocialDBHelper.KEY_UID,
+            MarrySocialDBHelper.KEY_PHONE_NUM,
+            MarrySocialDBHelper.KEY_NIKENAME, MarrySocialDBHelper.KEY_REALNAME,
+            MarrySocialDBHelper.KEY_FIRST_DIRECT_FRIEND,
+            MarrySocialDBHelper.KEY_DIRECT_FRIENDS,
+            MarrySocialDBHelper.KEY_INDIRECT_ID,
+            MarrySocialDBHelper.KEY_DIRECT_FRIENDS_COUNT,
+            MarrySocialDBHelper.KEY_HEADPIC, MarrySocialDBHelper.KEY_GENDER,
+            MarrySocialDBHelper.KEY_ASTRO, MarrySocialDBHelper.KEY_HOBBY };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SharedPreferences prefs = getActivity().getSharedPreferences(
+                CommonDataStructure.PREFS_LAIQIAN_DEFAULT,
+                getActivity().MODE_PRIVATE);
+        mAuthorUid = prefs.getString(CommonDataStructure.UID, "");
+
         mContactMembers.clear();
         mContactMembers.addAll(loadContactsFromDB());
     }
@@ -67,6 +73,7 @@ public class ContactsListFragment extends Fragment {
     }
 
     private long mExitTime = 0;
+
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         Log.e(TAG, "nannan ContactsListFragment onKeyDown......");
         if ((System.currentTimeMillis() - mExitTime) > 2000) {
@@ -84,8 +91,10 @@ public class ContactsListFragment extends Fragment {
 
         MarrySocialDBHelper dbHelper = MarrySocialDBHelper
                 .newInstance(getActivity());
-        Cursor cursor = dbHelper.query(MarrySocialDBHelper.DATABASE_CONTACTS_TABLE,
-                PROJECTION, null, null, null, null, null, null);
+        String whereClause = MarrySocialDBHelper.KEY_UID + " != " + mAuthorUid;
+        Cursor cursor = dbHelper.query(
+                MarrySocialDBHelper.DATABASE_CONTACTS_TABLE, PROJECTION,
+                whereClause, null, null, null, null, null);
         if (cursor == null) {
             Log.w(TAG, "nannan query fail!");
             return contactMembers;
