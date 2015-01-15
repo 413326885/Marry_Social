@@ -81,8 +81,8 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
             MarrySocialDBHelper.KEY_REPLY_CONTENTS,
             MarrySocialDBHelper.KEY_ADDED_TIME };
 
-     private RefreshListView mListView;
-//    private ListView mListView;
+    private RefreshListView mListView;
+    // private ListView mListView;
     private DynamicInfoListAdapter mListViewAdapter;
     private ImageView mEditComment;
 
@@ -162,6 +162,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
                 uploadCommentsOrBravosOrReplys(CommonDataStructure.KEY_COMMENTS);
                 mCommentEntrys.clear();
                 mCommentEntrys.addAll(loadCommentsItemFromDB());
+                mListViewAdapter.clearHeadPicsCache();
                 mListViewAdapter.notifyDataSetChanged();
                 Log.e(TAG, "nannan UPLOAD_COMMENT..");
                 break;
@@ -267,6 +268,10 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
                 .getContentResolver()
                 .registerContentObserver(CommonDataStructure.REPLYURL, true,
                         mChangeObserver);
+        this.getActivity()
+                .getContentResolver()
+                .registerContentObserver(CommonDataStructure.HEADPICSURL, true,
+                        mChangeObserver);
         Log.e(TAG, "nannan oncreate()..");
 
         SharedPreferences prefs = getActivity().getSharedPreferences(
@@ -284,9 +289,9 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
 
         View view = inflater.inflate(R.layout.dynamic_info_fragment_layout,
                 container, false);
-         mListView = (RefreshListView)
-         view.findViewById(R.id.dynamic_info_listView);
-//        mListView = (ListView) view.findViewById(R.id.dynamic_info_listView);
+        mListView = (RefreshListView) view
+                .findViewById(R.id.dynamic_info_listView);
+        // mListView = (ListView) view.findViewById(R.id.dynamic_info_listView);
         TextView emptyView = (TextView) view
                 .findViewById(R.id.dynamic_info_list_empty);
         mListViewAdapter = new DynamicInfoListAdapter(getActivity());
@@ -430,8 +435,8 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
             super.onChange(selfChange);
             // if (mContentDirty.compareAndSet(false, true)) {
             handler.sendEmptyMessage(UPLOAD_COMMENT);
-//            handler.sendEmptyMessage(UPLOAD_BRAVO);
-//            handler.sendEmptyMessage(UPLOAD_REPLY);
+            // handler.sendEmptyMessage(UPLOAD_BRAVO);
+            // handler.sendEmptyMessage(UPLOAD_REPLY);
             Log.e(TAG, "nannan onChange()..");
             // }
         }

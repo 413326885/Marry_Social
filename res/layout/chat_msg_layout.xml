@@ -26,24 +26,12 @@
                 android:paddingRight="2dp"
                 android:src="@drawable/ic_return_button" />
 
-            <com.dhn.marrysocial.roundedimageview.RoundedImageView
-                android:id="@+id/chat_msg_person_pic"
-                android:layout_width="102px"
-                android:layout_height="102px"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/chat_msg_arrow"
-                android:scaleType="centerCrop"
-                android:src="@drawable/head"
-                app:border_width="0dp"
-                app:corner_radius="50dp"
-                app:oval="false" />
-
             <TextView
                 android:id="@+id/chat_msg_person_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/chat_msg_person_pic"
+                android:layout_toRightOf="@id/chat_msg_arrow"
                 android:alpha="0.8"
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"

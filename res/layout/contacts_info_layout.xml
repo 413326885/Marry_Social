@@ -40,196 +40,43 @@
         </RelativeLayout>
     </RelativeLayout>
 
-<!--     <RelativeLayout
-        android:id="@+id/contacts_info_head"
+    <!--
+         <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/contacts_info_head"
+        android:alpha="0.5"
+        android:background="@color/darkgray" >
+    </ImageView>
+    -->
+
+    <ListView
+        android:id="@+id/contacts_info_listview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/contacts_info_head_bar"
-        android:background="@color/gray_background_color" >
-
-        <LinearLayout
-            android:id="@+id/contacts_info_head_01"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" >
-
-            <com.dhn.marrysocial.roundedimageview.RoundedImageView
-                android:id="@+id/chat_msg_person_pic"
-                android:layout_width="162px"
-                android:layout_height="162px"
-                android:layout_gravity="center_horizontal"
-                android:padding="4dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/head"
-                app:border_width="0dp"
-                app:corner_radius="100dp"
-                app:oval="false" />
-
-            <TextView
-                android:id="@+id/contacts_info_friend_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:padding="4dp"
-                android:text="楠楠"
-                android:textSize="18dp" />
-
-            <TextView
-                android:id="@+id/contacts_info_friends_description"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:alpha="0.6"
-                android:paddingBottom="8dp"
-                android:paddingTop="4dp"
-                android:text="来自 楠楠 等3位好友的通信录"
-                android:textSize="14dp" />
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:alpha="0.5"
-                android:background="@color/darkgray" >
-            </ImageView>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/contacts_info_head_02"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/contacts_info_head_01"
-            android:orientation="horizontal" >
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:padding="6dp" >
-
-                <TextView
-                    android:id="@+id/contacts_info_gender"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:text="性别"
-                    android:textSize="16dp"
-                    android:alpha="0.6" />
-
-                <ImageView
-                    android:id="@+id/contacts_info_gender_pic"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_centerVertical="true"
-                    android:paddingLeft="8dp"
-                    android:src="@drawable/ic_male_selected" />
-            </LinearLayout>
-
-            <ImageView
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:alpha="0.5"
-                android:background="@color/darkgray" >
-            </ImageView>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:padding="6dp" >
-
-                <TextView
-                    android:id="@+id/contacts_info_astro"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:text="星座"
-                    android:textSize="16dp"
-                    android:alpha="0.6" />
-
-                <ImageView
-                    android:id="@+id/contacts_info_astro_pic"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_centerVertical="true"
-                    android:paddingLeft="8dp"
-                    android:src="@drawable/ic_aries_baiyang_green" />
-            </LinearLayout>
-
-            <ImageView
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:alpha="0.5"
-                android:background="@color/darkgray" >
-            </ImageView>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:padding="6dp" >
-
-                <TextView
-                    android:id="@+id/contacts_info_hobby"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="爱好"
-                    android:textSize="16dp"
-                    android:alpha="0.6" />
-
-                <ImageView
-                    android:id="@+id/contacts_info_hobby_pic"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:paddingLeft="8dp"
-                    android:src="@drawable/ic_female_selected" />
-            </LinearLayout>
-        </LinearLayout>
-    </RelativeLayout> -->
+        android:cacheColorHint="#0000"
+        android:listSelector="@android:color/transparent"
+        android:scrollbarStyle="outsideOverlay" >
+    </ListView>
 
     <RelativeLayout
         android:id="@+id/contacts_info_foot_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="-45dp"
-        android:layout_alignParentBottom="true" >
+        android:layout_alignParentBottom="true"
+        android:layout_margin="20dp" >
 
         <Button
             android:id="@+id/contacts_info_chat_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:clickable="true"
-            android:paddingLeft="28dp"
-            android:paddingRight="28dp"
             android:background="@drawable/contacts_info_btn_selector"
+            android:clickable="true"
             android:text="开始聊天"
-            android:textSize="16dp"
-            android:textColor="@color/gray" />
+            android:textColor="@color/gray"
+            android:textSize="16dp" />
     </RelativeLayout>
-
-<!--     <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_below="@id/contacts_info_head"
-        android:alpha="0.5"
-        android:background="@color/darkgray" >
-    </ImageView> -->
-
-    <ListView
-        android:id="@+id/contacts_info_listview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/contacts_info_foot_bar"
-        android:layout_below="@id/contacts_info_head_bar"
-        android:cacheColorHint="#0000"
-        android:listSelector="@android:color/transparent"
-        android:scrollbarStyle="outsideOverlay" >
-    </ListView>
 
 </RelativeLayout>

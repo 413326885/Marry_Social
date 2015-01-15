@@ -113,7 +113,7 @@ public class MarrySocialDBHelper {
             + "chat_content text, msg_type integer, added_time text, current_status integer )";
 
     private static final String DATABASE_CREATE_BRIEF_CHAT = "create table briefchat ("
-            + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, chat_id text, nikename text, "
+            + "_id integer PRIMARY KEY AUTOINCREMENT, to_uid text, chat_id text, nikename text, "
             + "chat_content text, added_time text )";
 
     private static final String DATABASE_CREATE_HEAD_PICS = "create table headpics ("

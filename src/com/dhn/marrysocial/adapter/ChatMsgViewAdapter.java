@@ -1,16 +1,20 @@
 package com.dhn.marrysocial.adapter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.dhn.marrysocial.R;
+import com.dhn.marrysocial.base.AsyncHeadPicBitmapLoader;
 import com.dhn.marrysocial.base.ChatMsgItem;
 import com.dhn.marrysocial.utils.Utils;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ChatMsgViewAdapter extends BaseAdapter {
@@ -21,6 +25,7 @@ public class ChatMsgViewAdapter extends BaseAdapter {
     private Context mContext;
     private LayoutInflater mInflater;
     private ArrayList<ChatMsgItem> mData = new ArrayList<ChatMsgItem>();
+    private HashMap<String, Bitmap> mHeadPics = new HashMap<String, Bitmap>();
 
     public static interface IMsgViewType {
         int IMVT_COM_MSG = 0;
@@ -34,6 +39,10 @@ public class ChatMsgViewAdapter extends BaseAdapter {
 
     public void setChatDataSource(ArrayList<ChatMsgItem> source) {
         mData = source;
+    }
+
+    public void setHeadPisDataSource(HashMap<String, Bitmap> source) {
+        mHeadPics = source;
     }
 
     @Override
@@ -84,20 +93,32 @@ public class ChatMsgViewAdapter extends BaseAdapter {
                     .findViewById(R.id.chat_msg_sendtime);
             holder.chat_msg_content = (TextView) convertView
                     .findViewById(R.id.chat_msg_content);
+            holder.chat_person_pic = (ImageView) convertView
+                    .findViewById(R.id.chat_msg_person_pic);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
+        if (mHeadPics.get(msgItem.getFromUid()) == null) {
+            holder.chat_person_pic
+                    .setImageResource(R.drawable.person_default_small_pic);
+        } else {
+            holder.chat_person_pic.setImageBitmap(mHeadPics.get(msgItem
+                    .getFromUid()));
+        }
+
         String time = msgItem.getAddedTime();
         String chat_time = time.substring(0, time.length() - 6);
-        holder.chat_msg_send_time.setText(Utils.getAddedTimeTitle(mContext, chat_time));
+        holder.chat_msg_send_time.setText(Utils.getAddedTimeTitle(mContext,
+                chat_time));
         holder.chat_msg_content.setText(msgItem.getChatContent());
 
         return convertView;
     }
 
     class ViewHolder {
+        ImageView chat_person_pic;
         TextView chat_msg_send_time;
         TextView chat_msg_content;
     }

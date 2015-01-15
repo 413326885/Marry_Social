@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,6 +34,7 @@ import com.dhn.marrysocial.R;
 import com.dhn.marrysocial.activity.EditCommentsActivity;
 import com.dhn.marrysocial.activity.ReplyListsActivity;
 import com.dhn.marrysocial.activity.ViewPhotoActivity;
+import com.dhn.marrysocial.base.AsyncHeadPicBitmapLoader;
 import com.dhn.marrysocial.base.AsyncImageViewBitmapLoader;
 import com.dhn.marrysocial.base.CommentsItem;
 import com.dhn.marrysocial.base.ReplysItem;
@@ -62,6 +64,7 @@ public class DynamicInfoListAdapter extends BaseAdapter {
     private MarrySocialDBHelper mDBHelper;
     private ExecutorService mExecutorService;
     private AsyncImageViewBitmapLoader mAsyncBitmapLoader;
+    private AsyncHeadPicBitmapLoader mHeadPicBitmapLoader;
 
     private ArrayList<CommentsItem> mCommentsData = new ArrayList<CommentsItem>();
     private HashMap<String, String> mBravoEntrys = new HashMap<String, String>();
@@ -107,6 +110,7 @@ public class DynamicInfoListAdapter extends BaseAdapter {
         mAuthorName = prefs.getString(CommonDataStructure.AUTHOR_NAME, "");
 
         mAsyncBitmapLoader = new AsyncImageViewBitmapLoader(mContext);
+        mHeadPicBitmapLoader = new AsyncHeadPicBitmapLoader(mContext);
         mDBHelper = MarrySocialDBHelper.newInstance(mContext);
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
                 .availableProcessors() * CommonDataStructure.THREAD_POOL_SIZE);
@@ -122,6 +126,12 @@ public class DynamicInfoListAdapter extends BaseAdapter {
 
     public void setReplyDataSource(HashMap<String, ArrayList<ReplysItem>> source) {
         mReplyEntrys = source;
+    }
+
+    public void clearHeadPicsCache() {
+        if (mHeadPicBitmapLoader != null) {
+            mHeadPicBitmapLoader.clearCache();
+        }
     }
 
     @Override
@@ -158,16 +168,6 @@ public class DynamicInfoListAdapter extends BaseAdapter {
 
     private void setViewHolderLoyout(final ViewHolder holder, final int position) {
 
-        // final ViewHolder holderTemp = holder;
-        if (mAuthorName != null
-                && mAuthorName.equalsIgnoreCase(mCommentsData.get(position)
-                        .getFulName())) {
-            holder.mHeadPic.setImageResource(R.drawable.head);
-        } else {
-            holder.mHeadPic
-                    .setImageResource(R.drawable.person_default_small_pic);
-        }
-
         holder.mFullName.setText(mCommentsData.get(position).getFulName());
         holder.mDynamicBravo.setEnabled(!CommonDataStructure.INVALID_STR
                 .equalsIgnoreCase(mCommentsData.get(position).getCommentId()));
@@ -192,7 +192,7 @@ public class DynamicInfoListAdapter extends BaseAdapter {
             }
         });
         holder.mReplyTipsTitle.setOnClickListener(new OnClickListener() {
-            
+
             @Override
             public void onClick(View v) {
                 showAllReplys(position);
@@ -200,6 +200,9 @@ public class DynamicInfoListAdapter extends BaseAdapter {
         });
         holder.mAddedTime.setText(mCommentsData.get(position).getAddTime());
         holder.mContents.setText(mCommentsData.get(position).getContents());
+
+        mHeadPicBitmapLoader.loadImageBitmap(holder.mHeadPic, mCommentsData
+                .get(position).getUid());
 
         setCommentPicsVisibleIfNeed(holder, position);
         setCommentPicsOnClickListener(holder, position);
@@ -387,7 +390,8 @@ public class DynamicInfoListAdapter extends BaseAdapter {
         String commentId = mCommentsData.get(position).getCommentId();
         int count = mCommentsData.get(position).getPhotoCount();
         for (int index = 0; index < count; index++) {
-            String url = uId + "_" + bucketId + "_" + commentId + "_" + (index + 1);
+            String url = uId + "_" + bucketId + "_" + commentId + "_"
+                    + (index + 1);
             commentPics.get(index).setVisibility(View.VISIBLE);
             mAsyncBitmapLoader.loadImageBitmap(commentPics.get(index), url);
         }
@@ -478,8 +482,8 @@ public class DynamicInfoListAdapter extends BaseAdapter {
     private void setBravosVisibleIfNeed(ViewHolder holder, int position) {
         holder.mBravoTips.setVisibility(View.GONE);
         holder.mBravosAuthorNames.setVisibility(View.GONE);
-        String bravoAuthorsName = mBravoEntrys.get(mCommentsData.get(
-                position).getCommentId());
+        String bravoAuthorsName = mBravoEntrys.get(mCommentsData.get(position)
+                .getCommentId());
         if (bravoAuthorsName != null && bravoAuthorsName.length() != 0) {
             holder.mBravosAuthorNames.setVisibility(View.VISIBLE);
             holder.mBravosAuthorNames.setText(bravoAuthorsName);
@@ -539,17 +543,19 @@ public class DynamicInfoListAdapter extends BaseAdapter {
             for (int index = 0; index < replysCount; index++) {
                 replysFather.get(index).setVisibility(View.VISIBLE);
                 authors.get(index).setText(replys.get(index).getFullName());
-                contents.get(index).setText(replys.get(index).getReplyContents());
+                contents.get(index).setText(
+                        replys.get(index).getReplyContents());
             }
         } else {
-            ArrayList<ReplysItem> top5Replys = new ArrayList<ReplysItem> ();
+            ArrayList<ReplysItem> top5Replys = new ArrayList<ReplysItem>();
             for (int index = 5; index > 0; index--) {
                 top5Replys.add(replys.get(replysCount - index));
             }
             for (int index = 0; index < top5Replys.size(); index++) {
                 replysFather.get(index).setVisibility(View.VISIBLE);
                 authors.get(index).setText(top5Replys.get(index).getFullName());
-                contents.get(index).setText(top5Replys.get(index).getReplyContents());
+                contents.get(index).setText(
+                        top5Replys.get(index).getReplyContents());
             }
         }
 
@@ -604,14 +610,16 @@ public class DynamicInfoListAdapter extends BaseAdapter {
         if (!isCommentIdExist(comment.getCommentId())) {
             ContentValues insertValues = new ContentValues();
             insertValues.put(MarrySocialDBHelper.KEY_UID, mUid);
-            insertValues.put(MarrySocialDBHelper.KEY_BUCKET_ID, comment.getBucketId());
+            insertValues.put(MarrySocialDBHelper.KEY_BUCKET_ID,
+                    comment.getBucketId());
             insertValues.put(MarrySocialDBHelper.KEY_COMMENT_ID,
                     comment.getCommentId());
             insertValues.put(MarrySocialDBHelper.KEY_AUTHOR_FULLNAME,
                     mAuthorName);
             insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
                     Long.toString(System.currentTimeMillis() / 1000));
-            insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS, MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD);
+            insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
+                    MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD);
 
             ContentResolver resolver = mContext.getContentResolver();
             resolver.insert(CommonDataStructure.BRAVOURL, insertValues);
@@ -628,8 +636,10 @@ public class DynamicInfoListAdapter extends BaseAdapter {
             }
             ContentResolver resolver = mContext.getContentResolver();
             ContentValues values = new ContentValues();
-            values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS, MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD);
-            resolver.update(CommonDataStructure.BRAVOURL, values, whereClause, null);
+            values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
+                    MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD);
+            resolver.update(CommonDataStructure.BRAVOURL, values, whereClause,
+                    null);
         }
 
     }
@@ -648,8 +658,10 @@ public class DynamicInfoListAdapter extends BaseAdapter {
                     + comment.getCommentId() + " AND "
                     + MarrySocialDBHelper.KEY_UID + " = " + mUid;
             ContentValues values = new ContentValues();
-            values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS, MarrySocialDBHelper.NEED_DELETE_FROM_CLOUD);
-            resolver.update(CommonDataStructure.BRAVOURL, values, whereClause, null);
+            values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
+                    MarrySocialDBHelper.NEED_DELETE_FROM_CLOUD);
+            resolver.update(CommonDataStructure.BRAVOURL, values, whereClause,
+                    null);
         }
     }
 

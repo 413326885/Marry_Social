@@ -211,6 +211,10 @@ public class CommonDataStructure {
             + DBContentChangeProvider.AUTHORITY + "/"
             + MarrySocialDBHelper.DATABASE_BRIEF_CHAT_TABLE);
 
+    public static final Uri HEADPICSURL = Uri.parse("content://"
+            + DBContentChangeProvider.AUTHORITY + "/"
+            + MarrySocialDBHelper.DATABASE_HEAD_PICS_TABLE);
+
     public static final String REMOTE_ORG_PHOTO_PATH = "http://static.pkjiao.com/topic/";
     public static final String REMOTE_THUMB_PHOTO_PATH = "http://static.pkjiao.com/thumbnail/topic/";
 

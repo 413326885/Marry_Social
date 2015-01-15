@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.dhn.marrysocial.R;
 import com.dhn.marrysocial.activity.ChatMsgActivity;
+import com.dhn.marrysocial.base.AsyncHeadPicBitmapLoader;
 import com.dhn.marrysocial.base.ChatMsgItem;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
 import com.dhn.marrysocial.fragment.ChatMsgFragment;
@@ -28,10 +29,12 @@ public class ChatMsgListAdapter extends BaseAdapter {
     private Context mContext;
     private LayoutInflater mInflater;
     private ArrayList<ChatMsgFragment.BriefChatItem> mData;
+    private AsyncHeadPicBitmapLoader mHeadPicBitmapLoader;
 
     public ChatMsgListAdapter(Context context) {
         mContext = context;
         mInflater = LayoutInflater.from(mContext);
+        mHeadPicBitmapLoader = new AsyncHeadPicBitmapLoader(mContext);
     }
 
     public void setDataSource(ArrayList<ChatMsgFragment.BriefChatItem> source) {
@@ -83,6 +86,9 @@ public class ChatMsgListAdapter extends BaseAdapter {
         String time = chatItem.addTime;
         String chat_time = time.substring(0, time.length() - 6);
         holder.chat_time.setText(Utils.getAddedTimeTitle(mContext, chat_time));
+
+        mHeadPicBitmapLoader.loadImageBitmap(holder.chat_person_pic,
+                chatItem.toUid);
 
         holder.chat_item_entry.setOnClickListener(new View.OnClickListener() {
 

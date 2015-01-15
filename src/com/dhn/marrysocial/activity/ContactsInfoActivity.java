@@ -29,6 +29,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.FeatureInfo;
+import android.database.ContentObserver;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -61,6 +62,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
     private static final int POOL_SIZE = 10;
     private static final int START_TO_UPLOAD = 100;
     private static final int UPLOAD_FINISH = 101;
+    private static final int RELOAD_DATA_SOURCE = 102;
 
     private static final String[] CONTACTS_PROJECTION = {
             MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_PHONE_NUM,
@@ -113,6 +115,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
     private Bitmap mCropPhoto = null;
     private String mCropPhotoName;
 
+    private DataSetChangeObserver mChangeObserver;
     private ProgressDialog mUploadProgressDialog;
 
     private Handler mHandler = new Handler() {
@@ -131,6 +134,11 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
                 mUserHeadPic = mCropPhoto;
                 mUserPic.setImageBitmap(mUserHeadPic);
                 mUploadProgressDialog.dismiss();
+                break;
+            }
+            case RELOAD_DATA_SOURCE: {
+                mListViewAdapter.clearHeadPicsCache();
+                mListViewAdapter.notifyDataSetChanged();
                 break;
             }
             default:
@@ -184,6 +192,10 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
                 .availableProcessors() * POOL_SIZE);
 
         initOriginData();
+
+        mChangeObserver = new DataSetChangeObserver(mHandler);
+        getContentResolver().registerContentObserver(
+                CommonDataStructure.HEADPICSURL, true, mChangeObserver);
     }
 
     @Override
@@ -193,6 +205,12 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         mCommentEntrys.addAll(loadUserCommentsFromDB(mUserInfoUid));
         mListViewAdapter.setCommentDataSource(mCommentEntrys);
         mListViewAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getContentResolver().unregisterContentObserver(mChangeObserver);
     }
 
     @Override
@@ -591,7 +609,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
 
     }
 
-    private int insertHeadPicToHeadPicsDB(
+    private void insertHeadPicToHeadPicsDB(
             CommonDataStructure.UploadHeadPicResultEntry headPic) {
         ContentValues insertValues = new ContentValues();
         insertValues.put(MarrySocialDBHelper.KEY_UID, headPic.uid);
@@ -606,9 +624,8 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 MarrySocialDBHelper.UPLOAD_TO_CLOUD_SUCCESS);
 
-        long rowId = mDBHelper.insert(
-                MarrySocialDBHelper.DATABASE_HEAD_PICS_TABLE, insertValues);
-        return (int) (rowId);
+        ContentResolver resolver = getContentResolver();
+        resolver.insert(CommonDataStructure.HEADPICSURL, insertValues);
     }
 
     private void updateHeadPicToHeadPicsDB(
@@ -619,16 +636,15 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
                 Utils.Bitmap2Bytes(mCropPhoto));
         insertValues.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH,
                 headPic.orgUrl);
-        insertValues.put(MarrySocialDBHelper.KEY_PHOTO_LOCAL_PATH,
-                mCropPhotoName);
         insertValues.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_THUMB_PATH,
                 headPic.smallThumbUrl);
         insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 MarrySocialDBHelper.UPLOAD_TO_CLOUD_SUCCESS);
 
         String whereClause = MarrySocialDBHelper.KEY_UID + " = " + headPic.uid;
-        mDBHelper.update(MarrySocialDBHelper.DATABASE_HEAD_PICS_TABLE,
-                insertValues, whereClause, null);
+        ContentResolver resolver = getContentResolver();
+        resolver.update(CommonDataStructure.HEADPICSURL, insertValues,
+                whereClause, null);
     }
 
     public boolean isUidExistInHeadPicDB(String uid) {
@@ -650,5 +666,22 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
             }
         }
         return true;
+    }
+
+    private class DataSetChangeObserver extends ContentObserver {
+
+        private Handler handler;
+
+        public DataSetChangeObserver(Handler handler) {
+            super(handler);
+            this.handler = handler;
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            super.onChange(selfChange);
+            handler.sendEmptyMessage(RELOAD_DATA_SOURCE);
+            Log.e(TAG, "nannan onChange()..");
+        }
     }
 }

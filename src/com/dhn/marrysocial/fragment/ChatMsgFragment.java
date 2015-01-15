@@ -33,7 +33,7 @@ public class ChatMsgFragment extends Fragment {
     private static final int UPDATE_CHAT_MSG = 100;
 
     private static final String[] BRIEF_CHAT_PROJECTION = {
-            MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_CHAT_ID,
+            MarrySocialDBHelper.KEY_TO_UID, MarrySocialDBHelper.KEY_CHAT_ID,
             MarrySocialDBHelper.KEY_NIKENAME,
             MarrySocialDBHelper.KEY_CHAT_CONTENT,
             MarrySocialDBHelper.KEY_ADDED_TIME };
@@ -85,7 +85,6 @@ public class ChatMsgFragment extends Fragment {
         mListView.setEmptyView(emptyView);
 
         mDBHelper = MarrySocialDBHelper.newInstance(getActivity());
-//        insertBriefChatMsgToBriefChatDB();
         return view;
     }
 
@@ -137,13 +136,11 @@ public class ChatMsgFragment extends Fragment {
 
             while (cursor.moveToNext()) {
                 BriefChatItem item = new BriefChatItem();
-                item.uId = cursor.getString(0);
+                item.toUid = cursor.getString(0);
                 item.chatId = cursor.getString(1);
                 item.nikename = cursor.getString(2);
                 item.chatContent = cursor.getString(3);
                 String chat_time = cursor.getString(4);
-                // item.addTime = chat_time.substring(0, chat_time.length() -
-                // 6);
                 item.addTime = chat_time;
                 mBriefChatItems.add(item);
             }
@@ -158,24 +155,11 @@ public class ChatMsgFragment extends Fragment {
     }
 
     public static class BriefChatItem {
-        public String uId;
+        public String toUid;
         public String chatId;
         public String nikename;
         public String chatContent;
         public String addTime;
-    }
-
-    private void insertBriefChatMsgToBriefChatDB() {
-        ContentValues insertValues = new ContentValues();
-        insertValues.put(MarrySocialDBHelper.KEY_UID, "3");
-        insertValues.put(MarrySocialDBHelper.KEY_CHAT_ID, "3_4");
-        insertValues.put(MarrySocialDBHelper.KEY_NIKENAME, "nan");
-        insertValues.put(MarrySocialDBHelper.KEY_CHAT_CONTENT, "你个大傻逼。。。");
-        String addtime = Long.toString(System.currentTimeMillis() * 1000);
-        insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME, addtime);
-
-        mDBHelper.insert(MarrySocialDBHelper.DATABASE_BRIEF_CHAT_TABLE,
-                insertValues);
     }
 
     private class DataSetChangeObserver extends ContentObserver {

@@ -1,6 +1,7 @@
 package com.dhn.marrysocial.activity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.dhn.marrysocial.R;
 import com.dhn.marrysocial.adapter.ChatMsgViewAdapter;
@@ -18,6 +19,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -48,10 +51,14 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
             MarrySocialDBHelper.KEY_CURRENT_STATUS };
 
     private static final String[] BRIEF_CHAT_PROJECTION = {
-            MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_CHAT_ID };
+            MarrySocialDBHelper.KEY_TO_UID, MarrySocialDBHelper.KEY_CHAT_ID };
 
     private static final String[] CONTACTS_PROJECTION = {
             MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_NIKENAME };
+
+    private static final String[] HEAD_PICS_PROJECTION = {
+            MarrySocialDBHelper.KEY_UID,
+            MarrySocialDBHelper.KEY_HEAD_PIC_BITMAP };
 
     private static final int START_TO_UPLOAD_CHAT_MSG = 100;
     private static final int UPLOAD_CHAT_MSG_FINISH = 101;
@@ -72,9 +79,9 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
     private TextView mEmptyView;
 
     private String mAuthorUid;
-    private String mChatUserName;
     private String mAuthorName;
     private String mToUid;
+    private String mChatUserName;
     private String mChatId;
 
     private float mTouchDownY = 0.0f;
@@ -83,6 +90,7 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
 
     private MarrySocialDBHelper mDBHelper;
     private ArrayList<ChatMsgItem> mChatMsgList = new ArrayList<ChatMsgItem>();
+    private HashMap<String, Bitmap> mHeadPics = new HashMap<String, Bitmap>();
 
     private ArrayList<ChatMsgSmallItem> mChatMsgQueue;
     private UploadChatMsgsTask mUploadChatMsgsTask;
@@ -169,6 +177,7 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
         mListView = (ListView) this.findViewById(R.id.chat_msg_listview);
         mListViewAdapter = new ChatMsgViewAdapter(this);
         mListViewAdapter.setChatDataSource(mChatMsgList);
+        mListViewAdapter.setHeadPisDataSource(mHeadPics);
         mListView.setAdapter(mListViewAdapter);
         mListView.setEmptyView(mEmptyView);
         mListView.setOnTouchListener(new OnTouchListener() {
@@ -211,6 +220,8 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
         mChangeObserver = new DataSetChangeObserver(mHandler);
         this.getContentResolver().registerContentObserver(
                 CommonDataStructure.CHATURL, true, mChangeObserver);
+
+        getChatPersonPics();
     }
 
     @Override
@@ -461,9 +472,9 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
 
     private void insertBriefChatMsgToBriefChatDB(ChatMsgItem chat) {
         ContentValues insertValues = new ContentValues();
-        insertValues.put(MarrySocialDBHelper.KEY_UID, chat.getUid());
+        insertValues.put(MarrySocialDBHelper.KEY_TO_UID, mToUid);
         insertValues.put(MarrySocialDBHelper.KEY_CHAT_ID, chat.getChatId());
-        insertValues.put(MarrySocialDBHelper.KEY_NIKENAME, mAuthorName);
+        insertValues.put(MarrySocialDBHelper.KEY_NIKENAME, mChatUserName);
         insertValues.put(MarrySocialDBHelper.KEY_CHAT_CONTENT,
                 chat.getChatContent());
         insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
@@ -475,9 +486,8 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
 
     private void updateLatestBriefChatMsgToBriefChatDB(BriefChatItem chat) {
         ContentValues values = new ContentValues();
-        values.put(MarrySocialDBHelper.KEY_UID, chat.uId);
-        ;
-        values.put(MarrySocialDBHelper.KEY_NIKENAME, chat.nikename);
+        values.put(MarrySocialDBHelper.KEY_TO_UID, mToUid);
+        values.put(MarrySocialDBHelper.KEY_NIKENAME, mChatUserName);
         values.put(MarrySocialDBHelper.KEY_CHAT_CONTENT, chat.chatContent);
         values.put(MarrySocialDBHelper.KEY_ADDED_TIME, chat.addTime);
 
@@ -517,13 +527,8 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
         }
         ChatMsgItem lastChatMsg = mChatMsgList.get(mChatMsgList.size() - 1);
         BriefChatItem briefChat = new BriefChatItem();
-        if (lastChatMsg.getMsgType() == IMsgViewType.IMVT_COM_MSG) {
-            briefChat.uId = mToUid;
-            briefChat.nikename = mChatUserName;
-        } else {
-            briefChat.uId = mAuthorUid;
-            briefChat.nikename = mAuthorName;
-        }
+        briefChat.toUid = mToUid;
+        briefChat.nikename = mChatUserName;
         briefChat.chatId = mChatId;
         briefChat.chatContent = lastChatMsg.getChatContent();
         briefChat.addTime = lastChatMsg.getAddedTime();
@@ -545,5 +550,39 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
             handler.sendEmptyMessage(UPDATE_CHAT_MSG);
             Log.e(TAG, "nannan onChange()..");
         }
+    }
+
+    private void getChatPersonPics() {
+        mHeadPics.put(mToUid, getHeadPicBitmap(mToUid));
+        mHeadPics.put(mAuthorUid, getHeadPicBitmap(mAuthorUid));
+    }
+
+    private Bitmap getHeadPicBitmap(String uid) {
+
+        Bitmap headpic = null;
+
+        String whereClause = MarrySocialDBHelper.KEY_UID + " = " + uid;
+        Cursor cursor = mDBHelper
+                .query(MarrySocialDBHelper.DATABASE_HEAD_PICS_TABLE,
+                        HEAD_PICS_PROJECTION, whereClause, null, null, null,
+                        null, null);
+
+        if (cursor == null || cursor.getCount() == 0) {
+            Log.w(TAG, "nannan query fail! Uid = " + uid);
+            return null;
+        }
+
+        try {
+            cursor.moveToFirst();
+            byte[] in = cursor.getBlob(1);
+            headpic = BitmapFactory.decodeByteArray(in, 0, in.length);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return headpic;
     }
 }
