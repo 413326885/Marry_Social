@@ -44,7 +44,8 @@ public class ChooseHeaderBackgroundActivity extends Activity implements
             MarrySocialDBHelper.KEY_PHOTO_NAME,
             MarrySocialDBHelper.KEY_PHOTO_LOCAL_PATH,
             MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH,
-            MarrySocialDBHelper.KEY_CURRENT_STATUS };
+            MarrySocialDBHelper.KEY_CURRENT_STATUS,
+            MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX};
 
     static {
         File bkgDir = new File(CommonDataStructure.BACKGROUND_PICS_DIR_URL);
@@ -98,7 +99,7 @@ public class ChooseHeaderBackgroundActivity extends Activity implements
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
                 .availableProcessors() * POOL_SIZE);
 
-        generateDBData(); // just for test
+//        generateDBData(); // just for test
 
         SharedPreferences prefs = this.getSharedPreferences(
                 CommonDataStructure.PREFS_LAIQIAN_DEFAULT, this.MODE_PRIVATE);
@@ -178,19 +179,20 @@ public class ChooseHeaderBackgroundActivity extends Activity implements
         for (String remote : CommonDataStructure.HEADER_BKG_PATH) {
             String name = index + ".jpg";
             if (!isHeaderBkgPathExistInHeaderBkgDB(remote)) {
-                insertHeaderBkgPathToHeaderBkgDB(name, remote);
+                insertHeaderBkgPathToHeaderBkgDB(name, remote, index);
             }
             index ++;
         }
     }
 
     private void insertHeaderBkgPathToHeaderBkgDB(String photoname,
-            String remotepath) {
+            String remotepath, int picindex) {
         ContentValues values = new ContentValues();
         values.put(MarrySocialDBHelper.KEY_PHOTO_NAME, photoname);
         values.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH, remotepath);
         values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 MarrySocialDBHelper.NEED_DOWNLOAD_FROM_CLOUD);
+        values.put(MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX, String.valueOf(picindex));
         mDBHelper
                 .insert(MarrySocialDBHelper.DATABASE_HEAD_BACKGROUND_PICS_TABLE,
                         values);
@@ -253,10 +255,12 @@ public class ChooseHeaderBackgroundActivity extends Activity implements
                 String localpath = cursor.getString(1);
                 String remotepath = cursor.getString(2);
                 String currentstatus = cursor.getString(3);
+                String headerbkgindex = cursor.getString(4);
                 background.photoName = photoname;
                 background.photoLocalPath = localpath;
                 background.photoRemotePath = remotepath;
                 background.currentStatus = currentstatus;
+                background.headerBkgIndex = headerbkgindex;
                 headBkgList.add(background);
             }
         } catch (Exception e) {
@@ -277,11 +281,13 @@ public class ChooseHeaderBackgroundActivity extends Activity implements
 
             String photoName = mHeadBkgEntrys.get(position).photoName;
             String photoLocalPath = mHeadBkgEntrys.get(position).photoLocalPath;
-            finishActivity(photoName, photoLocalPath);
+            String headerBkgIndex = mHeadBkgEntrys.get(position).headerBkgIndex;
+            String photoRemotePath = mHeadBkgEntrys.get(position).photoRemotePath;
+            finishActivity(photoName, photoLocalPath, photoRemotePath, headerBkgIndex);
         }
     };
 
-    private void finishActivity(String photoName, String photoLocalPath) {
+    private void finishActivity(String photoName, String photoLocalPath, String photoRemotePath, String headerBkgIndex) {
 
         SharedPreferences prefs = this.getSharedPreferences(
                 CommonDataStructure.PREFS_LAIQIAN_DEFAULT, this.MODE_PRIVATE);
@@ -291,6 +297,8 @@ public class ChooseHeaderBackgroundActivity extends Activity implements
 
         Intent data = new Intent();
         data.putExtra(MarrySocialDBHelper.KEY_PHOTO_LOCAL_PATH, photoLocalPath);
+        data.putExtra(MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH, photoRemotePath);
+        data.putExtra(MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX, headerBkgIndex);
         setResult(RESULT_OK, data);
         this.finish();
     }

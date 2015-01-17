@@ -13,6 +13,7 @@ import com.dhn.marrysocial.adapter.DynamicInfoListAdapter;
 import com.dhn.marrysocial.base.CommentsItem;
 import com.dhn.marrysocial.base.ContactsInfo;
 import com.dhn.marrysocial.common.CommonDataStructure;
+import com.dhn.marrysocial.common.CommonDataStructure.HeaderBackgroundEntry;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
 import com.dhn.marrysocial.roundedimageview.RoundedImageView;
 import com.dhn.marrysocial.utils.ImageUtils;
@@ -67,6 +68,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
     private static final int START_TO_UPLOAD = 100;
     private static final int UPLOAD_FINISH = 101;
     private static final int RELOAD_DATA_SOURCE = 102;
+    private static final int DOWNLOAD_HEADER_BKG_FINISH = 103;
 
     private static final String[] CONTACTS_PROJECTION = {
             MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_PHONE_NUM,
@@ -93,6 +95,18 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
             MarrySocialDBHelper.KEY_HEAD_PIC_BITMAP,
             MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH,
             MarrySocialDBHelper.KEY_PHOTO_REMOTE_THUMB_PATH };
+
+    private static final String[] HEAD_BACKGROUND_PROJECTION = {
+            MarrySocialDBHelper.KEY_PHOTO_NAME,
+            MarrySocialDBHelper.KEY_PHOTO_LOCAL_PATH,
+            MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH,
+            MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX };
+
+    private static final String[] HEAD_BKG_PROJECTION = {
+            MarrySocialDBHelper.KEY_PHOTO_NAME,
+            MarrySocialDBHelper.KEY_PHOTO_LOCAL_PATH,
+            MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH,
+            MarrySocialDBHelper.KEY_CURRENT_STATUS };
 
     private String mUserInfoUid;
     private ContactsInfo mUserInfo;
@@ -128,8 +142,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
     private View mContactsInfoHeader;
     private int mContactsInfoHeaderWidth;
     private int mContactsInfoHeaderHeight;
-    private String mBackgroundPicName; //  去掉 从db中取
-    private String mSelectedBackgroundPicsName;
+    private String mHeadBkgPath;
 
     private Handler mHandler = new Handler() {
 
@@ -154,6 +167,15 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
                 mListViewAdapter.notifyDataSetChanged();
                 break;
             }
+            case DOWNLOAD_HEADER_BKG_FINISH: {
+                Bitmap thumbHeader = Utils.decodeThumbnail(mHeadBkgPath, null,
+                        Utils.mThumbPhotoWidth);
+                Bitmap cropHeader = Utils.cropImages(thumbHeader,
+                        mContactsInfoHeaderWidth, mContactsInfoHeaderHeight,
+                        true);
+                mHeaderLayout.setBackground(ImageUtils
+                        .bitmapToDrawable(cropHeader));
+            }
             default:
                 break;
             }
@@ -167,6 +189,8 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         setContentView(R.layout.contacts_info_layout);
 
         mDBHelper = MarrySocialDBHelper.newInstance(this);
+
+        generateDBData();
 
         Intent data = getIntent();
         mUserInfoUid = data.getStringExtra(MarrySocialDBHelper.KEY_UID);
@@ -205,8 +229,6 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         SharedPreferences prefs = this.getSharedPreferences(
                 CommonDataStructure.PREFS_LAIQIAN_DEFAULT, MODE_PRIVATE);
         mAuthorUid = prefs.getString(CommonDataStructure.UID, "");
-        mBackgroundPicName = prefs.getString(
-                CommonDataStructure.BACKGROUND_PIC, "");
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
                 .availableProcessors() * POOL_SIZE);
 
@@ -230,29 +252,21 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
 
-        SharedPreferences prefs = this.getSharedPreferences(
-                CommonDataStructure.PREFS_LAIQIAN_DEFAULT, MODE_PRIVATE);
-        mBackgroundPicName = prefs.getString(
-                CommonDataStructure.BACKGROUND_PIC, "");
-
         mContactsInfoHeaderHeight = mContactsInfoHeader.getMeasuredHeight();
         mContactsInfoHeaderWidth = mContactsInfoHeader.getMeasuredWidth();
-        Bitmap thumbHeader;
-        if (mBackgroundPicName == null || mBackgroundPicName.length() == 0) {
-            thumbHeader = BitmapFactory.decodeResource(getResources(),
+
+        if ("0".equalsIgnoreCase(mUserInfo.getHeaderBkgIndex())) {
+            Bitmap thumbHeader = BitmapFactory.decodeResource(getResources(),
                     R.drawable.person_default_bkg);
+            Bitmap cropHeader = Utils.cropImages(thumbHeader,
+                    mContactsInfoHeaderWidth, mContactsInfoHeaderHeight, true);
+            mHeaderLayout
+                    .setBackground(ImageUtils.bitmapToDrawable(cropHeader));
         } else {
-            File backgroundPic = new File(
-                    CommonDataStructure.BACKGROUND_PICS_DIR_URL,
-                    mBackgroundPicName);
-            thumbHeader = Utils.decodeThumbnail(
-                    backgroundPic.getAbsolutePath(), null,
-                    Utils.mThumbPhotoWidth);
+            mExecutorService.execute(new DownloadHeadBackground(mUserInfo
+                    .getUid(), mUserInfo.getHeaderBkgIndex()));
         }
 
-        Bitmap cropHeader = Utils.cropImages(thumbHeader,
-                mContactsInfoHeaderWidth, mContactsInfoHeaderHeight, true);
-        mHeaderLayout.setBackground(ImageUtils.bitmapToDrawable(cropHeader));
     }
 
     @Override
@@ -550,6 +564,11 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
             case CHOOSE_BACKGROUND_PICTURE: {
                 String localPath = data.getExtras().getString(
                         MarrySocialDBHelper.KEY_PHOTO_LOCAL_PATH);
+                String headerBkgIndex = data.getExtras().getString(
+                        MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX);
+                String photoRemotePath = data.getExtras().getString(
+                        MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH);
+                updateHeaderBkgIndexToHeaderBkgDB(localPath, photoRemotePath, headerBkgIndex);
                 Bitmap thumbHeader = Utils.decodeThumbnail(localPath, null,
                         Utils.mThumbPhotoWidth);
                 Bitmap cropHeader = Utils.cropImages(thumbHeader,
@@ -564,6 +583,19 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
                 break;
             }
         }
+    }
+
+    private void updateHeaderBkgIndexToHeaderBkgDB(String localpath,
+            String remotepath, String headerebkgindex) {
+        ContentValues values = new ContentValues();
+        values.put(MarrySocialDBHelper.KEY_PHOTO_LOCAL_PATH, localpath);
+        values.put(MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX, headerebkgindex);
+
+        String whereClause = MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH
+                + " = " + '"' + remotepath + '"';
+        ContentResolver resolver = getContentResolver();
+        resolver.update(CommonDataStructure.HEADBACKGROUNDURL, values,
+                whereClause, null);
     }
 
     private void showBackgroundPicsPicker(Context context) {
@@ -724,6 +756,49 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
 
     }
 
+    class DownloadHeadBackground implements Runnable {
+
+        private String uid;
+        private String photonum;
+
+        public DownloadHeadBackground(String uid, String photonum) {
+            this.uid = uid;
+            this.photonum = photonum;
+        }
+
+        @Override
+        public void run() {
+            HeaderBackgroundEntry headerBkg = queryHeaderBkgEntryFromDB(photonum);
+            if (headerBkg.photoLocalPath != null
+                    && headerBkg.photoLocalPath.length() != 0) {
+                mHeadBkgPath = headerBkg.photoLocalPath;
+            } else {
+                File imageFile = Utils.downloadImageAndCache(
+                        headerBkg.photoRemotePath,
+                        CommonDataStructure.BACKGROUND_PICS_DIR_URL);
+                updateHeaderBkgPathToHeaderBkgDB(imageFile.getAbsolutePath(),
+                        headerBkg.photoRemotePath);
+                mHeadBkgPath = imageFile.getAbsolutePath();
+            }
+            mHandler.sendEmptyMessage(DOWNLOAD_HEADER_BKG_FINISH);
+        }
+
+    }
+
+    private void updateHeaderBkgPathToHeaderBkgDB(String localpath,
+            String remotepath) {
+        ContentValues values = new ContentValues();
+        values.put(MarrySocialDBHelper.KEY_PHOTO_LOCAL_PATH, localpath);
+        values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
+                MarrySocialDBHelper.DOWNLOAD_FROM_CLOUD_SUCCESS);
+
+        String whereClause = MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH
+                + " = " + '"' + remotepath + '"';
+        ContentResolver resolver = getContentResolver();
+        resolver.update(CommonDataStructure.HEADBACKGROUNDURL, values,
+                whereClause, null);
+    }
+
     private void insertHeadPicToHeadPicsDB(
             CommonDataStructure.UploadHeadPicResultEntry headPic) {
         ContentValues insertValues = new ContentValues();
@@ -760,6 +835,36 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         ContentResolver resolver = getContentResolver();
         resolver.update(CommonDataStructure.HEADPICSURL, insertValues,
                 whereClause, null);
+    }
+
+    public HeaderBackgroundEntry queryHeaderBkgEntryFromDB(String headerBkgIndex) {
+
+        HeaderBackgroundEntry headerBkgEntry = new HeaderBackgroundEntry();
+        Cursor cursor = null;
+        try {
+            String whereclause = MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX
+                    + " = " + headerBkgIndex;
+            cursor = mDBHelper.query(
+                    MarrySocialDBHelper.DATABASE_HEAD_BACKGROUND_PICS_TABLE,
+                    HEAD_BACKGROUND_PROJECTION, whereclause, null, null, null,
+                    null, null);
+            if (cursor == null || cursor.getCount() == 0) {
+                return headerBkgEntry;
+            }
+            cursor.moveToFirst();
+            headerBkgEntry.photoName = cursor.getString(0);
+            headerBkgEntry.photoLocalPath = cursor.getString(1);
+            headerBkgEntry.photoRemotePath = cursor.getString(2);
+            headerBkgEntry.headerBkgIndex = cursor.getString(3);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return headerBkgEntry;
     }
 
     public boolean isUidExistInHeadPicDB(String uid) {
@@ -803,5 +908,52 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
     private void startToChooseBackgroundPic() {
         Intent intent = new Intent(this, ChooseHeaderBackgroundActivity.class);
         startActivityForResult(intent, CHOOSE_BACKGROUND_PICTURE);
+    }
+
+    private void generateDBData() {
+        int index = 1;
+        for (String remote : CommonDataStructure.HEADER_BKG_PATH) {
+            String name = index + ".jpg";
+            if (!isHeaderBkgPathExistInHeaderBkgDB(remote)) {
+                insertHeaderBkgPathToHeaderBkgDB(name, remote, index);
+            }
+            index++;
+        }
+    }
+
+    public boolean isHeaderBkgPathExistInHeaderBkgDB(String remotepath) {
+        Cursor cursor = null;
+        try {
+            String whereclause = MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH
+                    + " = " + '"' + remotepath + '"';
+            cursor = mDBHelper.query(
+                    MarrySocialDBHelper.DATABASE_HEAD_BACKGROUND_PICS_TABLE,
+                    HEAD_BKG_PROJECTION, whereclause, null, null, null, null,
+                    null);
+            if (cursor == null || cursor.getCount() == 0) {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return true;
+    }
+
+    private void insertHeaderBkgPathToHeaderBkgDB(String photoname,
+            String remotepath, int picindex) {
+        ContentValues values = new ContentValues();
+        values.put(MarrySocialDBHelper.KEY_PHOTO_NAME, photoname);
+        values.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH, remotepath);
+        values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
+                MarrySocialDBHelper.NEED_DOWNLOAD_FROM_CLOUD);
+        values.put(MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX,
+                String.valueOf(picindex));
+        mDBHelper
+                .insert(MarrySocialDBHelper.DATABASE_HEAD_BACKGROUND_PICS_TABLE,
+                        values);
     }
 }

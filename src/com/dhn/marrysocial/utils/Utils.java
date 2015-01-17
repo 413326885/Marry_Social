@@ -1701,6 +1701,7 @@ public class Utils {
                 int gender = Integer.valueOf(userinfo.getString("gender"));
                 int astro = Integer.valueOf(userinfo.getString("astro"));
                 int hobby = Integer.valueOf(userinfo.getString("hobby"));
+                String headerbkg = userinfo.getString("systembackground");
 
                 ContactsInfo contactItem = new ContactsInfo();
                 contactItem.setUid(uid);
@@ -1715,6 +1716,7 @@ public class Utils {
                 contactItem.setFirstDirectFriend(firstDirectName);
                 contactItem.setDirectFriends(directFriends.toString());
                 contactItem.setDirectFriendsCount(directFriendsCount);
+                contactItem.setHeaderBkgIndex(headerbkg);
                 contactsList.add(contactItem);
             }
 
@@ -1805,6 +1807,7 @@ public class Utils {
             int gender = Integer.valueOf(respData.getString("gender"));
             int astro = Integer.valueOf(respData.getString("astro"));
             int hobby = Integer.valueOf(respData.getString("hobby"));
+            String headerbkg = respData.getString("systembackground");
 
             contact.setUid(uid);
             contact.setPhoneNum(phoneNum);
@@ -1818,6 +1821,7 @@ public class Utils {
             contact.setFirstDirectFriend(nickname);
             contact.setDirectFriends(nickname);
             contact.setDirectFriendsCount(0);
+            contact.setHeaderBkgIndex(headerbkg);
 
             reader.close();
 

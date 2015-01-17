@@ -304,5 +304,6 @@ public class CommonDataStructure {
         public String photoRemotePath;
         public String currentStatus;
         public Bitmap bkgBitmap;
+        public String headerBkgIndex;
     }
 }

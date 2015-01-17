@@ -133,6 +133,7 @@ public class DownloadIndirectFriendsIntentServices extends IntentService {
                 contact.getDirectFriends());
         values.put(MarrySocialDBHelper.KEY_INDIRECT_ID, contact.getIndirectId());
         values.put(MarrySocialDBHelper.KEY_HEADPIC, contact.getHeadPic());
+        values.put(MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX, contact.getHeaderBkgIndex());
 
         mDBHelper.insert(MarrySocialDBHelper.DATABASE_CONTACTS_TABLE, values);
     }
