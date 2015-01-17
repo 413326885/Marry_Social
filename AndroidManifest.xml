@@ -51,6 +51,8 @@
         </activity>
         <activity android:name=".activity.ContactsInfoActivity" >
         </activity>
+        <activity android:name=".activity.ChooseHeaderBackgroundActivity" >
+        </activity>
         <activity android:name=".test.MainActivity" >
         </activity>
 

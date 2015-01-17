@@ -45,6 +45,7 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextClock;
@@ -58,6 +59,9 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
     private static final int CHOOSE_PICTURE_FROM_GALLERY = 1;
     private static final int NEED_CROP = 2;
     private static final int CROP_PICTURE = 3;
+    private static final int CHOOSE_BACKGROUND_PICTURE = 4;
+
+    private static final int CHANGE_HEAD_BACKGROUND = 0;
 
     private static final int POOL_SIZE = 10;
     private static final int START_TO_UPLOAD = 100;
@@ -72,7 +76,8 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
             MarrySocialDBHelper.KEY_INDIRECT_ID,
             MarrySocialDBHelper.KEY_DIRECT_FRIENDS_COUNT,
             MarrySocialDBHelper.KEY_HEADPIC, MarrySocialDBHelper.KEY_GENDER,
-            MarrySocialDBHelper.KEY_ASTRO, MarrySocialDBHelper.KEY_HOBBY };
+            MarrySocialDBHelper.KEY_ASTRO, MarrySocialDBHelper.KEY_HOBBY,
+            MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX };
 
     private final String[] COMMENTS_PROJECTION = { MarrySocialDBHelper.KEY_UID,
             MarrySocialDBHelper.KEY_BUCKET_ID,
@@ -99,6 +104,8 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
     private ArrayList<CommentsItem> mCommentEntrys = new ArrayList<CommentsItem>();
 
     private RelativeLayout mReturnBtn;
+    private RelativeLayout mHeaderLayout;
+    private LinearLayout mHeaderLayout01;
     private TextView mUserName;
     private TextView mFriendName;
     private RoundedImageView mUserPic;
@@ -117,6 +124,12 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
 
     private DataSetChangeObserver mChangeObserver;
     private ProgressDialog mUploadProgressDialog;
+
+    private View mContactsInfoHeader;
+    private int mContactsInfoHeaderWidth;
+    private int mContactsInfoHeaderHeight;
+    private String mBackgroundPicName; //  去掉 从db中取
+    private String mSelectedBackgroundPicsName;
 
     private Handler mHandler = new Handler() {
 
@@ -164,23 +177,27 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         mUserName = (TextView) findViewById(R.id.contacts_info_person_name);
         mChatButton = (Button) findViewById(R.id.contacts_info_chat_btn);
 
-        View contactsInfoHeader = (LayoutInflater.from(this).inflate(
+        mContactsInfoHeader = (LayoutInflater.from(this).inflate(
                 R.layout.contacts_info_header_layout, null, false));
-        mUserPic = (RoundedImageView) contactsInfoHeader
+        mHeaderLayout = (RelativeLayout) mContactsInfoHeader
+                .findViewById(R.id.contacts_info_head);
+        mHeaderLayout01 = (LinearLayout) mContactsInfoHeader
+                .findViewById(R.id.contacts_info_head_01);
+        mUserPic = (RoundedImageView) mContactsInfoHeader
                 .findViewById(R.id.chat_msg_person_pic);
-        mFriendName = (TextView) contactsInfoHeader
+        mFriendName = (TextView) mContactsInfoHeader
                 .findViewById(R.id.contacts_info_friend_name);
-        mFriendsDesc = (TextView) contactsInfoHeader
+        mFriendsDesc = (TextView) mContactsInfoHeader
                 .findViewById(R.id.contacts_info_friends_description);
-        mUserGender = (ImageView) contactsInfoHeader
+        mUserGender = (ImageView) mContactsInfoHeader
                 .findViewById(R.id.contacts_info_gender_pic);
-        mUserAstro = (ImageView) contactsInfoHeader
+        mUserAstro = (ImageView) mContactsInfoHeader
                 .findViewById(R.id.contacts_info_astro_pic);
-        mUserHobby = (ImageView) contactsInfoHeader
+        mUserHobby = (ImageView) mContactsInfoHeader
                 .findViewById(R.id.contacts_info_hobby_pic);
 
         mListView = (ListView) findViewById(R.id.contacts_info_listview);
-        mListView.addHeaderView(contactsInfoHeader);
+        mListView.addHeaderView(mContactsInfoHeader);
         mListViewAdapter = new DynamicInfoListAdapter(this);
         mListViewAdapter.setCommentDataSource(mCommentEntrys);
         mListView.setAdapter(mListViewAdapter);
@@ -188,6 +205,8 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         SharedPreferences prefs = this.getSharedPreferences(
                 CommonDataStructure.PREFS_LAIQIAN_DEFAULT, MODE_PRIVATE);
         mAuthorUid = prefs.getString(CommonDataStructure.UID, "");
+        mBackgroundPicName = prefs.getString(
+                CommonDataStructure.BACKGROUND_PIC, "");
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
                 .availableProcessors() * POOL_SIZE);
 
@@ -208,6 +227,35 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
     }
 
     @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+
+        SharedPreferences prefs = this.getSharedPreferences(
+                CommonDataStructure.PREFS_LAIQIAN_DEFAULT, MODE_PRIVATE);
+        mBackgroundPicName = prefs.getString(
+                CommonDataStructure.BACKGROUND_PIC, "");
+
+        mContactsInfoHeaderHeight = mContactsInfoHeader.getMeasuredHeight();
+        mContactsInfoHeaderWidth = mContactsInfoHeader.getMeasuredWidth();
+        Bitmap thumbHeader;
+        if (mBackgroundPicName == null || mBackgroundPicName.length() == 0) {
+            thumbHeader = BitmapFactory.decodeResource(getResources(),
+                    R.drawable.person_default_bkg);
+        } else {
+            File backgroundPic = new File(
+                    CommonDataStructure.BACKGROUND_PICS_DIR_URL,
+                    mBackgroundPicName);
+            thumbHeader = Utils.decodeThumbnail(
+                    backgroundPic.getAbsolutePath(), null,
+                    Utils.mThumbPhotoWidth);
+        }
+
+        Bitmap cropHeader = Utils.cropImages(thumbHeader,
+                mContactsInfoHeaderWidth, mContactsInfoHeaderHeight, true);
+        mHeaderLayout.setBackground(ImageUtils.bitmapToDrawable(cropHeader));
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         getContentResolver().unregisterContentObserver(mChangeObserver);
@@ -220,9 +268,15 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
             this.finish();
             break;
         }
+        case R.id.contacts_info_head_01: {
+            if (mUserInfoUid.equalsIgnoreCase(mAuthorUid)) {
+                showBackgroundPicsPicker(this);
+            }
+            break;
+        }
         case R.id.chat_msg_person_pic: {
             if (mUserInfoUid.equalsIgnoreCase(mAuthorUid)) {
-                showPicturePicker(this, true);
+                showHeaderPicsPicker(this, true);
             }
             if (mCropPhoto != null) {
                 mCropPhoto = null;
@@ -240,6 +294,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
     }
 
     private void initOriginData() {
+        mHeaderLayout01.setOnClickListener(this);
         mReturnBtn.setOnClickListener(this);
         mUserPic.setOnClickListener(this);
         if (mUserHeadPic != null) {
@@ -304,6 +359,10 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         } else {
             mUserHobby.setImageResource(R.drawable.ic_male_selected);
         }
+
+        int height = mContactsInfoHeader.getMeasuredHeight();
+        int width = mContactsInfoHeader.getMeasuredWidth();
+        Log.e(TAG, "nannan height = " + height + " width = " + width);
     }
 
     private Bitmap loadUserHeadPicFromDB(String uid) {
@@ -363,6 +422,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
             int gender = Integer.valueOf(cursor.getInt(9));
             int astro = Integer.valueOf(cursor.getInt(10));
             int hobby = Integer.valueOf(cursor.getInt(11));
+            String headerBkg = cursor.getString(12);
 
             userInfo.setUid(uid);
             userInfo.setPhoneNum(phoneNum);
@@ -376,6 +436,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
             userInfo.setFirstDirectFriend(firstDirectFriend);
             userInfo.setDirectFriends(directFriends);
             userInfo.setDirectFriendsCount(directFriendsCount);
+            userInfo.setHeaderBkgIndex(headerBkg);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -486,13 +547,46 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
                 break;
             }
 
+            case CHOOSE_BACKGROUND_PICTURE: {
+                String localPath = data.getExtras().getString(
+                        MarrySocialDBHelper.KEY_PHOTO_LOCAL_PATH);
+                Bitmap thumbHeader = Utils.decodeThumbnail(localPath, null,
+                        Utils.mThumbPhotoWidth);
+                Bitmap cropHeader = Utils.cropImages(thumbHeader,
+                        mContactsInfoHeaderWidth, mContactsInfoHeaderHeight,
+                        true);
+                mHeaderLayout.setBackground(ImageUtils
+                        .bitmapToDrawable(cropHeader));
+                break;
+            }
+
             default:
                 break;
             }
         }
     }
 
-    public void showPicturePicker(Context context, boolean isCrop) {
+    private void showBackgroundPicsPicker(Context context) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setItems(new String[] { "更换相册封面" },
+                new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                        case CHANGE_HEAD_BACKGROUND: {
+                            startToChooseBackgroundPic();
+                            break;
+                        }
+                        default:
+                            break;
+                        }
+                    }
+                });
+        builder.create().show();
+    }
+
+    private void showHeaderPicsPicker(Context context, boolean isCrop) {
         final boolean needCrop = isCrop;
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("图片来源");
@@ -609,6 +703,27 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
 
     }
 
+    class UploadHeadBackground implements Runnable {
+
+        private String uid;
+        private String photonum;
+
+        public UploadHeadBackground(String uid, String photonum) {
+            this.uid = uid;
+            this.photonum = photonum;
+        }
+
+        @Override
+        public void run() {
+            boolean result = Utils.uploadHeaderBackground(
+                    CommonDataStructure.URL_PROFILE_BACKGROUND, mAuthorUid,
+                    photonum);
+
+            mHandler.sendEmptyMessage(UPLOAD_FINISH);
+        }
+
+    }
+
     private void insertHeadPicToHeadPicsDB(
             CommonDataStructure.UploadHeadPicResultEntry headPic) {
         ContentValues insertValues = new ContentValues();
@@ -683,5 +798,10 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
             handler.sendEmptyMessage(RELOAD_DATA_SOURCE);
             Log.e(TAG, "nannan onChange()..");
         }
+    }
+
+    private void startToChooseBackgroundPic() {
+        Intent intent = new Intent(this, ChooseHeaderBackgroundActivity.class);
+        startActivityForResult(intent, CHOOSE_BACKGROUND_PICTURE);
     }
 }

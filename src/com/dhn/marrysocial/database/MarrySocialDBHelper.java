@@ -20,6 +20,7 @@ public class MarrySocialDBHelper {
     public static final String DATABASE_CHATS_TABLE = "chats";
     public static final String DATABASE_BRIEF_CHAT_TABLE = "briefchat";
     public static final String DATABASE_HEAD_PICS_TABLE = "headpics";
+    public static final String DATABASE_HEAD_BACKGROUND_PICS_TABLE = "headbackgroundpics";
     
     public static final int DATABASE_VERSION = 1;
 
@@ -46,6 +47,7 @@ public class MarrySocialDBHelper {
     public static final String KEY_DIRECT_FRIENDS = "directfriends";
     public static final String KEY_FIRST_DIRECT_FRIEND = "firstdirectfriend";
     public static final String KEY_INDIRECT_ID = "indirect_id";
+    public static final String KEY_HEADER_BACKGROUND_INDEX = "header_background_index";
 
     // for comments table
     public static final String KEY_ID = "_id";
@@ -88,7 +90,7 @@ public class MarrySocialDBHelper {
     private static final String DATABASE_CREATE_CONTACTS = "create table contacts ( "
             + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, phoneNum text, nikename text, realname text, "
             + "hobby integer, gender integer, astro integer, directfriendscount integer, "
-            + "firstdirectfriend text, directfriends text, indirect_id text, avatar integer )";
+            + "firstdirectfriend text, directfriends text, indirect_id text, avatar integer, header_background_index text )";
 
     private static final String DATABASE_CREATE_COMMENTS = "create table comments ( "
             + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, bucket_id text, comment_id text, "
@@ -119,6 +121,10 @@ public class MarrySocialDBHelper {
     private static final String DATABASE_CREATE_HEAD_PICS = "create table headpics ("
             + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, headpicbitmap blob, "
             + "photo_remote_org_path text, photo_remote_thumb_path text, current_status integer )";
+
+    private static final String DATABASE_CREATE_HEAD_BACKGROUND_PICS = "create table headbackgroundpics ("
+            + "_id integer PRIMARY KEY AUTOINCREMENT, photo_name text, photo_local_path text, "
+            + "photo_remote_org_path text, header_background_index text, current_status integer )";
 
     private final Context mContext;
     private DataBaseOpenHelper mDataBaseHelper;
@@ -156,6 +162,7 @@ public class MarrySocialDBHelper {
             db.execSQL(DATABASE_CREATE_CHATS);
             db.execSQL(DATABASE_CREATE_BRIEF_CHAT);
             db.execSQL(DATABASE_CREATE_HEAD_PICS);
+            db.execSQL(DATABASE_CREATE_HEAD_BACKGROUND_PICS);
             Log.e(TAG, "nannan onCreate");
         }
 

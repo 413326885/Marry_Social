@@ -46,10 +46,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:paddingLeft="20dp"
-            android:paddingRight="40dp"
+            android:layout_marginRight="-10dp"
             android:layout_toLeftOf="@id/chat_msg_person_pic"
             android:background="@drawable/chat_to_bkg_selector"
             android:clickable="true"
@@ -57,7 +54,7 @@
             android:gravity="left|center"
             android:lineSpacingExtra="2dp"
             android:minHeight="50dp"
-            android:textColor="#99000000"
+            android:textColor="#ffffff"
             android:textSize="15sp" />
     </RelativeLayout>
 

@@ -3,6 +3,7 @@ package com.dhn.marrysocial.common;
 import java.io.File;
 import java.util.ArrayList;
 
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
 
@@ -17,10 +18,13 @@ public class CommonDataStructure {
     public static final String AUTHOR_NAME = "author_name";
     public static final String COMMENT_ID = "tid";
     public static final String TOUID = "touid";
+    public static final String BACKGROUND_PIC = "background_pic";
+    public static final String BACKGROUD_PIC_NUM = "picnum";
 
     public static final String IMAGE_CACHE_DIR = ".com.dhn.marrysocial";
     public static final String DOWNLOAD_PICS_DIR = "downloadPics";
     public static final String HEAD_PICS_DIR = "headPics";
+    public static final String BACKGROUND_PICS_DIR = "backgroundPics";
 
     public static final String HEAD_PICS_ORG_PATH = "http://static.pkjiao.com/avatar/";
     public static final String HEAD_PICS_THUMB_PATH = "http://static.pkjiao.com/102x102/avatar/";
@@ -33,6 +37,10 @@ public class CommonDataStructure {
             .getExternalStorageDirectory().getAbsolutePath()
             + File.separator
             + IMAGE_CACHE_DIR + File.separator + HEAD_PICS_DIR;
+    public static final String BACKGROUND_PICS_DIR_URL = Environment
+            .getExternalStorageDirectory().getAbsolutePath()
+            + File.separator
+            + IMAGE_CACHE_DIR + File.separator + BACKGROUND_PICS_DIR;
 
     public static final String HEAD_PIC_NAME = "head_pic_name";
     public static final String HEAD_PIC_CROP_NAME = "head_pic_crop_name";
@@ -141,6 +149,10 @@ public class CommonDataStructure {
             + "FY4U0VTZWUraEc4Rlk9IiwidmFsdWUiOiJTdHV2bzlpUnNVXC9tcFJMU0JYSU03Z2c4RDAyWmZEdjVodjdyRGhmUkt"
             + "cL2c9IiwibWFjIjoiYTVlNjMwZGY0MzUxMDg2MDY4MmNkYzQ0N2NmNzk4Y2E3ZmVhNDFhMjg4YzAxMTg2MmRmMmY4MmYyZmM0ZTA3YyJ9";
 
+    public static final String CMD_PROFILE_BACKGROUND = "eyJpdiI6ImxpbEllOWxpazR6UndqRjJ0bmJ3UTBLSm84cW41"
+            + "YitYeW13a2JGeVh4MjQ9IiwidmFsdWUiOiJDKzV1WklyMldNTXBzcVV4cDl4ZDdpM1ZmbkxUYXRzdVhWaVNZZjJMcG"
+            + "RzPSIsIm1hYyI6IjBmNTBkMmEwMjg3MjZjYWY4NzVlOGU3YzNkMGU0MmRhZTRkMWQxN2JhN2Q4NTM4OTJkNjViNjc0ZmZhNzNjNjUifQ==";
+
     public static final String URL_UPLOAD_COMMON = "http://www.pkjiao.com/verify/post/";
 
     public static final String URL_TOKEN_CHECK = URL_UPLOAD_COMMON
@@ -186,6 +198,8 @@ public class CommonDataStructure {
     public static final String URL_GET_USER_HEAD_PIC = URL_UPLOAD_COMMON
             + CMD_GET_USER_HEAD_PIC;
     public static final String URL_UPLOAD_HEAD_PIC = "http://www.pkjiao.com/upload/avatar";
+    public static final String URL_PROFILE_BACKGROUND = URL_UPLOAD_COMMON
+            + CMD_PROFILE_BACKGROUND;
 
     public static final Uri COMMENTURL = Uri.parse("content://"
             + DBContentChangeProvider.AUTHORITY + "/"
@@ -214,6 +228,10 @@ public class CommonDataStructure {
     public static final Uri HEADPICSURL = Uri.parse("content://"
             + DBContentChangeProvider.AUTHORITY + "/"
             + MarrySocialDBHelper.DATABASE_HEAD_PICS_TABLE);
+
+    public static final Uri HEADBACKGROUNDURL = Uri.parse("content://"
+            + DBContentChangeProvider.AUTHORITY + "/"
+            + MarrySocialDBHelper.DATABASE_HEAD_BACKGROUND_PICS_TABLE);
 
     public static final String REMOTE_ORG_PHOTO_PATH = "http://static.pkjiao.com/topic/";
     public static final String REMOTE_THUMB_PHOTO_PATH = "http://static.pkjiao.com/thumbnail/topic/";
@@ -247,6 +265,12 @@ public class CommonDataStructure {
     // public String contact_sortKey;
     // }
 
+    public static String[] HEADER_BKG_PATH = {
+            "http://static.pkjiao.com/sysbackground/1.jpg",
+            "http://static.pkjiao.com/sysbackground/2.jpg",
+            "http://static.pkjiao.com/sysbackground/3.jpg",
+            "http://static.pkjiao.com/sysbackground/4.jpg" };
+
     public static class UploadImageResultEntry {
         public boolean result;
         public int pos;
@@ -272,5 +296,13 @@ public class CommonDataStructure {
         public String commentId;
         public String replyId;
         public String addTime;
+    }
+
+    public static class HeaderBackgroundEntry {
+        public String photoName;
+        public String photoLocalPath;
+        public String photoRemotePath;
+        public String currentStatus;
+        public Bitmap bkgBitmap;
     }
 }

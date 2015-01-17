@@ -20,6 +20,7 @@ public class DBContentChangeProvider extends ContentProvider {
     private static final int KEY_CHATS = 5;
     private static final int KEY_BRIEFCHATS = 6;
     private static final int KEY_HEADPICS = 7;
+    private static final int KEY_HEADBACKGROUND = 8;
 
     public static final String AUTHORITY = "com.dhn.marrysocial.provider";
 
@@ -36,6 +37,7 @@ public class DBContentChangeProvider extends ContentProvider {
         mMatcher.addURI(AUTHORITY, MarrySocialDBHelper.DATABASE_CHATS_TABLE, KEY_CHATS);
         mMatcher.addURI(AUTHORITY, MarrySocialDBHelper.DATABASE_BRIEF_CHAT_TABLE, KEY_BRIEFCHATS);
         mMatcher.addURI(AUTHORITY, MarrySocialDBHelper.DATABASE_HEAD_PICS_TABLE, KEY_HEADPICS);
+        mMatcher.addURI(AUTHORITY, MarrySocialDBHelper.DATABASE_HEAD_BACKGROUND_PICS_TABLE, KEY_HEADBACKGROUND);
         return true;
     }
 
@@ -88,6 +90,11 @@ public class DBContentChangeProvider extends ContentProvider {
                 this.getContext().getContentResolver().notifyChange(uri, null);
                 return ContentUris.withAppendedId(uri, rowId);
             }
+            case KEY_HEADBACKGROUND: {
+                long rowId = mDBHelper.insert(MarrySocialDBHelper.DATABASE_HEAD_BACKGROUND_PICS_TABLE, values);
+                this.getContext().getContentResolver().notifyChange(uri, null);
+                return ContentUris.withAppendedId(uri, rowId);
+            }
             default:
                 break;
         }
@@ -133,6 +140,11 @@ public class DBContentChangeProvider extends ContentProvider {
             this.getContext().getContentResolver().notifyChange(uri, null);
             return rowId;
         }
+        case KEY_HEADBACKGROUND: {
+            int rowId = mDBHelper.delete(MarrySocialDBHelper.DATABASE_HEAD_BACKGROUND_PICS_TABLE, selection, selectionArgs);
+            this.getContext().getContentResolver().notifyChange(uri, null);
+            return rowId;
+        }
         default:
             break;
     }
@@ -175,6 +187,11 @@ public class DBContentChangeProvider extends ContentProvider {
         }
         case KEY_HEADPICS: {
             int rowId = mDBHelper.update(MarrySocialDBHelper.DATABASE_HEAD_PICS_TABLE, values, selection, selectionArgs);
+            this.getContext().getContentResolver().notifyChange(uri, null);
+            return rowId;
+        }
+        case KEY_HEADBACKGROUND: {
+            int rowId = mDBHelper.update(MarrySocialDBHelper.DATABASE_HEAD_BACKGROUND_PICS_TABLE, values, selection, selectionArgs);
             this.getContext().getContentResolver().notifyChange(uri, null);
             return rowId;
         }

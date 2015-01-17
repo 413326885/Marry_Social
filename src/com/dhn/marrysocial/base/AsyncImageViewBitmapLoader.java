@@ -27,12 +27,12 @@ public class AsyncImageViewBitmapLoader {
     @SuppressWarnings("unused")
     private static final String TAG = "AsyncImageViewBitmapLoader";
 
-    private final String[] IMAGES_PROJECTION = { MarrySocialDBHelper.KEY_PHOTO_NAME,
+    private final String[] IMAGES_PROJECTION = {
+            MarrySocialDBHelper.KEY_PHOTO_NAME,
             MarrySocialDBHelper.KEY_PHOTO_LOCAL_PATH,
             MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH,
             MarrySocialDBHelper.KEY_PHOTO_REMOTE_THUMB_PATH,
-            MarrySocialDBHelper.KEY_PHOTO_ID
-            };
+            MarrySocialDBHelper.KEY_PHOTO_ID };
 
     private MemoryCache mMemoryCache = new MemoryCache();
     private FileCache mFileCache;
@@ -95,17 +95,19 @@ public class AsyncImageViewBitmapLoader {
 
             if (commentId != null && Integer.valueOf(commentId) > 0) {
                 whereClause = MarrySocialDBHelper.KEY_UID + " = " + uId
-                        + " AND " + MarrySocialDBHelper.KEY_COMMENT_ID + " = " + commentId
-                        + " AND " + MarrySocialDBHelper.KEY_PHOTO_POS + " = " + photoPos;
+                        + " AND " + MarrySocialDBHelper.KEY_COMMENT_ID + " = "
+                        + commentId + " AND "
+                        + MarrySocialDBHelper.KEY_PHOTO_POS + " = " + photoPos;
             } else {
                 whereClause = MarrySocialDBHelper.KEY_UID + " = " + uId
-                        + " AND " + MarrySocialDBHelper.KEY_BUCKET_ID + " = " + bucketId
-                        + " AND " + MarrySocialDBHelper.KEY_PHOTO_POS + " = " + photoPos;
+                        + " AND " + MarrySocialDBHelper.KEY_BUCKET_ID + " = "
+                        + bucketId + " AND "
+                        + MarrySocialDBHelper.KEY_PHOTO_POS + " = " + photoPos;
             }
 
-            cursor = mDBHelper.query(
-                    MarrySocialDBHelper.DATABASE_IMAGES_TABLE,
-                    IMAGES_PROJECTION, whereClause, null, null, null, null, null);
+            cursor = mDBHelper.query(MarrySocialDBHelper.DATABASE_IMAGES_TABLE,
+                    IMAGES_PROJECTION, whereClause, null, null, null, null,
+                    null);
             if (cursor == null) {
                 Log.e(TAG, "nannan getBitmap()..  cursor == null");
                 return null;
@@ -121,7 +123,6 @@ public class AsyncImageViewBitmapLoader {
                 photoId = cursor.getString(4);
             }
 
-
             Bitmap thumbBitmap = null;
             Bitmap cropBitmap = null;
             if (photoLocalPath != null && photoLocalPath.length() != 0) {
@@ -132,10 +133,11 @@ public class AsyncImageViewBitmapLoader {
                 return cropBitmap;
             }
 
-         // 最后从指定的url中下载图片
-            File imageFile = Utils.downloadImageAndCache(photoRemoteThumbPath);
-            thumbBitmap = Utils.decodeThumbnail(imageFile.getAbsolutePath(), null,
-                    Utils.mThumbPhotoWidth);
+            // 最后从指定的url中下载图片
+            File imageFile = Utils.downloadImageAndCache(photoRemoteThumbPath,
+                    CommonDataStructure.DOWNLOAD_PICS_DIR_URL);
+            thumbBitmap = Utils.decodeThumbnail(imageFile.getAbsolutePath(),
+                    null, Utils.mThumbPhotoWidth);
             cropBitmap = Utils.resizeAndCropCenter(thumbBitmap,
                     Utils.mCropCenterThumbPhotoWidth, true);
 
@@ -153,24 +155,24 @@ public class AsyncImageViewBitmapLoader {
 
         }
         // // 最后从指定的url中下载图片
-//         try {
-//         Bitmap bitmap = null;
-//         URL imageUrl = new URL(url);
-//         HttpURLConnection conn = (HttpURLConnection) imageUrl
-//         .openConnection();
-//         conn.setConnectTimeout(30000);
-//         conn.setReadTimeout(30000);
-//         conn.setInstanceFollowRedirects(true);
-//         InputStream is = conn.getInputStream();
-//         OutputStream os = new FileOutputStream(f);
-//         CopyStream(is, os);
-//         os.close();
-//         bitmap = decodeFile(f);
-//         return bitmap;
-//         } catch (Exception ex) {
-//         ex.printStackTrace();
-//         return null;
-//         }
+        // try {
+        // Bitmap bitmap = null;
+        // URL imageUrl = new URL(url);
+        // HttpURLConnection conn = (HttpURLConnection) imageUrl
+        // .openConnection();
+        // conn.setConnectTimeout(30000);
+        // conn.setReadTimeout(30000);
+        // conn.setInstanceFollowRedirects(true);
+        // InputStream is = conn.getInputStream();
+        // OutputStream os = new FileOutputStream(f);
+        // CopyStream(is, os);
+        // os.close();
+        // bitmap = decodeFile(f);
+        // return bitmap;
+        // } catch (Exception ex) {
+        // ex.printStackTrace();
+        // return null;
+        // }
         return null;
     }
 
@@ -291,8 +293,8 @@ public class AsyncImageViewBitmapLoader {
         }
     }
 
-    private void updateImageStatusOfImagesDB(String uid, String comment_id, String photo_id,
-            String localPath, int updateStatus) {
+    private void updateImageStatusOfImagesDB(String uid, String comment_id,
+            String photo_id, String localPath, int updateStatus) {
         String whereClause = MarrySocialDBHelper.KEY_UID + " = " + uid
                 + " AND " + MarrySocialDBHelper.KEY_COMMENT_ID + " = "
                 + comment_id + " AND " + MarrySocialDBHelper.KEY_PHOTO_ID

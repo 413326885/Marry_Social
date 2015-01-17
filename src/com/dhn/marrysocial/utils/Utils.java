@@ -223,6 +223,30 @@ public class Utils {
         return target;
     }
 
+    public static Bitmap cropImages(Bitmap bitmap, int cropWidth, int cropHeight,
+            boolean recycle) {
+        int w = bitmap.getWidth();
+        int h = bitmap.getHeight();
+        if (w == cropWidth && h == cropHeight)
+            return bitmap;
+
+        // scale the image so that the shorter side equals to the target;
+        // the longer side will be center-cropped.
+        float scale = (float) Math.max((float) cropWidth / w, (float) cropHeight / h);
+
+        Bitmap target = Bitmap.createBitmap(cropWidth, cropHeight, getConfig(bitmap));
+        int width = Math.round(scale * bitmap.getWidth());
+        int height = Math.round(scale * bitmap.getHeight());
+        Canvas canvas = new Canvas(target);
+        canvas.translate((cropWidth - width) / 2f, (cropHeight - height) / 2f);
+        canvas.scale(scale, scale);
+        Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG | Paint.DITHER_FLAG);
+        canvas.drawBitmap(bitmap, 0, 0, paint);
+        if (recycle)
+            bitmap.recycle();
+        return target;
+    }
+
     public static void recycleSilently(Bitmap bitmap) {
         if (bitmap == null)
             return;
@@ -657,6 +681,86 @@ public class Utils {
         }
 
         return resultEntry;
+    }
+
+    public static boolean uploadHeaderBackground(String RequestURL,
+            String uId, String picnum) {
+
+        boolean resultCode = false;
+
+        URL postUrl = null;
+        DataOutputStream outputStream = null;
+        HttpURLConnection connection = null;
+        OutputStreamWriter outputWriter = null;
+        BufferedReader inputReader = null;
+
+        try {
+            postUrl = new URL(RequestURL);
+            if (postUrl == null)
+                return resultCode;
+
+            connection = (HttpURLConnection) postUrl.openConnection();
+            if (connection == null)
+                return resultCode;
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestMethod("POST");
+            connection.setUseCaches(false);
+            connection.setInstanceFollowRedirects(true);
+            connection.setRequestProperty("Content-Type",
+                    "application/x-www-form-urlencoded");
+
+            connection.connect();
+
+            outputStream = new DataOutputStream(connection.getOutputStream());
+            JSONObject commentContent = new JSONObject();
+            commentContent.put(CommonDataStructure.UID, uId);
+            commentContent.put(CommonDataStructure.BACKGROUD_PIC_NUM, picnum);
+
+            String content = "jsondata="
+                    + URLEncoder.encode(commentContent.toString(), "UTF-8");
+            Log.e(TAG, "nannan commentContent = " + commentContent.toString());
+            Log.e(TAG, "nannan content = " + content);
+            if (content == null)
+                return resultCode;
+
+            outputStream.writeBytes(content);
+            outputStream.flush();
+            outputStream.close();
+
+            inputReader = new BufferedReader(new InputStreamReader(
+                    connection.getInputStream()));
+            StringBuffer resp = new StringBuffer();
+            String line = null;
+            while ((line = inputReader.readLine()) != null) {
+                resp.append(line);
+            }
+            // String line = inputReader.readLine();
+            // inputReader.close();
+
+            Log.e(TAG, "nannan resp = " + resp.toString());
+            JSONObject response = new JSONObject(resp.toString());
+            String code = response.getString("code");
+            if (!"200".equalsIgnoreCase(code)) {
+                return resultCode;
+            }
+
+            resultCode = response.getBoolean("data");
+
+            inputReader.close();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+        return resultCode;
     }
 
     public static String uploadCommentContentFile(String RequestURL,
@@ -1970,18 +2074,14 @@ public class Utils {
         Toast.makeText(context, resId, Toast.LENGTH_SHORT).show();
     }
 
-    public static File getCachedImageFile(String imageUri) {
+    public static File getCachedImageFile(String imageUri, String cacheFilePath) {
         File imageFile = null;
         try {
             if (Environment.getExternalStorageState().equals(
                     Environment.MEDIA_MOUNTED)) {
-                File sdCardDir = Environment.getExternalStorageDirectory();
                 String imageName = getImageName(imageUri);
 
-                File cacheDir = new File(sdCardDir.getAbsolutePath()
-                        + File.separator + CommonDataStructure.IMAGE_CACHE_DIR
-                        + File.separator
-                        + CommonDataStructure.DOWNLOAD_PICS_DIR);
+                File cacheDir = new File(cacheFilePath);
                 if (!cacheDir.exists()) {
                     cacheDir.mkdirs();
                     File nomedia = new File(cacheDir, ".nomedia");
@@ -2008,11 +2108,11 @@ public class Utils {
         return path.substring(index + 1);
     }
 
-    public static File downloadImageAndCache(String RequestURL) {
+    public static File downloadImageAndCache(String RequestURL, String cacheFilePath) {
 
         URL postUrl = null;
         HttpURLConnection connection = null;
-        File imageFile = getCachedImageFile(RequestURL);
+        File imageFile = getCachedImageFile(RequestURL, cacheFilePath);
 
         try {
             postUrl = new URL(RequestURL);
