@@ -149,9 +149,9 @@ public class CommonDataStructure {
             + "FY4U0VTZWUraEc4Rlk9IiwidmFsdWUiOiJTdHV2bzlpUnNVXC9tcFJMU0JYSU03Z2c4RDAyWmZEdjVodjdyRGhmUkt"
             + "cL2c9IiwibWFjIjoiYTVlNjMwZGY0MzUxMDg2MDY4MmNkYzQ0N2NmNzk4Y2E3ZmVhNDFhMjg4YzAxMTg2MmRmMmY4MmYyZmM0ZTA3YyJ9";
 
-    public static final String CMD_PROFILE_BACKGROUND = "eyJpdiI6ImxpbEllOWxpazR6UndqRjJ0bmJ3UTBLSm84cW41"
-            + "YitYeW13a2JGeVh4MjQ9IiwidmFsdWUiOiJDKzV1WklyMldNTXBzcVV4cDl4ZDdpM1ZmbkxUYXRzdVhWaVNZZjJMcG"
-            + "RzPSIsIm1hYyI6IjBmNTBkMmEwMjg3MjZjYWY4NzVlOGU3YzNkMGU0MmRhZTRkMWQxN2JhN2Q4NTM4OTJkNjViNjc0ZmZhNzNjNjUifQ==";
+    public static final String CMD_PROFILE_BACKGROUND = "eyJpdiI6IkFtbGlhRnNcL0R0aENDbXFQMmRKdExPVnJtc1o1"
+            + "UGoyZ2dnSFpOdXNGc2tRPSIsInZhbHVlIjoiSnpZN01MZVd2RldENWJCZ21jQ1wvUmk5T2toQmRDRDFmd2xNTWdhSm"
+            + "1CVlE9IiwibWFjIjoiZDU5ODZmNWVkYjBkMGEyYzYyOWI0OWRlNWNhNWUxYjlhNjNjOWMxNjk0OGY1NDZiODBhZmJmN2E3MDc2MjY4OCJ9";
 
     public static final String URL_UPLOAD_COMMON = "http://www.pkjiao.com/verify/post/";
 
@@ -252,7 +252,7 @@ public class CommonDataStructure {
     public static final int INVALID_NUM = -1;
     public static final String INVALID_STR = "-1";
 
-    public static final String INDIRECTIDS = "2,3,4,5,6,7,8,20";
+    public static final String INDIRECTIDS = "4";
 
     // public static final Uri REPLYURL = Uri.parse("content://"
     // + DataSetProvider.AUTHORITY + "/"

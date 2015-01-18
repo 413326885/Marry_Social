@@ -29,7 +29,7 @@ public class MarrySocialDBHelper {
     public static final int NEED_UPLOAD_TO_CLOUD = 1;
     public static final int DOWNLOAD_FROM_CLOUD_SUCCESS = 2;
     public static final int NEED_DELETE_FROM_CLOUD = 3;
-    public static final int NEED_DOWNLOAD_FROM_CLOUD = 3;
+    public static final int NEED_DOWNLOAD_FROM_CLOUD = 4;
 
     public static final int BRAVO_CANCEL = 0;
     public static final int BRAVO_CONFIRM = 1;

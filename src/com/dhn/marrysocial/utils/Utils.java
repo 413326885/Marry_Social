@@ -705,6 +705,7 @@ public class Utils {
 
             connection.setDoOutput(true);
             connection.setDoInput(true);
+            connection.setConnectTimeout(TIME_OUT);
             connection.setRequestMethod("POST");
             connection.setUseCaches(false);
             connection.setInstanceFollowRedirects(true);

@@ -252,6 +252,8 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
 
+        mUserInfo = loadUserInfoFromDB(mUserInfoUid);
+
         mContactsInfoHeaderHeight = mContactsInfoHeader.getMeasuredHeight();
         mContactsInfoHeaderWidth = mContactsInfoHeader.getMeasuredWidth();
 
@@ -374,9 +376,6 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
             mUserHobby.setImageResource(R.drawable.ic_male_selected);
         }
 
-        int height = mContactsInfoHeader.getMeasuredHeight();
-        int width = mContactsInfoHeader.getMeasuredWidth();
-        Log.e(TAG, "nannan height = " + height + " width = " + width);
     }
 
     private Bitmap loadUserHeadPicFromDB(String uid) {
@@ -566,9 +565,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
                         MarrySocialDBHelper.KEY_PHOTO_LOCAL_PATH);
                 String headerBkgIndex = data.getExtras().getString(
                         MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX);
-                String photoRemotePath = data.getExtras().getString(
-                        MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH);
-                updateHeaderBkgIndexToHeaderBkgDB(localPath, photoRemotePath, headerBkgIndex);
+                updateHeaderBkgIndexToContactsDB(mAuthorUid, headerBkgIndex);
                 Bitmap thumbHeader = Utils.decodeThumbnail(localPath, null,
                         Utils.mThumbPhotoWidth);
                 Bitmap cropHeader = Utils.cropImages(thumbHeader,
@@ -576,6 +573,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
                         true);
                 mHeaderLayout.setBackground(ImageUtils
                         .bitmapToDrawable(cropHeader));
+                mExecutorService.execute(new UploadHeadBackground(mAuthorUid, headerBkgIndex));
                 break;
             }
 
@@ -585,16 +583,14 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         }
     }
 
-    private void updateHeaderBkgIndexToHeaderBkgDB(String localpath,
-            String remotepath, String headerebkgindex) {
+    private void updateHeaderBkgIndexToContactsDB(String uid,
+            String headerebkgindex) {
         ContentValues values = new ContentValues();
-        values.put(MarrySocialDBHelper.KEY_PHOTO_LOCAL_PATH, localpath);
-        values.put(MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX, headerebkgindex);
+        values.put(MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX,
+                headerebkgindex);
 
-        String whereClause = MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH
-                + " = " + '"' + remotepath + '"';
-        ContentResolver resolver = getContentResolver();
-        resolver.update(CommonDataStructure.HEADBACKGROUNDURL, values,
+        String whereClause = MarrySocialDBHelper.KEY_UID + " = " + uid;
+        mDBHelper.update(MarrySocialDBHelper.DATABASE_CONTACTS_TABLE, values,
                 whereClause, null);
     }
 
@@ -747,11 +743,9 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
 
         @Override
         public void run() {
-            boolean result = Utils.uploadHeaderBackground(
-                    CommonDataStructure.URL_PROFILE_BACKGROUND, mAuthorUid,
+            Utils.uploadHeaderBackground(
+                    CommonDataStructure.URL_PROFILE_BACKGROUND, uid,
                     photonum);
-
-            mHandler.sendEmptyMessage(UPLOAD_FINISH);
         }
 
     }

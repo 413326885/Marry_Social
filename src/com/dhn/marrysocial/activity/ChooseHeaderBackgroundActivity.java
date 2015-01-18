@@ -45,7 +45,7 @@ public class ChooseHeaderBackgroundActivity extends Activity implements
             MarrySocialDBHelper.KEY_PHOTO_LOCAL_PATH,
             MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH,
             MarrySocialDBHelper.KEY_CURRENT_STATUS,
-            MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX};
+            MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX };
 
     static {
         File bkgDir = new File(CommonDataStructure.BACKGROUND_PICS_DIR_URL);
@@ -59,9 +59,6 @@ public class ChooseHeaderBackgroundActivity extends Activity implements
         }
     }
 
-    private String mUid;
-    private String mAuthorName;
-    private String mSelectedBackgroundPicsName;
     private RelativeLayout mChooseBkgReturn;
     private GridView mChooseBkgPics;
     private ProgressDialog mDownloadProgressDialog;
@@ -98,15 +95,6 @@ public class ChooseHeaderBackgroundActivity extends Activity implements
         mDBHelper = MarrySocialDBHelper.newInstance(this);
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
                 .availableProcessors() * POOL_SIZE);
-
-//        generateDBData(); // just for test
-
-        SharedPreferences prefs = this.getSharedPreferences(
-                CommonDataStructure.PREFS_LAIQIAN_DEFAULT, this.MODE_PRIVATE);
-        mUid = prefs.getString(CommonDataStructure.UID, "");
-        mAuthorName = prefs.getString(CommonDataStructure.AUTHOR_NAME, "");
-        mSelectedBackgroundPicsName = prefs.getString(
-                CommonDataStructure.BACKGROUND_PIC, "");
 
         mPhotoViewAdapter = new HeaderBackgroundPhotoViewAdapter(this);
         mPhotoViewAdapter.setDataSource(mHeadBkgEntrys);
@@ -155,6 +143,14 @@ public class ChooseHeaderBackgroundActivity extends Activity implements
             if (bkgEntry.photoLocalPath != null
                     && bkgEntry.photoLocalPath.length() != 0) {
                 imageFile = new File(bkgEntry.photoLocalPath);
+                if (!imageFile.exists()) {
+                    imageFile = Utils.downloadImageAndCache(
+                            bkgEntry.photoRemotePath,
+                            CommonDataStructure.BACKGROUND_PICS_DIR_URL);
+                    updateHeaderBkgPathToHeaderBkgDB(
+                            imageFile.getAbsolutePath(),
+                            bkgEntry.photoRemotePath);
+                }
             } else {
                 imageFile = Utils.downloadImageAndCache(
                         bkgEntry.photoRemotePath,
@@ -167,6 +163,7 @@ public class ChooseHeaderBackgroundActivity extends Activity implements
             Bitmap cropBitmap = Utils.resizeAndCropCenter(thumbBitmap,
                     Utils.mCropCenterThumbPhotoWidth, true);
             bkgEntry.bkgBitmap = cropBitmap;
+            bkgEntry.photoLocalPath = imageFile.getAbsolutePath();
             mHeadBkgEntrys.add(bkgEntry);
             mHandler.sendEmptyMessage(DOWNLOAD_BKG_FINISH);
 
@@ -174,16 +171,16 @@ public class ChooseHeaderBackgroundActivity extends Activity implements
 
     }
 
-    private void generateDBData() {
-        int index = 1;
-        for (String remote : CommonDataStructure.HEADER_BKG_PATH) {
-            String name = index + ".jpg";
-            if (!isHeaderBkgPathExistInHeaderBkgDB(remote)) {
-                insertHeaderBkgPathToHeaderBkgDB(name, remote, index);
-            }
-            index ++;
-        }
-    }
+//    private void generateDBData() {
+//        int index = 1;
+//        for (String remote : CommonDataStructure.HEADER_BKG_PATH) {
+//            String name = index + ".jpg";
+//            if (!isHeaderBkgPathExistInHeaderBkgDB(remote)) {
+//                insertHeaderBkgPathToHeaderBkgDB(name, remote, index);
+//            }
+//            index++;
+//        }
+//    }
 
     private void insertHeaderBkgPathToHeaderBkgDB(String photoname,
             String remotepath, int picindex) {
@@ -192,7 +189,8 @@ public class ChooseHeaderBackgroundActivity extends Activity implements
         values.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH, remotepath);
         values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 MarrySocialDBHelper.NEED_DOWNLOAD_FROM_CLOUD);
-        values.put(MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX, String.valueOf(picindex));
+        values.put(MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX,
+                String.valueOf(picindex));
         mDBHelper
                 .insert(MarrySocialDBHelper.DATABASE_HEAD_BACKGROUND_PICS_TABLE,
                         values);
@@ -207,9 +205,13 @@ public class ChooseHeaderBackgroundActivity extends Activity implements
 
         String whereClause = MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH
                 + " = " + '"' + remotepath + '"';
-        ContentResolver resolver = getContentResolver();
-        resolver.update(CommonDataStructure.HEADBACKGROUNDURL, values,
-                whereClause, null);
+
+        mDBHelper.update(
+                MarrySocialDBHelper.DATABASE_HEAD_BACKGROUND_PICS_TABLE,
+                values, whereClause, null);
+        // ContentResolver resolver = getContentResolver();
+        // resolver.update(CommonDataStructure.HEADBACKGROUNDURL, values,
+        // whereClause, null);
     }
 
     public boolean isHeaderBkgPathExistInHeaderBkgDB(String remotepath) {
@@ -240,7 +242,8 @@ public class ChooseHeaderBackgroundActivity extends Activity implements
         Cursor cursor = null;
 
         try {
-            String orderBy = MarrySocialDBHelper.KEY_PHOTO_NAME + " ASC";
+            String orderBy = MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX
+                    + " ASC ";
             cursor = mDBHelper.query(
                     MarrySocialDBHelper.DATABASE_HEAD_BACKGROUND_PICS_TABLE,
                     HEAD_BKG_PROJECTION, null, null, null, null, orderBy, null);
@@ -282,23 +285,17 @@ public class ChooseHeaderBackgroundActivity extends Activity implements
             String photoName = mHeadBkgEntrys.get(position).photoName;
             String photoLocalPath = mHeadBkgEntrys.get(position).photoLocalPath;
             String headerBkgIndex = mHeadBkgEntrys.get(position).headerBkgIndex;
-            String photoRemotePath = mHeadBkgEntrys.get(position).photoRemotePath;
-            finishActivity(photoName, photoLocalPath, photoRemotePath, headerBkgIndex);
+            finishActivity(photoName, photoLocalPath, headerBkgIndex);
         }
     };
 
-    private void finishActivity(String photoName, String photoLocalPath, String photoRemotePath, String headerBkgIndex) {
-
-        SharedPreferences prefs = this.getSharedPreferences(
-                CommonDataStructure.PREFS_LAIQIAN_DEFAULT, this.MODE_PRIVATE);
-        Editor editor = prefs.edit();
-        editor.putString(CommonDataStructure.BACKGROUND_PIC, photoName);
-        editor.commit();
+    private void finishActivity(String photoName, String photoLocalPath,
+            String headerBkgIndex) {
 
         Intent data = new Intent();
         data.putExtra(MarrySocialDBHelper.KEY_PHOTO_LOCAL_PATH, photoLocalPath);
-        data.putExtra(MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH, photoRemotePath);
-        data.putExtra(MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX, headerBkgIndex);
+        data.putExtra(MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX,
+                headerBkgIndex);
         setResult(RESULT_OK, data);
         this.finish();
     }
