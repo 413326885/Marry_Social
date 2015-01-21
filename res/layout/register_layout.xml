@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <ImageView
+        android:id="@+id/register_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/ic_edit_unselected" />
+
+    <TextView
+        android:id="@+id/register_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/register_logo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:padding="4dp"
+        android:text="基于好友通讯录的交友应用"
+        android:textSize="20dp" />
+
+    <EditText
+        android:id="@+id/register_phone_num"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/register_description"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:hint="手机号码"
+        android:inputType="phone"
+        android:minWidth="200dp"
+        android:textSize="14dp" />
+
+    <EditText
+        android:id="@+id/register_password"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/register_phone_num"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:hint="输入密码"
+        android:minWidth="200dp"
+        android:textSize="14dp" />
+
+    <RelativeLayout
+        android:id="@+id/verify_code"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/register_password"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp" >
+
+        <EditText
+            android:id="@+id/input_verify_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="输入验证码"
+            android:minWidth="80dp"
+            android:textSize="14dp" />
+
+        <Button
+            android:id="@+id/get_verify_code"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_toRightOf="@id/input_verify_code"
+            android:layout_centerInParent="true"
+            android:background="@drawable/contacts_info_btn_selector"
+            android:clickable="true"
+            android:padding="5dp"
+            android:text="获取验证码"
+            android:textColor="@color/gray"
+            android:textSize="16dp" />
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/register_btn"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/verify_code"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/contacts_info_btn_selector"
+        android:clickable="true"
+        android:padding="5dp"
+        android:text="开启我的新社交"
+        android:textColor="@color/gray"
+        android:textSize="16dp" />
+
+    <RelativeLayout
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/register_btn"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="40dp" >
+
+        <TextView
+            android:id="@+id/has_account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="已有账号"
+            android:textSize="18dp" />
+
+        <Button
+            android:id="@+id/login_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_toRightOf="@id/has_account"
+            android:background="@drawable/contacts_info_btn_selector"
+            android:clickable="true"
+            android:padding="5dp"
+            android:text="登录"
+            android:textColor="@color/gray"
+            android:textSize="16dp" />
+    </RelativeLayout>
+
+</RelativeLayout>

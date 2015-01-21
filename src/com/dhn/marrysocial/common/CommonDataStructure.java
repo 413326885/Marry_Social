@@ -20,6 +20,14 @@ public class CommonDataStructure {
     public static final String TOUID = "touid";
     public static final String BACKGROUND_PIC = "background_pic";
     public static final String BACKGROUD_PIC_NUM = "picnum";
+    public static final String PASSWORD = "password";
+    public static final String MAC = "mac";
+    public static final String PHONE = "phone";
+    public static final String NICKNAME = "nickname";
+    public static final String GENDER = "gender";
+    public static final String ASTRO = "astro";
+    public static final String HOBBY = "hobby";
+    public static final String INTRODUCE = "intro";
 
     public static final String IMAGE_CACHE_DIR = ".com.dhn.marrysocial";
     public static final String DOWNLOAD_PICS_DIR = "downloadPics";
@@ -153,6 +161,18 @@ public class CommonDataStructure {
             + "UGoyZ2dnSFpOdXNGc2tRPSIsInZhbHVlIjoiSnpZN01MZVd2RldENWJCZ21jQ1wvUmk5T2toQmRDRDFmd2xNTWdhSm"
             + "1CVlE9IiwibWFjIjoiZDU5ODZmNWVkYjBkMGEyYzYyOWI0OWRlNWNhNWUxYjlhNjNjOWMxNjk0OGY1NDZiODBhZmJmN2E3MDc2MjY4OCJ9";
 
+    public static final String CMD_USER_REGISTER = "eyJpdiI6IlZmTHNNYUU5dVRkWUVBSVhheFR3dGppcWNnRXpnO"
+            + "GNNejFrS3NwblNtbTA9IiwidmFsdWUiOiJvemVwbUV4TzI2UStjWjFnK21vSXk3ODhYbXpjbk1ESHpkbnhnc1lIcCt"
+            + "zPSIsIm1hYyI6ImNkMTFkYWIyZjBlZTJiMDJmYWU1YTMxM2Y0ZDVjZDM2MzI3OWYwMzVmYzJkYjdjYWYwYTcyMDA4NzVkYzc0OTgifQ==";
+
+    public static final String CMD_USER_LOGIN = "eyJpdiI6InZKYmZ3UWM0RFB2TURwQVdPRDVKcXNmM2xWQWxiU2tPUzIy"
+            + "Qlh0S2pWdEE9IiwidmFsdWUiOiJkYmNCM3FEWFNKTmNWajhSVktaZURoR2FmT25kb2dyc2Qxa2poSjQ0XC9Jdz0iLC"
+            + "JtYWMiOiIyYjgwZjlkNTFkOThmZjI4ZGE3ZDc1ODcxOGIyOTg2NzBjYzViOGNlNmZlZmE0YjBhODg4YzhlYjJmNWM0ZGU4In0=";
+
+    public static final String CMD_UPDATE_USER_INFO = "eyJpdiI6IkxcL28zME00cGxBRkJLM2tMWWcxWEZJU2FmbTlXKz"
+            + "hrZm04ZzM4UnR4bWFvPSIsInZhbHVlIjoiQTRoQXBSZVZzZHU1T3JJcEpcLzVwM05ldEFjZlV4M0ljYjJPVlhjNmF2"
+            + "WkU9IiwibWFjIjoiNGM1MTk2ZDZhNzFlY2UzNDY2ZGJlZjY2M2EwM2JhYTA2ZjllZDc4N2I1ODhmYTBiY2M0YzFlMzU2NjUwZGZmYyJ9";
+
     public static final String URL_UPLOAD_COMMON = "http://www.pkjiao.com/verify/post/";
 
     public static final String URL_TOKEN_CHECK = URL_UPLOAD_COMMON
@@ -200,6 +220,12 @@ public class CommonDataStructure {
     public static final String URL_UPLOAD_HEAD_PIC = "http://www.pkjiao.com/upload/avatar";
     public static final String URL_PROFILE_BACKGROUND = URL_UPLOAD_COMMON
             + CMD_PROFILE_BACKGROUND;
+    public static final String URL_USER_REGISTER = URL_UPLOAD_COMMON
+            + CMD_USER_REGISTER;
+    public static final String URL_USER_LOGIN = URL_UPLOAD_COMMON
+            + CMD_USER_LOGIN;
+    public static final String URL_UPDATE_USER_INFO = URL_UPLOAD_COMMON
+            + CMD_UPDATE_USER_INFO;
 
     public static final Uri COMMENTURL = Uri.parse("content://"
             + DBContentChangeProvider.AUTHORITY + "/"
@@ -253,6 +279,8 @@ public class CommonDataStructure {
     public static final String INVALID_STR = "-1";
 
     public static final String INDIRECTIDS = "4";
+
+    public static final String KEY_SECRET_CODE = "marrysocial";
 
     // public static final Uri REPLYURL = Uri.parse("content://"
     // + DataSetProvider.AUTHORITY + "/"

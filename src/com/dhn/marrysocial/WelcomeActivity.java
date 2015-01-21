@@ -1,5 +1,6 @@
 package com.dhn.marrysocial;
 
+import com.dhn.marrysocial.activity.RegisterActivity;
 import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.services.DownloadIndirectFriendsIntentServices;
 import com.dhn.marrysocial.services.ReadContactsIntentService;
@@ -68,11 +69,17 @@ public class WelcomeActivity extends Activity {
     }
 
     private void redirectToMainActivity() {
-        Intent intent = new Intent(this, MarrySocialMainActivity.class);
+        Intent intent = new Intent(this, RegisterActivity.class);
 //        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
     }
+//    private void redirectToMainActivity() {
+//        Intent intent = new Intent(this, MarrySocialMainActivity.class);
+////        Intent intent = new Intent(this, MainActivity.class);
+//        startActivity(intent);
+//        finish();
+//    }
 
     private void uploadUserContacts() {
 //        Intent serviceIntent = new Intent(this, ReadContactsIntentService.class);

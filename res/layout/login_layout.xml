@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <ImageView
+        android:id="@+id/login_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/ic_edit_unselected" />
+
+    <TextView
+        android:id="@+id/login_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/login_logo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:padding="4dp"
+        android:text="基于好友通讯录的交友应用"
+        android:textSize="20dp" />
+
+    <EditText
+        android:id="@+id/login_phone_num"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/login_description"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:hint="手机号码"
+        android:inputType="phone"
+        android:minWidth="200dp"
+        android:textSize="14dp" />
+
+    <EditText
+        android:id="@+id/login_password"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/login_phone_num"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:hint="输入密码"
+        android:minWidth="200dp"
+        android:textSize="14dp" />
+
+    <Button
+        android:id="@+id/login_btn"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/login_password"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/contacts_info_btn_selector"
+        android:clickable="true"
+        android:padding="5dp"
+        android:text="登录"
+        android:textColor="@color/gray"
+        android:textSize="16dp" />
+
+    <RelativeLayout
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/login_btn"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="40dp" >
+
+        <TextView
+            android:id="@+id/forget_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="忘记密码？"
+            android:textSize="18dp" />
+
+        <TextView
+            android:id="@+id/return_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="返回"
+            android:textSize="18dp" />
+    </RelativeLayout>
+
+</RelativeLayout>

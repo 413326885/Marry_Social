@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,9 +52,12 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.FloatMath;
 import android.util.Log;
 import android.view.View;
@@ -223,8 +228,8 @@ public class Utils {
         return target;
     }
 
-    public static Bitmap cropImages(Bitmap bitmap, int cropWidth, int cropHeight,
-            boolean recycle) {
+    public static Bitmap cropImages(Bitmap bitmap, int cropWidth,
+            int cropHeight, boolean recycle) {
         int w = bitmap.getWidth();
         int h = bitmap.getHeight();
         if (w == cropWidth && h == cropHeight)
@@ -232,9 +237,11 @@ public class Utils {
 
         // scale the image so that the shorter side equals to the target;
         // the longer side will be center-cropped.
-        float scale = (float) Math.max((float) cropWidth / w, (float) cropHeight / h);
+        float scale = (float) Math.max((float) cropWidth / w,
+                (float) cropHeight / h);
 
-        Bitmap target = Bitmap.createBitmap(cropWidth, cropHeight, getConfig(bitmap));
+        Bitmap target = Bitmap.createBitmap(cropWidth, cropHeight,
+                getConfig(bitmap));
         int width = Math.round(scale * bitmap.getWidth());
         int height = Math.round(scale * bitmap.getHeight());
         Canvas canvas = new Canvas(target);
@@ -683,8 +690,8 @@ public class Utils {
         return resultEntry;
     }
 
-    public static boolean uploadHeaderBackground(String RequestURL,
-            String uId, String picnum) {
+    public static boolean uploadHeaderBackground(String RequestURL, String uId,
+            String picnum) {
 
         boolean resultCode = false;
 
@@ -2113,7 +2120,8 @@ public class Utils {
         return path.substring(index + 1);
     }
 
-    public static File downloadImageAndCache(String RequestURL, String cacheFilePath) {
+    public static File downloadImageAndCache(String RequestURL,
+            String cacheFilePath) {
 
         URL postUrl = null;
         HttpURLConnection connection = null;
@@ -2271,6 +2279,171 @@ public class Utils {
         return chatTime;
     }
 
+    public static String registerUserInfo(String RequestURL, String phoneNum,
+            String password, String macAddr) {
+
+        Log.e(TAG, "nannan registerUserInfo ");
+        String result = "";
+
+        URL postUrl = null;
+        DataOutputStream outputStream = null;
+        HttpURLConnection connection = null;
+        OutputStreamWriter outputWriter = null;
+        BufferedReader inputReader = null;
+
+        try {
+            postUrl = new URL(RequestURL);
+            if (postUrl == null)
+                return result;
+
+            connection = (HttpURLConnection) postUrl.openConnection();
+            if (connection == null)
+                return result;
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestMethod("POST");
+            connection.setUseCaches(false);
+            connection.setInstanceFollowRedirects(true);
+            connection.setRequestProperty("Content-Type",
+                    "application/x-www-form-urlencoded");
+
+            connection.connect();
+
+            outputStream = new DataOutputStream(connection.getOutputStream());
+            JSONObject chatMsg = new JSONObject();
+            chatMsg.put(CommonDataStructure.PHONE, phoneNum);
+            chatMsg.put(CommonDataStructure.PASSWORD, password);
+            chatMsg.put(CommonDataStructure.MAC, macAddr);
+
+            String content = "jsondata="
+                    + URLEncoder.encode(chatMsg.toString(), "UTF-8");
+            Log.e(TAG, "nannan content = " + content);
+            if (content == null)
+                return result;
+
+            outputStream.writeBytes(content);
+            outputStream.flush();
+            outputStream.close();
+
+            inputReader = new BufferedReader(new InputStreamReader(
+                    connection.getInputStream()));
+            StringBuffer resp = new StringBuffer();
+            String line = null;
+            while ((line = inputReader.readLine()) != null) {
+                resp.append(line);
+            }
+            // String line = inputReader.readLine();
+            // inputReader.close();
+
+            Log.e(TAG, "nannan resp = " + resp.toString() + "#################");
+            JSONObject response = new JSONObject(resp.toString());
+            String code = response.getString("code");
+            if (!"200".equalsIgnoreCase(code)) {
+                return result;
+            }
+
+            result = response.getJSONObject("data").getString("uid");
+
+            inputReader.close();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+        return result;
+    }
+
+    public static String updateUserInfo(String RequestURL, String uid,
+            String nickname, int gender, int astro, int hobby, String intro) {
+
+        Log.e(TAG, "nannan updateUserInfo ");
+        String result = "";
+
+        URL postUrl = null;
+        DataOutputStream outputStream = null;
+        HttpURLConnection connection = null;
+        OutputStreamWriter outputWriter = null;
+        BufferedReader inputReader = null;
+
+        try {
+            postUrl = new URL(RequestURL);
+            if (postUrl == null)
+                return result;
+
+            connection = (HttpURLConnection) postUrl.openConnection();
+            if (connection == null)
+                return result;
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestMethod("POST");
+            connection.setUseCaches(false);
+            connection.setInstanceFollowRedirects(true);
+            connection.setRequestProperty("Content-Type",
+                    "application/x-www-form-urlencoded");
+
+            connection.connect();
+
+            outputStream = new DataOutputStream(connection.getOutputStream());
+            JSONObject chatMsg = new JSONObject();
+            chatMsg.put(CommonDataStructure.UID, uid);
+            chatMsg.put(CommonDataStructure.NICKNAME, nickname);
+            chatMsg.put(CommonDataStructure.GENDER, String.valueOf(gender));
+            chatMsg.put(CommonDataStructure.ASTRO, String.valueOf(astro));
+            chatMsg.put(CommonDataStructure.HOBBY, String.valueOf(hobby));
+            chatMsg.put(CommonDataStructure.INTRODUCE, intro);
+
+            String content = "jsondata="
+                    + URLEncoder.encode(chatMsg.toString(), "UTF-8");
+            Log.e(TAG, "nannan content = " + content);
+            if (content == null)
+                return result;
+
+            outputStream.writeBytes(content);
+            outputStream.flush();
+            outputStream.close();
+
+            inputReader = new BufferedReader(new InputStreamReader(
+                    connection.getInputStream()));
+            StringBuffer resp = new StringBuffer();
+            String line = null;
+            while ((line = inputReader.readLine()) != null) {
+                resp.append(line);
+            }
+            // String line = inputReader.readLine();
+            // inputReader.close();
+
+            Log.e(TAG, "nannan resp = " + resp.toString() + "#################");
+            JSONObject response = new JSONObject(resp.toString());
+            String code = response.getString("code");
+            if (!"200".equalsIgnoreCase(code)) {
+                return result;
+            }
+
+            result = response.getJSONObject("data").getString("uid");
+
+            inputReader.close();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+        return result;
+    }
+
     public static void waitWithoutInterrupt(Object object) {
         try {
             object.wait();
@@ -2384,4 +2557,41 @@ public class Utils {
         return null;
     }
 
+    public static String getPhoneNumber(Context context) {
+        TelephonyManager mTelephonyMgr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        return mTelephonyMgr.getLine1Number();
+    }
+
+    public static boolean isMobilePhoneNum(String mobiles) {
+        /*
+         * 移动：134、135、136、137、138、139、150、151、157(TD)、158、159、187、188
+         * 联通：130、131、132、152、155、156、185、186 电信：133、153、180、189、（1349卫通）
+         * 总结起来就是第一位必定为1，第二位必定为3或5或8，其他位置的可以为0-9
+         */
+        String telRegex = "[1][3578]\\d{9}";// "[1]"代表第1位为数字1，"[3578]"代表第二位可以为3、5、7、8中的一个，"\\d{9}"代表后面是可以是0～9的数字，有9位。
+        if (TextUtils.isEmpty(mobiles))
+            return false;
+        else
+            return mobiles.matches(telRegex);
+    }
+
+    public static boolean isPassworkValid(String password) {
+        return password.length() >= 6;
+    }
+
+    public static String getMacAddress(Context context) {
+        String macAddress = "";
+        try {
+            WifiManager wifiMgr = (WifiManager) context
+                    .getSystemService(Context.WIFI_SERVICE);
+            WifiInfo info = (wifiMgr == null ? null : wifiMgr
+                    .getConnectionInfo());
+            if (info != null) {
+                macAddress = info.getMacAddress();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return macAddress;
+    }
 }

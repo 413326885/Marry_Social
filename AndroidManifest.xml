@@ -53,6 +53,14 @@
         </activity>
         <activity android:name=".activity.ChooseHeaderBackgroundActivity" >
         </activity>
+        <activity android:name=".activity.RegisterActivity" >
+        </activity>
+        <activity android:name=".activity.FillUserInfoActivity" >
+        </activity>
+        <activity android:name=".activity.InviteFriendsActivity" >
+        </activity>
+        <activity android:name=".activity.LoginActivity" >
+        </activity>
         <activity android:name=".test.MainActivity" >
         </activity>
 
