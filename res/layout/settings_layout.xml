@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <RelativeLayout
+        android:id="@+id/settings_return"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/gray_bkg_selector"
+        android:clickable="true" >
+
+        <ImageView
+            android:id="@+id/settings_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:paddingBottom="10dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingTop="10dp"
+            android:src="@drawable/ic_return_button" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/settings_arrow"
+            android:alpha="0.8"
+            android:paddingBottom="10dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="12dp"
+            android:paddingTop="10dp"
+            android:text="设置"
+            android:textSize="16dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/barcode_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/settings_return" >
+
+        <ImageView
+            android:id="@+id/barcode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_barcode" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/barcode"
+            android:layout_centerHorizontal="true"
+            android:alpha="0.8"
+            android:paddingBottom="20dp"
+            android:paddingTop="10dp"
+            android:text="扫一扫上面的二维码图案，下载最新交友应用"
+            android:textSize="16dp" />
+    </RelativeLayout>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_below="@id/barcode_group"
+        android:alpha="0.6"
+        android:background="@color/darkgray" />
+
+    <RelativeLayout
+        android:id="@+id/version_update"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/barcode_group"
+        android:background="@drawable/gray_bkg_selector"
+        android:clickable="true" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.8"
+            android:paddingBottom="10dp"
+            android:paddingLeft="24dp"
+            android:paddingRight="24dp"
+            android:paddingTop="10dp"
+            android:text="版本更新"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/version_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:alpha="0.6"
+            android:paddingBottom="10dp"
+            android:paddingLeft="24dp"
+            android:paddingRight="24dp"
+            android:paddingTop="10dp"
+            android:text="V1.0"
+            android:textSize="16dp" />
+    </RelativeLayout>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_below="@id/version_update"
+        android:alpha="0.6"
+        android:background="@color/darkgray" />
+
+    <TextView
+        android:id="@+id/about_us"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/version_update"
+        android:alpha="0.8"
+        android:background="@drawable/gray_bkg_selector"
+        android:clickable="true"
+        android:paddingBottom="10dp"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:paddingTop="10dp"
+        android:text="关于我们"
+        android:textSize="16dp" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_below="@id/about_us"
+        android:alpha="0.6"
+        android:background="@color/darkgray" />
+
+    <TextView
+        android:id="@+id/func_desc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/about_us"
+        android:alpha="0.8"
+        android:background="@drawable/gray_bkg_selector"
+        android:clickable="true"
+        android:paddingBottom="10dp"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:paddingTop="10dp"
+        android:text="功能介绍"
+        android:textSize="16dp" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_below="@id/func_desc"
+        android:alpha="0.6"
+        android:background="@color/darkgray" />
+
+    <TextView
+        android:id="@+id/change_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/func_desc"
+        android:alpha="0.8"
+        android:background="@drawable/gray_bkg_selector"
+        android:clickable="true"
+        android:paddingBottom="10dp"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:paddingTop="10dp"
+        android:text="修改密码"
+        android:textSize="16dp" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_below="@id/change_password"
+        android:alpha="0.6"
+        android:background="@color/darkgray" />
+
+    <ImageView
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_below="@id/change_password"
+        android:layout_marginTop="20dp"
+        android:alpha="0.6"
+        android:background="@color/darkgray" />
+
+    <TextView
+        android:id="@+id/logout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/divider"
+        android:alpha="0.8"
+        android:background="@drawable/gray_bkg_selector"
+        android:clickable="true"
+        android:paddingBottom="10dp"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:paddingTop="10dp"
+        android:text="退出登录"
+        android:textSize="16dp" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_below="@id/logout"
+        android:alpha="0.6"
+        android:background="@color/darkgray" />
+
+</RelativeLayout>

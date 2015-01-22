@@ -3,6 +3,7 @@ package com.dhn.marrysocial;
 import java.util.ArrayList;
 
 import com.dhn.marrysocial.activity.ContactsInfoActivity;
+import com.dhn.marrysocial.activity.SettingsActivity;
 import com.dhn.marrysocial.adapter.ViewPagerFragmentAdapter;
 import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
@@ -176,13 +177,15 @@ public class MarrySocialMainActivity extends FragmentActivity implements OnClick
     public void onClick(View arg0) {
         switch(arg0.getId()) {
         case R.id.actionbar_setting: {
-            //
+            startToViewSettings();
+            break;
         }
         case R.id.actionbar_user_center: {
             startToViewContactsInfo(mUid);
+            break;
         }
         case R.id.actionbar_invite_friends: {
-            //
+            break;
         }
         default:
             break;
@@ -192,6 +195,11 @@ public class MarrySocialMainActivity extends FragmentActivity implements OnClick
     private void startToViewContactsInfo(String uid) {
         Intent intent = new Intent(this, ContactsInfoActivity.class);
         intent.putExtra(MarrySocialDBHelper.KEY_UID, uid);
+        startActivity(intent);
+    }
+
+    private void startToViewSettings() {
+        Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
 }

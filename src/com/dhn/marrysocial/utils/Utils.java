@@ -2360,6 +2360,87 @@ public class Utils {
         return result;
     }
 
+    public static String loginSystem(String RequestURL, String phoneNum,
+            String password, String macAddr) {
+
+        Log.e(TAG, "nannan loginSystem ");
+        String result = "";
+
+        URL postUrl = null;
+        DataOutputStream outputStream = null;
+        HttpURLConnection connection = null;
+        OutputStreamWriter outputWriter = null;
+        BufferedReader inputReader = null;
+
+        try {
+            postUrl = new URL(RequestURL);
+            if (postUrl == null)
+                return result;
+
+            connection = (HttpURLConnection) postUrl.openConnection();
+            if (connection == null)
+                return result;
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestMethod("POST");
+            connection.setUseCaches(false);
+            connection.setInstanceFollowRedirects(true);
+            connection.setRequestProperty("Content-Type",
+                    "application/x-www-form-urlencoded");
+
+            connection.connect();
+
+            outputStream = new DataOutputStream(connection.getOutputStream());
+            JSONObject chatMsg = new JSONObject();
+            chatMsg.put(CommonDataStructure.PHONE, phoneNum);
+            chatMsg.put(CommonDataStructure.PASSWORD, password);
+            chatMsg.put(CommonDataStructure.MAC, macAddr);
+
+            String content = "jsondata="
+                    + URLEncoder.encode(chatMsg.toString(), "UTF-8");
+            Log.e(TAG, "nannan content = " + content);
+            if (content == null)
+                return result;
+
+            outputStream.writeBytes(content);
+            outputStream.flush();
+            outputStream.close();
+
+            inputReader = new BufferedReader(new InputStreamReader(
+                    connection.getInputStream()));
+            StringBuffer resp = new StringBuffer();
+            String line = null;
+            while ((line = inputReader.readLine()) != null) {
+                resp.append(line);
+            }
+            // String line = inputReader.readLine();
+            // inputReader.close();
+
+            Log.e(TAG, "nannan resp = " + resp.toString() + "#################");
+            JSONObject response = new JSONObject(resp.toString());
+            String code = response.getString("code");
+            if (!"200".equalsIgnoreCase(code)) {
+                return result;
+            }
+
+            result = response.getJSONObject("data").getString("uid");
+
+            inputReader.close();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+        return result;
+    }
+
     public static String updateUserInfo(String RequestURL, String uid,
             String nickname, int gender, int astro, int hobby, String intro) {
 

@@ -28,6 +28,7 @@ public class CommonDataStructure {
     public static final String ASTRO = "astro";
     public static final String HOBBY = "hobby";
     public static final String INTRODUCE = "intro";
+    public static final String LOGINSTATUS = "login_status";
 
     public static final String IMAGE_CACHE_DIR = ".com.dhn.marrysocial";
     public static final String DOWNLOAD_PICS_DIR = "downloadPics";

@@ -394,7 +394,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         }
 
         try {
-            cursor.moveToFirst();
+            cursor.moveToNext();
             byte[] in = cursor.getBlob(1);
             headpic = BitmapFactory.decodeByteArray(in, 0, in.length);
         } catch (Exception e) {
@@ -422,7 +422,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         }
 
         try {
-            cursor.moveToFirst();
+            cursor.moveToNext();
 
             String phoneNum = cursor.getString(1);
             String nickname = cursor.getString(2);
@@ -845,7 +845,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
             if (cursor == null || cursor.getCount() == 0) {
                 return headerBkgEntry;
             }
-            cursor.moveToFirst();
+            cursor.moveToNext();
             headerBkgEntry.photoName = cursor.getString(0);
             headerBkgEntry.photoLocalPath = cursor.getString(1);
             headerBkgEntry.photoRemotePath = cursor.getString(2);
