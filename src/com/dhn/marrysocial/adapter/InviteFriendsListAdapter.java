@@ -70,11 +70,16 @@ public class InviteFriendsListAdapter extends BaseAdapter {
         }
 
         holder.invite_friend_name.setText(contact.contact_name);
-        if ("0".equalsIgnoreCase(contact.direct_uid)) {
+        if (contact.direct_uid == null || "0".equalsIgnoreCase(contact.direct_uid)) {
             holder.invite_friend_registed.setVisibility(View.GONE);
         } else {
             holder.invite_friend_registed.setVisibility(View.VISIBLE);
         }
+//        if ("0".equalsIgnoreCase(contact.direct_uid)) {
+//            holder.invite_friend_registed.setVisibility(View.GONE);
+//        } else {
+//            holder.invite_friend_registed.setVisibility(View.VISIBLE);
+//        }
         holder.invite_friends_btn
                 .setOnClickListener(new View.OnClickListener() {
 

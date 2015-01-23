@@ -279,9 +279,10 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
             break;
         }
         case R.id.userinfo_invite_friends: {
-            if (inUserInfoValid()) {
-                mHandler.sendEmptyMessage(START_TO_UPLOAD_USER_INFO);
-            }
+            startToInviteFriends();
+//            if (inUserInfoValid()) {
+//                mHandler.sendEmptyMessage(START_TO_UPLOAD_USER_INFO);
+//            }
             break;
         }
         default:

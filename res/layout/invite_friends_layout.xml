@@ -7,7 +7,7 @@
         android:id="@+id/invite_friends_return"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/gray_bkg_selector"
+        android:background="@drawable/default_bkg_selector"
         android:clickable="true" >
 
         <ImageView
@@ -32,6 +32,7 @@
             android:paddingRight="12dp"
             android:paddingTop="10dp"
             android:text="邀请好友"
+            android:textColor="@color/white"
             android:textSize="16dp" />
     </RelativeLayout>
 
@@ -48,10 +49,10 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/invite_friends_return"
         android:alpha="0.8"
-        android:paddingBottom="10dp"
+        android:paddingBottom="15dp"
         android:paddingLeft="24dp"
         android:paddingRight="24dp"
-        android:paddingTop="10dp"
+        android:paddingTop="15dp"
         android:text="添加喜欢的好友，认识更多他们的朋友"
         android:textSize="16dp" />
 
@@ -83,8 +84,8 @@
             android:layout_centerVertical="true"
             android:layout_toRightOf="@id/share_icon"
             android:alpha="0.8"
-            android:paddingBottom="10dp"
-            android:paddingTop="10dp"
+            android:paddingBottom="15dp"
+            android:paddingTop="15dp"
             android:text="分享给好友"
             android:textSize="16dp" />
     </RelativeLayout>
@@ -117,8 +118,8 @@
             android:layout_centerVertical="true"
             android:layout_toRightOf="@id/contacts_icon"
             android:alpha="0.8"
-            android:paddingBottom="10dp"
-            android:paddingTop="10dp"
+            android:paddingBottom="15dp"
+            android:paddingTop="15dp"
             android:text="通讯录好友"
             android:textSize="16dp" />
     </RelativeLayout>

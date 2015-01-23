@@ -110,6 +110,10 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
                 .availableProcessors() * POOL_SIZE);
 
+        mContactList.clear();
+        mContactList.addAll(getAllContactsInfo());
+        mListAdapter.notifyDataSetChanged();
+
     }
 
     @Override

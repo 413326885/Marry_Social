@@ -96,28 +96,28 @@ public class RegisterActivity extends Activity implements OnClickListener {
     public void onClick(View arg0) {
         switch (arg0.getId()) {
         case R.id.register_btn: {
-
-            if (!isPhoneNumValid()) {
-                mPhoneNumEditText.requestFocus();
-                break;
-            }
-            if (!isPasswordValid()) {
-                mPasswordEditText.requestFocus();
-                break;
-            }
-            mUploadProgressDialog = ProgressDialog.show(this, "用户注册",
-                    "正在注册，请稍后...", false, true);
-            try {
-                mPassword = AESecretUtils.encrypt(
-                        CommonDataStructure.KEY_SECRET_CODE, mPasswordEditText
-                                .getText().toString());
-            } catch (Exception e) {
-            }
-//            String macAddr = Utils.getMacAddress(this);
-            String macAddr = "10:ak:44:jj:55:u8";
-            mPhoneNum = mPhoneNumEditText.getText().toString();
-            mExecutorService.execute(new RegisterUserInfo(mPhoneNum, mPassword,
-                    macAddr));
+            startToFillUserinfo();
+//            if (!isPhoneNumValid()) {
+//                mPhoneNumEditText.requestFocus();
+//                break;
+//            }
+//            if (!isPasswordValid()) {
+//                mPasswordEditText.requestFocus();
+//                break;
+//            }
+//            mUploadProgressDialog = ProgressDialog.show(this, "用户注册",
+//                    "正在注册，请稍后...", false, true);
+//            try {
+//                mPassword = AESecretUtils.encrypt(
+//                        CommonDataStructure.KEY_SECRET_CODE, mPasswordEditText
+//                                .getText().toString());
+//            } catch (Exception e) {
+//            }
+////            String macAddr = Utils.getMacAddress(this);
+//            String macAddr = "10:ak:44:jj:55:u8";
+//            mPhoneNum = mPhoneNumEditText.getText().toString();
+//            mExecutorService.execute(new RegisterUserInfo(mPhoneNum, mPassword,
+//                    macAddr));
             break;
         }
         case R.id.login_btn: {
