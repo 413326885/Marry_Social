@@ -21,7 +21,8 @@ public class MarrySocialDBHelper {
     public static final String DATABASE_BRIEF_CHAT_TABLE = "briefchat";
     public static final String DATABASE_HEAD_PICS_TABLE = "headpics";
     public static final String DATABASE_HEAD_BACKGROUND_PICS_TABLE = "headbackgroundpics";
-    
+    public static final String DATABASE_DIRECT_TABLE = "directs";
+
     public static final int DATABASE_VERSION = 1;
 
     public static final int UPLOAD_TO_CLOUD_FAIL = -1;
@@ -36,7 +37,7 @@ public class MarrySocialDBHelper {
 
     // for contacts table
     public static final String KEY_UID = "uid";
-    public static final String KEY_PHONE_NUM = "phoneNum";
+    public static final String KEY_PHONE_NUM = "phone_num";
     public static final String KEY_HEADPIC = "avatar";
     public static final String KEY_NIKENAME = "nikename";
     public static final String KEY_REALNAME = "realname";
@@ -87,8 +88,12 @@ public class MarrySocialDBHelper {
     // for head pics table
     public static final String KEY_HEAD_PIC_BITMAP = "headpicbitmap";
 
+    // for direct table
+    public static final String KEY_DIRECT_ID = "direct_id";
+    public static final String KEY_DIRECT_UID = "direct_uid";
+
     private static final String DATABASE_CREATE_CONTACTS = "create table contacts ( "
-            + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, phoneNum text, nikename text, realname text, "
+            + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, phone_num text, nikename text, realname text, "
             + "hobby integer, gender integer, astro integer, directfriendscount integer, "
             + "firstdirectfriend text, directfriends text, indirect_id text, avatar integer, header_background_index text )";
 
@@ -125,6 +130,10 @@ public class MarrySocialDBHelper {
     private static final String DATABASE_CREATE_HEAD_BACKGROUND_PICS = "create table headbackgroundpics ("
             + "_id integer PRIMARY KEY AUTOINCREMENT, photo_name text, photo_local_path text, "
             + "photo_remote_org_path text, header_background_index text, current_status integer )";
+
+    private static final String DATABASE_CREATE_DIRECTS = "create table directs ("
+            + "_id integer PRIMARY KEY AUTOINCREMENT, phone_num text, realname text, "
+            + "direct_id text, direct_uid text )";
 
     private final Context mContext;
     private DataBaseOpenHelper mDataBaseHelper;
@@ -163,6 +172,7 @@ public class MarrySocialDBHelper {
             db.execSQL(DATABASE_CREATE_BRIEF_CHAT);
             db.execSQL(DATABASE_CREATE_HEAD_PICS);
             db.execSQL(DATABASE_CREATE_HEAD_BACKGROUND_PICS);
+            db.execSQL(DATABASE_CREATE_DIRECTS);
             Log.e(TAG, "nannan onCreate");
         }
 

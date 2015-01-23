@@ -58,8 +58,9 @@ public class RegisterActivity extends Activity implements OnClickListener {
                 Editor editor = prefs.edit();
                 editor.putString(CommonDataStructure.UID, mUid);
                 editor.putString(CommonDataStructure.PHONE, mPhoneNum);
-                editor.putString(CommonDataStructure.PASSWORD, mPassword);
+                editor.putInt(CommonDataStructure.LOGINSTATUS, 1);
                 editor.commit();
+                startToFillUserinfo();
                 break;
             }
             default:
@@ -95,38 +96,39 @@ public class RegisterActivity extends Activity implements OnClickListener {
     public void onClick(View arg0) {
         switch (arg0.getId()) {
         case R.id.register_btn: {
-            startToFillUserinfo();
-//            if (!isPhoneNumValid()) {
-//                mPhoneNumEditText.requestFocus();
-//                break;
-//            }
-//            if (!isPasswordValid()) {
-//                mPasswordEditText.requestFocus();
-//                break;
-//            }
-//            mUploadProgressDialog = ProgressDialog.show(this, "用户注册",
-//                    "正在注册，请稍后...", false, true);
-//            try {
-//                mPassword = AESecretUtils.encrypt(
-//                        CommonDataStructure.KEY_SECRET_CODE, mPasswordEditText
-//                                .getText().toString());
-//            } catch (Exception e) {
-//            }
+
+            if (!isPhoneNumValid()) {
+                mPhoneNumEditText.requestFocus();
+                break;
+            }
+            if (!isPasswordValid()) {
+                mPasswordEditText.requestFocus();
+                break;
+            }
+            mUploadProgressDialog = ProgressDialog.show(this, "用户注册",
+                    "正在注册，请稍后...", false, true);
+            try {
+                mPassword = AESecretUtils.encrypt(
+                        CommonDataStructure.KEY_SECRET_CODE, mPasswordEditText
+                                .getText().toString());
+            } catch (Exception e) {
+            }
 //            String macAddr = Utils.getMacAddress(this);
-//            mPhoneNum = mPhoneNumEditText.getText().toString();
-//            mExecutorService.execute(new RegisterUserInfo(mPhoneNum, mPassword,
-//                    macAddr));
+            String macAddr = "10:ak:44:jj:55:u8";
+            mPhoneNum = mPhoneNumEditText.getText().toString();
+            mExecutorService.execute(new RegisterUserInfo(mPhoneNum, mPassword,
+                    macAddr));
             break;
         }
         case R.id.login_btn: {
-//            if (!isPhoneNumValid()) {
-//                mPhoneNumEditText.requestFocus();
-//                break;
-//            }
-//            if (!isPasswordValid()) {
-//                mPasswordEditText.requestFocus();
-//                break;
-//            }
+            if (!isPhoneNumValid()) {
+                mPhoneNumEditText.requestFocus();
+                break;
+            }
+            if (!isPasswordValid()) {
+                mPasswordEditText.requestFocus();
+                break;
+            }
             startToLogin();
             break;
         }
@@ -162,26 +164,6 @@ public class RegisterActivity extends Activity implements OnClickListener {
         }
         return true;
     }
-
-//    @Override
-//    public void onFocusChange(View arg0, boolean isFocused) {
-//        switch (arg0.getId()) {
-//        case R.id.register_phone_num: {
-//            if (!isFocused && !isPhoneNumValid()) {
-//                mPhoneNumEditText.requestFocus();
-//            }
-//            break;
-//        }
-//        case R.id.register_password: {
-//            if (!isFocused && !isPasswordValid()) {
-//                mPasswordEditText.requestFocus();
-//            }
-//            break;
-//        }
-//        default:
-//            break;
-//        }
-//    }
 
     class CountTimer extends CountDownTimer {
 

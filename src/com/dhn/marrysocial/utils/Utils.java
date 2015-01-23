@@ -64,9 +64,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
-import com.dhn.marrysocial.MarrySocialApplication;
 import com.dhn.marrysocial.R;
-import com.dhn.marrysocial.activity.EditCommentsActivity.UploadCommentContentEntry;
 import com.dhn.marrysocial.adapter.ChatMsgViewAdapter.IMsgViewType;
 import com.dhn.marrysocial.base.ChatMsgItem;
 import com.dhn.marrysocial.base.CommentsItem;
@@ -2639,7 +2637,8 @@ public class Utils {
     }
 
     public static String getPhoneNumber(Context context) {
-        TelephonyManager mTelephonyMgr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        TelephonyManager mTelephonyMgr = (TelephonyManager) context
+                .getSystemService(Context.TELEPHONY_SERVICE);
         return mTelephonyMgr.getLine1Number();
     }
 
@@ -2674,5 +2673,108 @@ public class Utils {
             e.printStackTrace();
         }
         return macAddress;
+    }
+
+    public static ArrayList<CommonDataStructure.ContactEntry> uploadUserContacts(
+            String RequestURL, String uid,
+            ArrayList<CommonDataStructure.ContactEntry> contactsList) {
+
+        Log.e(TAG, "nannan uploadUserContacts ");
+        ArrayList<CommonDataStructure.ContactEntry> contactEntrys = new ArrayList<CommonDataStructure.ContactEntry>();
+
+        URL postUrl = null;
+        DataOutputStream outputStream = null;
+        HttpURLConnection connection = null;
+        OutputStreamWriter outputWriter = null;
+        BufferedReader inputReader = null;
+
+        try {
+            postUrl = new URL(RequestURL);
+            if (postUrl == null)
+                return contactEntrys;
+
+            connection = (HttpURLConnection) postUrl.openConnection();
+            if (connection == null)
+                return contactEntrys;
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestMethod("POST");
+            connection.setUseCaches(false);
+            connection.setInstanceFollowRedirects(true);
+            connection.setRequestProperty("Content-Type",
+                    "application/x-www-form-urlencoded");
+
+            connection.connect();
+
+            outputStream = new DataOutputStream(connection.getOutputStream());
+
+            JSONArray contactList = new JSONArray();
+            for (CommonDataStructure.ContactEntry entry : contactsList) {
+                JSONObject contact = new JSONObject();
+                contact.put(CommonDataStructure.FULLNAME, entry.contact_name);
+                contact.put(CommonDataStructure.PHONE,
+                        entry.contact_phone_number);
+                contact.put(CommonDataStructure.UID, uid);
+
+                contactList.put(contact);
+            }
+
+            String content = "jsondata="
+                    + URLEncoder.encode(contactList.toString(), "UTF-8");
+            Log.e(TAG, "nannan chatMsg = " + contactList.toString());
+            Log.e(TAG, "nannan content = " + content);
+            
+            if (content == null)
+                return contactEntrys;
+
+            outputStream.writeBytes(content);
+            outputStream.flush();
+            outputStream.close();
+
+            inputReader = new BufferedReader(new InputStreamReader(
+                    connection.getInputStream()));
+            StringBuffer resp = new StringBuffer();
+            String line = null;
+            while ((line = inputReader.readLine()) != null) {
+                resp.append(line);
+            }
+
+            Log.e(TAG, "nannan resp = " + resp.toString() + "#################");
+            JSONObject response = new JSONObject(resp.toString());
+            String code = response.getString("code");
+            if (!"200".equalsIgnoreCase(code)) {
+                return contactEntrys;
+            }
+            
+            JSONObject data = response.getJSONObject("data");
+            Iterator<String> iterator = data.keys();
+            while (iterator.hasNext()) {
+                String phone_num = iterator.next();
+                JSONObject result = data.getJSONObject(phone_num);
+                String direct_id = result.getString("directid");
+                String direct_uid = result.getString("directuid");
+                String direct_name = result.getString("directname");
+                CommonDataStructure.ContactEntry entry = new CommonDataStructure.ContactEntry();
+                entry.direct_id = direct_id;
+                entry.direct_uid = direct_uid;
+                entry.contact_phone_number = phone_num;
+                entry.contact_name = direct_name;
+                contactEntrys.add(entry);
+            }
+
+            inputReader.close();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+        return contactEntrys;
     }
 }

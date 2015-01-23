@@ -65,8 +65,10 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
     private static final int REGISTER_SUCCESS = 100;
     private static final int START_TO_UPLOAD_USER_HEADER = 101;
     private static final int UPLOAD_USER_HEADER_FINISH = 102;
-    private static final int START_TO_UPLOAD_USER_INFO = 103;
-    private static final int UPLOAD_USER_INFO_FINISH = 104;
+    private static final int UPLOAD_USER_HEADER_FAIL = 103;
+    private static final int START_TO_UPLOAD_USER_INFO = 104;
+    private static final int UPLOAD_USER_INFO_FINISH = 105;
+    private static final int UPLOAD_USER_INFO_FAIL = 106;
 
     private RoundedImageView mHeaderImageView;
     private TextView mHeaderText;
@@ -173,7 +175,19 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
             }
             case UPLOAD_USER_INFO_FINISH: {
                 mUploadUserInfoProgressDialog.dismiss();
+                SharedPreferences prefs = FillUserInfoActivity.this
+                        .getSharedPreferences(
+                                CommonDataStructure.PREFS_LAIQIAN_DEFAULT,
+                                MODE_PRIVATE);
+                Editor editor = prefs.edit();
+                editor.putInt(CommonDataStructure.LOGINSTATUS, 2);
+                editor.commit();
                 startToInviteFriends();
+                break;
+            }
+            case UPLOAD_USER_INFO_FAIL: {
+                mUploadUserInfoProgressDialog.dismiss();
+                Toast.makeText(FillUserInfoActivity.this, "上传个人信息失败，请稍后重试", 500).show();
                 break;
             }
             default:
@@ -266,7 +280,7 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
         }
         case R.id.userinfo_invite_friends: {
             if (inUserInfoValid()) {
-                mHandler.sendEmptyMessage(START_TO_UPLOAD_USER_HEADER);
+                mHandler.sendEmptyMessage(START_TO_UPLOAD_USER_INFO);
             }
             break;
         }
@@ -536,10 +550,14 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
         public void run() {
             String nickname = mUserInfoName.getText().toString();
             String intro = mUserinfoSignature.getText().toString();
-            Utils.updateUserInfo(CommonDataStructure.URL_UPDATE_USER_INFO, uid,
+            String result = Utils.updateUserInfo(CommonDataStructure.URL_UPDATE_USER_INFO, uid,
                     nickname, mGender, mAstro, mHobby, intro);
 
-            mHandler.sendEmptyMessage(UPLOAD_USER_INFO_FINISH);
+            if (result != null && result.length() != 0) {
+                mHandler.sendEmptyMessage(UPLOAD_USER_INFO_FINISH);
+            } else {
+                mHandler.sendEmptyMessage(UPLOAD_USER_INFO_FAIL);
+            }
         }
     }
 
@@ -562,6 +580,7 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
     }
 
     private void startToInviteFriends() {
-
+        Intent intent = new Intent(this, InviteFriendsActivity.class);
+        startActivity(intent);
     }
 }

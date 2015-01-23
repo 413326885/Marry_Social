@@ -3,55 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <!--
-         <RelativeLayout
-        android:id="@+id/dynamic_info_edit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="10dp" >
-
-        <ImageView
-            android:id="@+id/dynamic_info_send_comment_divider"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/main_color"/>
-
-        <ImageView
-            android:id="@+id/dynamic_info_send_comment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_margin="10dp"
-            android:src="@drawable/ic_send" />
-
-        <EditText
-            android:id="@+id/dynamic_info_edit_comment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:layout_toLeftOf="@id/dynamic_info_send_comment"
-            android:background="@drawable/bkg_edit_comment"
-            android:hint="发表你的动态" />
-    </RelativeLayout>
-    -->
-
     <com.dhn.marrysocial.view.RefreshListView
         android:id="@+id/dynamic_info_listView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:listSelector="#00000000" >
     </com.dhn.marrysocial.view.RefreshListView>
-
-    <!--
-         <ListView
-        android:id="@+id/dynamic_info_listView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:listSelector="#00000000" >
-
-    </ListView>
-    -->
 
     <TextView
         android:id="@+id/dynamic_info_list_empty"

@@ -23,6 +23,7 @@ public class CommonDataStructure {
     public static final String PASSWORD = "password";
     public static final String MAC = "mac";
     public static final String PHONE = "phone";
+    public static final String FULLNAME = "fullname";
     public static final String NICKNAME = "nickname";
     public static final String GENDER = "gender";
     public static final String ASTRO = "astro";
@@ -174,6 +175,14 @@ public class CommonDataStructure {
             + "hrZm04ZzM4UnR4bWFvPSIsInZhbHVlIjoiQTRoQXBSZVZzZHU1T3JJcEpcLzVwM05ldEFjZlV4M0ljYjJPVlhjNmF2"
             + "WkU9IiwibWFjIjoiNGM1MTk2ZDZhNzFlY2UzNDY2ZGJlZjY2M2EwM2JhYTA2ZjllZDc4N2I1ODhmYTBiY2M0YzFlMzU2NjUwZGZmYyJ9";
 
+    public static final String CMD_UPLOAD_CONTACTS = "eyJpdiI6ImhRM3lsaDk5ZlNYOFcwZXJxdWVkaU9BdDVHMGNsYjF"
+            + "xUnB4RlN1SE1XQ009IiwidmFsdWUiOiJoRExcL3o4QW1zNWtTc3hIZk9YVzBuODh1MytxZWFUTnV5VXFPOUtwY1NlQ"
+            + "T0iLCJtYWMiOiJlNjRmNzYwOWU2YmVkOWFlNmE0MTY1ZDA4YzhkMDM3M2NmZDY4ZDljZjYzOTYwZjc3ZWY2Y2JhZjVhNDZkYWY0In0=";
+
+    public static final String CMD_UPDATE_USERINFO = "eyJpdiI6IllRUFdscis2dHA4aW5PTCtCaE1tc1wvS2taUkNEYmd"
+            + "NTEpTWmhJK09YSWswPSIsInZhbHVlIjoiT2Rpd05YTUhVamduTnZ1SGJ3ZDllMlFRY1hRWndudGJzOHNPXC9XQnZ0a"
+            + "WM9IiwibWFjIjoiNTc2NDQ1MWU1ZjM3ZjI4ZDczZTA0ZmMzODk0ODhiOGY4ZjRhM2NhMTUxZDQ5NDc0NTNlYjEwZjdjZDc4NWQ2YSJ9";
+
     public static final String URL_UPLOAD_COMMON = "http://www.pkjiao.com/verify/post/";
 
     public static final String URL_TOKEN_CHECK = URL_UPLOAD_COMMON
@@ -227,6 +236,10 @@ public class CommonDataStructure {
             + CMD_USER_LOGIN;
     public static final String URL_UPDATE_USER_INFO = URL_UPLOAD_COMMON
             + CMD_UPDATE_USER_INFO;
+    public static final String URL_UPLOAD_CONTACTS = URL_UPLOAD_COMMON
+            + CMD_UPLOAD_CONTACTS;
+    public static final String URL_UPDATE_USERINFO = URL_UPLOAD_COMMON
+            + CMD_UPDATE_USERINFO;
 
     public static final Uri COMMENTURL = Uri.parse("content://"
             + DBContentChangeProvider.AUTHORITY + "/"
@@ -334,5 +347,14 @@ public class CommonDataStructure {
         public String currentStatus;
         public Bitmap bkgBitmap;
         public String headerBkgIndex;
+    }
+
+    public static class ContactEntry {
+        public String contact_name;
+        public String contact_phone_number;
+        public int contact_id;
+        public String contact_sortKey;
+        public String direct_id;
+        public String direct_uid;
     }
 }
