@@ -79,7 +79,8 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
             MarrySocialDBHelper.KEY_DIRECT_FRIENDS_COUNT,
             MarrySocialDBHelper.KEY_HEADPIC, MarrySocialDBHelper.KEY_GENDER,
             MarrySocialDBHelper.KEY_ASTRO, MarrySocialDBHelper.KEY_HOBBY,
-            MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX };
+            MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX,
+            MarrySocialDBHelper.KEY_INTRODUCT };
 
     private final String[] COMMENTS_PROJECTION = { MarrySocialDBHelper.KEY_UID,
             MarrySocialDBHelper.KEY_BUCKET_ID,
@@ -319,17 +320,16 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
 
         mUserName.setText(mUserInfo.getNikeName());
         mFriendName.setText(mUserInfo.getNikeName());
+        mFriendsDesc.setText(mUserInfo.getIntroduce());
 
         if (mUserInfoUid.equalsIgnoreCase(mAuthorUid)) {
-            mFriendsDesc.setText("我的地盘我做主");
             mChatButton.setVisibility(View.GONE);
         } else {
-            String friendsDesc = String.format(
-                    this.getString(R.string.chat_msg_friends_more),
-                    mUserInfo.getFirstDirectFriend(),
-                    mUserInfo.getDirectFriendsCount());
-            mFriendsDesc.setText(friendsDesc);
-
+//            String friendsDesc = String.format(
+//                    this.getString(R.string.chat_msg_friends_more),
+//                    mUserInfo.getFirstDirectFriend(),
+//                    mUserInfo.getDirectFriendsCount());
+//            mFriendsDesc.setText(friendsDesc);
             mChatButton.setVisibility(View.VISIBLE);
             mChatButton.setOnClickListener(this);
         }
@@ -436,6 +436,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
             int astro = Integer.valueOf(cursor.getInt(10));
             int hobby = Integer.valueOf(cursor.getInt(11));
             String headerBkg = cursor.getString(12);
+            String introduce = cursor.getString(13);
 
             userInfo.setUid(uid);
             userInfo.setPhoneNum(phoneNum);
@@ -445,6 +446,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
             userInfo.setGender(gender);
             userInfo.setAstro(astro);
             userInfo.setHobby(hobby);
+            userInfo.setIntroduce(introduce);
             userInfo.setIndirectId(indirectId);
             userInfo.setFirstDirectFriend(firstDirectFriend);
             userInfo.setDirectFriends(directFriends);
@@ -801,8 +803,6 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
                 Utils.Bitmap2Bytes(mCropPhoto));
         insertValues.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH,
                 headPic.orgUrl);
-        insertValues.put(MarrySocialDBHelper.KEY_PHOTO_LOCAL_PATH,
-                mCropPhotoName);
         insertValues.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_THUMB_PATH,
                 headPic.smallThumbUrl);
         insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,

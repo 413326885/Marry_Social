@@ -1708,6 +1708,7 @@ public class Utils {
                 int astro = Integer.valueOf(userinfo.getString("astro"));
                 int hobby = Integer.valueOf(userinfo.getString("hobby"));
                 String headerbkg = userinfo.getString("systembackground");
+                String introduce = userinfo.getString("intro");
 
                 ContactsInfo contactItem = new ContactsInfo();
                 contactItem.setUid(uid);
@@ -1718,6 +1719,7 @@ public class Utils {
                 contactItem.setGender(gender);
                 contactItem.setAstro(astro);
                 contactItem.setHobby(hobby);
+                contactItem.setIntroduce(introduce);
                 contactItem.setIndirectId(inDirectId);
                 contactItem.setFirstDirectFriend(firstDirectName);
                 contactItem.setDirectFriends(directFriends.toString());
@@ -1814,6 +1816,7 @@ public class Utils {
             int astro = Integer.valueOf(respData.getString("astro"));
             int hobby = Integer.valueOf(respData.getString("hobby"));
             String headerbkg = respData.getString("systembackground");
+            String intruduce = respData.getString("intro");
 
             contact.setUid(uid);
             contact.setPhoneNum(phoneNum);
@@ -1828,6 +1831,7 @@ public class Utils {
             contact.setDirectFriends(nickname);
             contact.setDirectFriendsCount(0);
             contact.setHeaderBkgIndex(headerbkg);
+            contact.setIntroduce(intruduce);
 
             reader.close();
 

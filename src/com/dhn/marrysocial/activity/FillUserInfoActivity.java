@@ -535,7 +535,7 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
             mAstroImageView
                     .setImageResource((SelectAstroGridViewAdapter.ASTRO_ICON)[position]);
             mChooseAstroDialog.dismiss();
-            mAstro = position + 1;
+            mAstro = position;
         };
     };
 

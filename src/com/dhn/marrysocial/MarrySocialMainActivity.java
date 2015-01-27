@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import com.dhn.marrysocial.activity.ContactsInfoActivity;
 import com.dhn.marrysocial.activity.InviteFriendsActivity;
+import com.dhn.marrysocial.activity.LoginActivity;
+import com.dhn.marrysocial.activity.RegisterActivity;
 import com.dhn.marrysocial.activity.SettingsActivity;
 import com.dhn.marrysocial.adapter.ViewPagerFragmentAdapter;
 import com.dhn.marrysocial.common.CommonDataStructure;
@@ -76,6 +78,7 @@ public class MarrySocialMainActivity extends FragmentActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+        redirectToCorrespondActivityIfNeeded();
         // initViewPager();
     }
 
@@ -209,5 +212,23 @@ public class MarrySocialMainActivity extends FragmentActivity implements
     private void startToInviteFriends() {
         Intent intent = new Intent(this, InviteFriendsActivity.class);
         startActivity(intent);
+    }
+
+    private void redirectToCorrespondActivityIfNeeded() {
+        SharedPreferences prefs = getSharedPreferences(
+                CommonDataStructure.PREFS_LAIQIAN_DEFAULT, MODE_PRIVATE);
+        int login_status = prefs.getInt(CommonDataStructure.LOGINSTATUS, 0);
+        switch (login_status) {
+        case CommonDataStructure.LONIN_STATUS_LOGOUT: {
+            redirectToRegisterActivity();
+            break;
+        }
+        }
+    }
+
+    private void redirectToRegisterActivity() {
+        Intent intent = new Intent(this, RegisterActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

@@ -48,6 +48,7 @@ public class ContactsInfo {
     private int mDirectFriendsCount;
     private String mIndirectId;
     private String mHeaderBkgIndex;
+    private String mIntroduce;
 
     public String getUid() {
         return mUid;
@@ -167,5 +168,13 @@ public class ContactsInfo {
 
     public void setHeaderBkgIndex(String mHeaderBkgIndex) {
         this.mHeaderBkgIndex = mHeaderBkgIndex;
+    }
+
+    public String getIntroduce() {
+        return mIntroduce;
+    }
+
+    public void setIntroduce(String mIntroduce) {
+        this.mIntroduce = mIntroduce;
     }
 }

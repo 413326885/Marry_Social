@@ -1,7 +1,12 @@
 package com.dhn.marrysocial.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -9,7 +14,9 @@ import android.view.Window;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.dhn.marrysocial.MarrySocialMainActivity;
 import com.dhn.marrysocial.R;
+import com.dhn.marrysocial.common.CommonDataStructure;
 
 public class SettingsActivity extends Activity implements OnClickListener {
 
@@ -64,6 +71,7 @@ public class SettingsActivity extends Activity implements OnClickListener {
             break;
         }
         case R.id.logout: {
+            showLogoutDialog(this);
             break;
         }
         default:
@@ -79,5 +87,34 @@ public class SettingsActivity extends Activity implements OnClickListener {
     private void startToViewProductDesc() {
         Intent intent = new Intent(this, ProductDescActivity.class);
         startActivity(intent);
+    }
+
+    private void showLogoutDialog(final Context context) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("退出登录");
+        builder.setMessage("退出当前账号？");
+        builder.setNegativeButton("取消", null);
+        builder.setPositiveButton("确定", new android.content.DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                SharedPreferences prefs = context
+                        .getSharedPreferences(
+                                CommonDataStructure.PREFS_LAIQIAN_DEFAULT,
+                                MODE_PRIVATE);
+                Editor editor = prefs.edit();
+                editor.putInt(CommonDataStructure.LOGINSTATUS,
+                        CommonDataStructure.LONIN_STATUS_LOGOUT);
+                editor.commit();
+                redirectToMainActivity();
+            }
+        });
+        builder.create().show();
+    }
+
+    private void redirectToMainActivity() {
+        Intent intent = new Intent(this, MarrySocialMainActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

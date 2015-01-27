@@ -31,6 +31,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 
     private static final int POOL_SIZE = 2;
     private static final int LOGIN_SUCCESS = 100;
+    private static final int LOGIN_FAIL = 101;
 
     private EditText mPhoneNumEditText;
     private EditText mPasswordEditText;
@@ -63,6 +64,10 @@ public class LoginActivity extends Activity implements OnClickListener {
                 startToMainActivity();
                 break;
             }
+            case LOGIN_FAIL: {
+                Toast.makeText(LoginActivity.this, "手机号与密码不匹配", 500).show();
+                break;
+            }
             default:
                 break;
             }
@@ -84,6 +89,16 @@ public class LoginActivity extends Activity implements OnClickListener {
         mForgetPassword.setOnClickListener(this);
         mReturnBack.setOnClickListener(this);
 
+        SharedPreferences prefs = LoginActivity.this
+                .getSharedPreferences(
+                        CommonDataStructure.PREFS_LAIQIAN_DEFAULT,
+                        MODE_PRIVATE);
+        mUid = prefs.getString(CommonDataStructure.UID, "");
+        mPhoneNum = prefs.getString(CommonDataStructure.PHONE, "");
+        if (mPhoneNum.length() != 0) {
+            mPhoneNumEditText.setText(mPhoneNum);
+            mPasswordEditText.requestFocus();
+        }
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
                 .availableProcessors() * POOL_SIZE);
     }
@@ -157,6 +172,8 @@ public class LoginActivity extends Activity implements OnClickListener {
                     phoneNum, password, macAddr);
             if (mUid != null && mUid.length() != 0) {
                 mHandler.sendEmptyMessage(LOGIN_SUCCESS);
+            } else {
+                mHandler.sendEmptyMessage(LOGIN_FAIL);
             }
         }
     }

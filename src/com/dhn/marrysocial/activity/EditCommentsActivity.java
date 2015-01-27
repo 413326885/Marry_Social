@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 
 import com.dhn.marrysocial.R;
 import com.dhn.marrysocial.adapter.EditCommentsPhotoViewAdapter;
+import com.dhn.marrysocial.base.ContactsInfo;
 import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
 import com.dhn.marrysocial.provider.DBContentChangeProvider;
@@ -80,6 +81,23 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
             ImageColumns.ORIENTATION, ImageColumns.BUCKET_ID,
             ImageColumns.SIZE, };
 
+    private static final String[] CONTACTS_PROJECTION = {
+        MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_PHONE_NUM,
+        MarrySocialDBHelper.KEY_NIKENAME, MarrySocialDBHelper.KEY_REALNAME,
+        MarrySocialDBHelper.KEY_FIRST_DIRECT_FRIEND,
+        MarrySocialDBHelper.KEY_DIRECT_FRIENDS,
+        MarrySocialDBHelper.KEY_INDIRECT_ID,
+        MarrySocialDBHelper.KEY_DIRECT_FRIENDS_COUNT,
+        MarrySocialDBHelper.KEY_HEADPIC, MarrySocialDBHelper.KEY_GENDER,
+        MarrySocialDBHelper.KEY_ASTRO, MarrySocialDBHelper.KEY_HOBBY,
+        MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX,
+        MarrySocialDBHelper.KEY_INTRODUCT };
+    
+    private static final String[] HEAD_PICS_PROJECTION = {
+        MarrySocialDBHelper.KEY_UID,
+        MarrySocialDBHelper.KEY_HEAD_PIC_BITMAP,
+        MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH,
+        MarrySocialDBHelper.KEY_PHOTO_REMOTE_THUMB_PATH };
     // static final String[] INSERT_COMMENT_PROJECTION = {
     // MarrySocialDBHelper.KEY_UID,
     // MarrySocialDBHelper.KEY_AVATAR, MarrySocialDBHelper.KEY_NAME,
@@ -110,6 +128,9 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
     private String mUid;
     private String mAuthorName;
 
+    private ContactsInfo mUserInfo;
+    private Bitmap mUserHeadPic = null;
+    private MarrySocialDBHelper mDBHelper;
     private ExecutorService mExecutorService;
 
     private ArrayList<Bitmap> mCropCenterThumbBitmaps = new ArrayList<Bitmap>();
@@ -147,6 +168,7 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.edit_info_comments_layout);
+
         mCommentReturn = (RelativeLayout) findViewById(R.id.edit_info_comment_return);
         mCommentPersonPic = (RoundedImageView) findViewById(R.id.edit_info_comments_person_pic);
         mCommentPersonName = (TextView) findViewById(R.id.edit_info_comments_person_name);
@@ -188,6 +210,8 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
                 }
             }
         };
+        
+        mDBHelper = MarrySocialDBHelper.newInstance(this);
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
                 .availableProcessors() * POOL_SIZE);
 
@@ -195,6 +219,11 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
                 CommonDataStructure.PREFS_LAIQIAN_DEFAULT, this.MODE_PRIVATE);
         mUid = prefs.getString(CommonDataStructure.UID, "");
         mAuthorName = prefs.getString(CommonDataStructure.AUTHOR_NAME, "");
+
+        mUserInfo = loadUserInfoFromDB(mUid);
+        mUserHeadPic = loadUserHeadPicFromDB(mUid);
+        mCommentPersonPic.setImageBitmap(mUserHeadPic);
+        mCommentPersonName.setText(mUserInfo.getRealName());
     }
 
     @Override
@@ -482,5 +511,89 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
     private void finishActivity() {
         this.finish();
     }
+    
+    private Bitmap loadUserHeadPicFromDB(String uid) {
 
+        Bitmap headpic = null;
+
+        String whereClause = MarrySocialDBHelper.KEY_UID + " = " + uid;
+        Cursor cursor = mDBHelper
+                .query(MarrySocialDBHelper.DATABASE_HEAD_PICS_TABLE,
+                        HEAD_PICS_PROJECTION, whereClause, null, null, null,
+                        null, null);
+
+        if (cursor == null) {
+            Log.w(TAG, "nannan query fail!");
+            return null;
+        }
+
+        try {
+            cursor.moveToNext();
+            byte[] in = cursor.getBlob(1);
+            headpic = BitmapFactory.decodeByteArray(in, 0, in.length);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return headpic;
+    }
+    
+    private ContactsInfo loadUserInfoFromDB(String uid) {
+
+        ContactsInfo userInfo = new ContactsInfo();
+
+        String whereClause = MarrySocialDBHelper.KEY_UID + " = " + uid;
+
+        Cursor cursor = mDBHelper.query(
+                MarrySocialDBHelper.DATABASE_CONTACTS_TABLE,
+                CONTACTS_PROJECTION, whereClause, null, null, null, null, null);
+        if (cursor == null) {
+            Log.w(TAG, "nannan query fail!");
+            return null;
+        }
+
+        try {
+            cursor.moveToNext();
+
+            String phoneNum = cursor.getString(1);
+            String nickname = cursor.getString(2);
+            String realname = cursor.getString(3);
+            String firstDirectFriend = cursor.getString(4);
+            String directFriends = cursor.getString(5);
+            String indirectId = cursor.getString(6);
+            int directFriendsCount = cursor.getInt(7);
+            int avatar = Integer.valueOf(cursor.getInt(8));
+            int gender = Integer.valueOf(cursor.getInt(9));
+            int astro = Integer.valueOf(cursor.getInt(10));
+            int hobby = Integer.valueOf(cursor.getInt(11));
+            String headerBkg = cursor.getString(12);
+            String introduce = cursor.getString(13);
+
+            userInfo.setUid(uid);
+            userInfo.setPhoneNum(phoneNum);
+            userInfo.setNikeName(nickname);
+            userInfo.setRealName(realname);
+            userInfo.setHeadPic(avatar);
+            userInfo.setGender(gender);
+            userInfo.setAstro(astro);
+            userInfo.setHobby(hobby);
+            userInfo.setIntroduce(introduce);
+            userInfo.setIndirectId(indirectId);
+            userInfo.setFirstDirectFriend(firstDirectFriend);
+            userInfo.setDirectFriends(directFriends);
+            userInfo.setDirectFriendsCount(directFriendsCount);
+            userInfo.setHeaderBkgIndex(headerBkg);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return userInfo;
+    }
 }
