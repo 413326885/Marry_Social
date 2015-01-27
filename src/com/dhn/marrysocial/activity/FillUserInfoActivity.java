@@ -180,7 +180,7 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
                                 CommonDataStructure.PREFS_LAIQIAN_DEFAULT,
                                 MODE_PRIVATE);
                 Editor editor = prefs.edit();
-                editor.putInt(CommonDataStructure.LOGINSTATUS, 2);
+                editor.putInt(CommonDataStructure.LOGINSTATUS, CommonDataStructure.LONIN_STATUS_FILLED_INFO);
                 editor.commit();
                 startToInviteFriends();
                 break;
@@ -279,10 +279,10 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
             break;
         }
         case R.id.userinfo_invite_friends: {
-            startToInviteFriends();
-//            if (inUserInfoValid()) {
-//                mHandler.sendEmptyMessage(START_TO_UPLOAD_USER_INFO);
-//            }
+//            startToInviteFriends();
+            if (inUserInfoValid()) {
+                mHandler.sendEmptyMessage(START_TO_UPLOAD_USER_INFO);
+            }
             break;
         }
         default:

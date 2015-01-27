@@ -296,6 +296,10 @@ public class CommonDataStructure {
 
     public static final String KEY_SECRET_CODE = "marrysocial";
 
+    public static final int LOGIN_STATUS_REGISTERED = 1;
+    public static final int LONIN_STATUS_FILLED_INFO = 2;
+    public static final int LOGIN_STATUS_LOGIN = 3;
+    public static final int LONIN_STATUS_LOGOUT = 4;
     // public static final Uri REPLYURL = Uri.parse("content://"
     // + DataSetProvider.AUTHORITY + "/"
     // + MarrySocialDBHelper.DATABASE_COMMENTS_TABLE);

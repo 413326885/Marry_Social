@@ -5,6 +5,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
+import com.dhn.marrysocial.MarrySocialMainActivity;
 import com.dhn.marrysocial.R;
 import com.dhn.marrysocial.adapter.InviteFriendsListAdapter;
 import com.dhn.marrysocial.base.ChatMsgItem;
@@ -15,7 +16,9 @@ import com.dhn.marrysocial.utils.Utils;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -26,6 +29,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -35,11 +39,10 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
     private static final String TAG = "InviteFriendsActivity";
 
     private static final String[] DIRECT_PROJECTION = {
-        MarrySocialDBHelper.KEY_PHONE_NUM,
-        MarrySocialDBHelper.KEY_REALNAME,
-        MarrySocialDBHelper.KEY_DIRECT_ID,
-        MarrySocialDBHelper.KEY_DIRECT_UID
-        };
+            MarrySocialDBHelper.KEY_PHONE_NUM,
+            MarrySocialDBHelper.KEY_REALNAME,
+            MarrySocialDBHelper.KEY_DIRECT_ID,
+            MarrySocialDBHelper.KEY_DIRECT_UID };
 
     private static final int POOL_SIZE = 10;
     private static final int START_TO_UPLOAD_CONTACTS = 100;
@@ -54,8 +57,9 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
     private RelativeLayout mReturnBtn;
     private RelativeLayout mShareBtn;
     private ListView mListView;
+    private Button mInviteFinishBtn;
     private InviteFriendsListAdapter mListAdapter;
-    
+
     private ArrayList<CommonDataStructure.ContactEntry> mContactList = new ArrayList<CommonDataStructure.ContactEntry>();
 
     private Handler mHandler = new Handler() {
@@ -95,9 +99,11 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
         mReturnBtn = (RelativeLayout) findViewById(R.id.invite_friends_return);
         mShareBtn = (RelativeLayout) findViewById(R.id.share_group);
         mListView = (ListView) findViewById(R.id.invite_friends_listView);
+        mInviteFinishBtn = (Button) findViewById(R.id.invite_friends_finish);
 
         mReturnBtn.setOnClickListener(this);
         mShareBtn.setOnClickListener(this);
+        mInviteFinishBtn.setOnClickListener(this);
 
         mListAdapter = new InviteFriendsListAdapter(this);
         mListAdapter.setDataSource(mContactList);
@@ -126,6 +132,18 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
         case R.id.share_group: {
             break;
         }
+        case R.id.invite_friends_finish: {
+            SharedPreferences prefs = InviteFriendsActivity.this
+                    .getSharedPreferences(
+                            CommonDataStructure.PREFS_LAIQIAN_DEFAULT,
+                            MODE_PRIVATE);
+            Editor editor = prefs.edit();
+            editor.putInt(CommonDataStructure.LOGINSTATUS,
+                    CommonDataStructure.LOGIN_STATUS_LOGIN);
+            editor.commit();
+            redirectToMainActivity();
+            break;
+        }
         default:
             break;
         }
@@ -146,11 +164,11 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
                 mHandler.sendEmptyMessage(READ_USER_CONTACTS_FAIL);
                 return;
             }
-//            for (CommonDataStructure.ContactEntry entry : contacts) {
-//                if (!isPhoneNumExistInDirectDB(entry.contact_phone_number)) {
-//                    insertContactsToDirectDB(entry);
-//                }
-//            }
+            // for (CommonDataStructure.ContactEntry entry : contacts) {
+            // if (!isPhoneNumExistInDirectDB(entry.contact_phone_number)) {
+            // insertContactsToDirectDB(entry);
+            // }
+            // }
             ArrayList<CommonDataStructure.ContactEntry> resultEntry = Utils
                     .uploadUserContacts(
                             CommonDataStructure.URL_UPLOAD_CONTACTS, uid,
@@ -237,9 +255,11 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
         ContentValues insertValues = new ContentValues();
         insertValues.put(MarrySocialDBHelper.KEY_PHONE_NUM,
                 contact.contact_phone_number);
-        insertValues.put(MarrySocialDBHelper.KEY_REALNAME, contact.contact_name);
+        insertValues
+                .put(MarrySocialDBHelper.KEY_REALNAME, contact.contact_name);
         insertValues.put(MarrySocialDBHelper.KEY_DIRECT_ID, contact.direct_id);
-        insertValues.put(MarrySocialDBHelper.KEY_DIRECT_UID, contact.direct_uid);
+        insertValues
+                .put(MarrySocialDBHelper.KEY_DIRECT_UID, contact.direct_uid);
 
         mDBHelper.insert(MarrySocialDBHelper.DATABASE_DIRECT_TABLE,
                 insertValues);
@@ -289,11 +309,11 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
 
         try {
             cursor = mDBHelper.query(MarrySocialDBHelper.DATABASE_DIRECT_TABLE,
-                    DIRECT_PROJECTION, null, null, null, null, null,
-                    null);
+                    DIRECT_PROJECTION, null, null, null, null, null, null);
 
             if (cursor == null) {
-                Log.e(TAG, "nannan loadContactsFromDirectDB()..  cursor == null");
+                Log.e(TAG,
+                        "nannan loadContactsFromDirectDB()..  cursor == null");
                 return;
             }
 
@@ -313,5 +333,11 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
                 cursor.close();
             }
         }
+    }
+
+    private void redirectToMainActivity() {
+        Intent intent = new Intent(this, MarrySocialMainActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

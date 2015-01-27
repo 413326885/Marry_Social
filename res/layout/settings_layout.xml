@@ -4,42 +4,45 @@
     android:layout_height="match_parent" >
 
     <RelativeLayout
-        android:id="@+id/settings_return"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/gray_bkg_selector"
-        android:clickable="true" >
+        android:id="@+id/settings_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="95px"
+        android:background="#991abc9c" >
 
-        <ImageView
-            android:id="@+id/settings_arrow"
+        <RelativeLayout
+            android:id="@+id/settings_return"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:paddingBottom="10dp"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
-            android:paddingTop="10dp"
-            android:src="@drawable/ic_return_button" />
+            android:layout_height="match_parent"
+            android:background="@drawable/gray_bkg_selector"
+            android:clickable="true" >
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@id/settings_arrow"
-            android:alpha="0.8"
-            android:paddingBottom="10dp"
-            android:paddingLeft="8dp"
-            android:paddingRight="12dp"
-            android:paddingTop="10dp"
-            android:text="设置"
-            android:textSize="16dp" />
+            <ImageView
+                android:id="@+id/settings_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:src="@drawable/ic_return_button" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/settings_arrow"
+                android:gravity="center_vertical"
+                android:paddingRight="12dp"
+                android:text="设置"
+                android:textSize="16dp"
+                android:textColor="@color/white" />
+        </RelativeLayout>
     </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/barcode_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/settings_return" >
+        android:layout_below="@id/settings_toolbar" >
 
         <ImageView
             android:id="@+id/barcode"

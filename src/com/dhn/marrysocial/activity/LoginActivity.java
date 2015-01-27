@@ -6,7 +6,7 @@ import java.util.concurrent.Executors;
 import com.dhn.marrysocial.MarrySocialMainActivity;
 import com.dhn.marrysocial.R;
 import com.dhn.marrysocial.common.CommonDataStructure;
-import com.dhn.marrysocial.utils.AESecretUtils;
+import com.dhn.marrysocial.utils.MD5SecretUtils;
 import com.dhn.marrysocial.utils.Utils;
 
 import android.app.Activity;
@@ -57,8 +57,10 @@ public class LoginActivity extends Activity implements OnClickListener {
                 Editor editor = prefs.edit();
                 editor.putString(CommonDataStructure.UID, mUid);
                 editor.putString(CommonDataStructure.PHONE, mPhoneNum);
-                editor.putBoolean(CommonDataStructure.LOGINSTATUS, true);
+                editor.putInt(CommonDataStructure.LOGINSTATUS,
+                        CommonDataStructure.LOGIN_STATUS_LOGIN);
                 editor.commit();
+                startToMainActivity();
                 break;
             }
             default:
@@ -90,30 +92,24 @@ public class LoginActivity extends Activity implements OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
         case R.id.login_btn: {
-            startToMainActivity();
+            if (!isPhoneNumValid()) {
+                mPhoneNumEditText.requestFocus();
+                break;
+            }
+            if (!isPasswordValid()) {
+                mPasswordEditText.requestFocus();
+                break;
+            }
+
+            mUploadProgressDialog = ProgressDialog.show(this, "用户登录",
+                    "正在登录系统，请稍后...", false, true);
+            mPassword = MD5SecretUtils.encrypt(mPasswordEditText.getText()
+                    .toString());
+            String macAddr = Utils.getMacAddress(this);
+            mPhoneNum = mPhoneNumEditText.getText().toString();
+            mExecutorService.execute(new LoginSystem(mPhoneNum, mPassword,
+                    macAddr));
             break;
-//            if (!isPhoneNumValid()) {
-//                mPhoneNumEditText.requestFocus();
-//                break;
-//            }
-//            if (!isPasswordValid()) {
-//                mPasswordEditText.requestFocus();
-//                break;
-//            }
-//
-//            mUploadProgressDialog = ProgressDialog.show(this, "用户登录",
-//                    "正在登录系统，请稍后...", false, true);
-//            try {
-//                mPassword = AESecretUtils.encrypt(
-//                        CommonDataStructure.KEY_SECRET_CODE, mPasswordEditText
-//                                .getText().toString());
-//            } catch (Exception e) {
-//            }
-//            String macAddr = Utils.getMacAddress(this);
-//            mPhoneNum = mPhoneNumEditText.getText().toString();
-//            mExecutorService.execute(new LoginSystem(mPhoneNum, mPassword,
-//                    macAddr));
-//            break;
         }
         case R.id.forget_password: {
             break;

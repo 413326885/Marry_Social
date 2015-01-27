@@ -3,6 +3,7 @@ package com.dhn.marrysocial;
 import java.util.ArrayList;
 
 import com.dhn.marrysocial.activity.ContactsInfoActivity;
+import com.dhn.marrysocial.activity.InviteFriendsActivity;
 import com.dhn.marrysocial.activity.SettingsActivity;
 import com.dhn.marrysocial.adapter.ViewPagerFragmentAdapter;
 import com.dhn.marrysocial.common.CommonDataStructure;
@@ -30,7 +31,8 @@ import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-public class MarrySocialMainActivity extends FragmentActivity implements OnClickListener {
+public class MarrySocialMainActivity extends FragmentActivity implements
+        OnClickListener {
 
     private static final String TAG = "MarrySocialMainActivity";
 
@@ -55,8 +57,7 @@ public class MarrySocialMainActivity extends FragmentActivity implements OnClick
         setContentView(R.layout.marrysocial_main);
 
         SharedPreferences prefs = this.getSharedPreferences(
-                CommonDataStructure.PREFS_LAIQIAN_DEFAULT,
-                MODE_PRIVATE);
+                CommonDataStructure.PREFS_LAIQIAN_DEFAULT, MODE_PRIVATE);
         mUid = prefs.getString(CommonDataStructure.UID, "");
 
         mSettings = (ImageButton) findViewById(R.id.actionbar_setting);
@@ -145,9 +146,10 @@ public class MarrySocialMainActivity extends FragmentActivity implements OnClick
     }
 
     private void downloadUserContacts() {
-        Intent serviceIntent = new Intent(this, DownloadIndirectFriendsIntentServices.class);
+        Intent serviceIntent = new Intent(this,
+                DownloadIndirectFriendsIntentServices.class);
         startService(serviceIntent);
-      }
+    }
 
     private void startDownloadNoticesServices() {
         Intent service = new Intent(getApplicationContext(),
@@ -175,7 +177,7 @@ public class MarrySocialMainActivity extends FragmentActivity implements OnClick
 
     @Override
     public void onClick(View arg0) {
-        switch(arg0.getId()) {
+        switch (arg0.getId()) {
         case R.id.actionbar_setting: {
             startToViewSettings();
             break;
@@ -185,6 +187,7 @@ public class MarrySocialMainActivity extends FragmentActivity implements OnClick
             break;
         }
         case R.id.actionbar_invite_friends: {
+            startToInviteFriends();
             break;
         }
         default:
@@ -200,6 +203,11 @@ public class MarrySocialMainActivity extends FragmentActivity implements OnClick
 
     private void startToViewSettings() {
         Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
+    private void startToInviteFriends() {
+        Intent intent = new Intent(this, InviteFriendsActivity.class);
         startActivity(intent);
     }
 }

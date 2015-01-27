@@ -46,6 +46,7 @@ public class SettingsActivity extends Activity implements OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
         case R.id.settings_return: {
+            this.finish();
             break;
         }
         case R.id.version_update: {
