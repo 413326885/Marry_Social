@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.dhn.marrysocial.R;
 import com.dhn.marrysocial.adapter.DynamicInfoListAdapter.ViewHolder;
+import com.dhn.marrysocial.base.AsyncHeadPicBitmapLoader;
 import com.dhn.marrysocial.base.ReplysItem;
 
 public class ReplyListAdapter extends BaseAdapter {
@@ -21,10 +22,12 @@ public class ReplyListAdapter extends BaseAdapter {
     private Context mContext;
     private LayoutInflater mInflater;
     private ArrayList<ReplysItem> mReplyItems = new ArrayList<ReplysItem>();
+    private AsyncHeadPicBitmapLoader mHeadPicBitmapLoader;
 
     public ReplyListAdapter(Context context) {
         mContext = context;
         mInflater = LayoutInflater.from(mContext);
+        mHeadPicBitmapLoader = new AsyncHeadPicBitmapLoader(mContext);
     }
 
     public void setReplyDataSource(ArrayList<ReplysItem> source) {
@@ -82,5 +85,6 @@ public class ReplyListAdapter extends BaseAdapter {
         holder.reply_person_name.setText(mReplyItems.get(position).getNickname());
         holder.reply_content.setText(mReplyItems.get(position).getReplyContents());
         holder.reply_time.setText(mReplyItems.get(position).getReplyTime());
+        mHeadPicBitmapLoader.loadImageBitmap(holder.reply_person_pic, mReplyItems.get(position).getUid());
     }
 }

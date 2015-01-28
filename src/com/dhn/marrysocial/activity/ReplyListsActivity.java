@@ -7,6 +7,7 @@ import com.dhn.marrysocial.adapter.ReplyListAdapter;
 import com.dhn.marrysocial.base.ReplysItem;
 import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
+import com.dhn.marrysocial.roundedimageview.RoundedImageView;
 import com.dhn.marrysocial.services.UploadCommentsAndBravosAndReplysIntentService;
 import com.dhn.marrysocial.utils.Utils;
 
@@ -16,6 +17,8 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -26,6 +29,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 public class ReplyListsActivity extends Activity implements OnClickListener {
 
@@ -36,6 +40,12 @@ public class ReplyListsActivity extends Activity implements OnClickListener {
             MarrySocialDBHelper.KEY_REPLY_CONTENTS,
             MarrySocialDBHelper.KEY_ADDED_TIME };
 
+    private static final String[] HEAD_PICS_PROJECTION = {
+            MarrySocialDBHelper.KEY_UID,
+            MarrySocialDBHelper.KEY_HEAD_PIC_BITMAP,
+            MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH,
+            MarrySocialDBHelper.KEY_PHOTO_REMOTE_THUMB_PATH };
+
     private final static int UPLOAD_REPLY = 100;
 
     private ListView mListView;
@@ -43,9 +53,12 @@ public class ReplyListsActivity extends Activity implements OnClickListener {
     private RelativeLayout mReplyReturnBtn;
     private ImageView mReplySendBtn;
     private EditText mReplyContent;
+    private RoundedImageView mAuthorHeaderView;
+    private TextView mAuthorNameView;
 
     private String mUid;
     private String mAuthorName;
+    private Bitmap mUserHeadPic = null;
 
     private MarrySocialDBHelper mDBHelper;
     private String mCommentId;
@@ -54,7 +67,7 @@ public class ReplyListsActivity extends Activity implements OnClickListener {
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(android.os.Message msg) {
-            switch(msg.what) {
+            switch (msg.what) {
             case UPLOAD_REPLY: {
                 loadReplysFromDB(mCommentId);
                 mListViewAdapter.notifyDataSetChanged();
@@ -78,23 +91,34 @@ public class ReplyListsActivity extends Activity implements OnClickListener {
         Intent data = getIntent();
         mCommentId = data.getStringExtra(MarrySocialDBHelper.KEY_COMMENT_ID);
 
+        mDBHelper = MarrySocialDBHelper.newInstance(this);
+        SharedPreferences prefs = this.getSharedPreferences(
+                CommonDataStructure.PREFS_LAIQIAN_DEFAULT, this.MODE_PRIVATE);
+        mUid = prefs.getString(CommonDataStructure.UID, "");
+        mAuthorName = prefs.getString(CommonDataStructure.AUTHOR_NAME, "");
+        mUserHeadPic = loadUserHeadPicFromDB(mUid);
+
+        mAuthorHeaderView = (RoundedImageView) this
+                .findViewById(R.id.reply_list_person_pic);
+        mAuthorNameView = (TextView) this
+                .findViewById(R.id.reply_list_person_name);
+        mAuthorHeaderView.setImageBitmap(mUserHeadPic);
+        mAuthorNameView.setText(mAuthorName);
+
         mListView = (ListView) this.findViewById(R.id.reply_listview);
         mListViewAdapter = new ReplyListAdapter(this);
         mListViewAdapter.setReplyDataSource(mReplyItems);
         mListView.setAdapter(mListViewAdapter);
 
-        mReplyReturnBtn = (RelativeLayout) this.findViewById(R.id.reply_list_return);
-        mReplySendBtn = (ImageView) this.findViewById(R.id.reply_list_reply_send);
-        mReplyContent = (EditText) this.findViewById(R.id.reply_list_reply_contents);
+        mReplyReturnBtn = (RelativeLayout) this
+                .findViewById(R.id.reply_list_return);
+        mReplySendBtn = (ImageView) this
+                .findViewById(R.id.reply_list_reply_send);
+        mReplyContent = (EditText) this
+                .findViewById(R.id.reply_list_reply_contents);
         mReplyReturnBtn.setOnClickListener(this);
         mReplySendBtn.setOnClickListener(this);
 
-        mDBHelper = MarrySocialDBHelper.newInstance(this);
-        SharedPreferences prefs = this.getSharedPreferences(
-                CommonDataStructure.PREFS_LAIQIAN_DEFAULT,
-                this.MODE_PRIVATE);
-        mUid = prefs.getString(CommonDataStructure.UID, "");
-        mAuthorName = prefs.getString(CommonDataStructure.AUTHOR_NAME, "");
     }
 
     @Override
@@ -106,7 +130,7 @@ public class ReplyListsActivity extends Activity implements OnClickListener {
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        switch(id) {
+        switch (id) {
         case R.id.reply_list_return: {
             Utils.hideSoftInputMethod(mReplyContent);
             this.finish();
@@ -151,8 +175,7 @@ public class ReplyListsActivity extends Activity implements OnClickListener {
                 item.setReplyContents(cursor.getString(2));
                 item.setUid(cursor.getString(0));
                 String reply_time = cursor.getString(3);
-                item.setReplyTime(Utils.getAddedTimeTitle(this,
-                        reply_time));
+                item.setReplyTime(Utils.getAddedTimeTitle(this, reply_time));
                 mReplyItems.add(item);
             }
 
@@ -175,7 +198,8 @@ public class ReplyListsActivity extends Activity implements OnClickListener {
                 reply.getReplyContents());
         insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
                 Long.toString(System.currentTimeMillis() / 1000));
-        insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS, MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD);
+        insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
+                MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD);
 
         ContentResolver resolver = this.getContentResolver();
         resolver.insert(CommonDataStructure.REPLYURL, insertValues);
@@ -187,5 +211,34 @@ public class ReplyListsActivity extends Activity implements OnClickListener {
                 UploadCommentsAndBravosAndReplysIntentService.class);
         serviceIntent.putExtra(CommonDataStructure.KEY_UPLOAD_TYPE, uploadType);
         this.startService(serviceIntent);
+    }
+
+    private Bitmap loadUserHeadPicFromDB(String uid) {
+
+        Bitmap headpic = null;
+
+        String whereClause = MarrySocialDBHelper.KEY_UID + " = " + uid;
+        Cursor cursor = mDBHelper
+                .query(MarrySocialDBHelper.DATABASE_HEAD_PICS_TABLE,
+                        HEAD_PICS_PROJECTION, whereClause, null, null, null,
+                        null, null);
+
+        if (cursor == null) {
+            Log.w(TAG, "nannan query fail!");
+            return null;
+        }
+
+        try {
+            cursor.moveToNext();
+            byte[] in = cursor.getBlob(1);
+            headpic = BitmapFactory.decodeByteArray(in, 0, in.length);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return headpic;
     }
 }

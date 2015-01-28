@@ -14,7 +14,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:paddingLeft="8dp"
             android:src="@drawable/ic_actionbar_logo" />
 
         <TextView
@@ -25,6 +24,7 @@
             android:layout_toRightOf="@id/actionbar_logo"
             android:paddingLeft="8dp"
             android:text="来钱"
+            android:visibility="gone"
             android:textColor="@android:color/white"
             android:textSize="18sp" />
 

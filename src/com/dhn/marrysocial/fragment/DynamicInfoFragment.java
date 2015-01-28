@@ -85,7 +85,6 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
             MarrySocialDBHelper.KEY_ASTRO, MarrySocialDBHelper.KEY_HOBBY };
 
     private RefreshListView mListView;
-    // private ListView mListView;
     private DynamicInfoListAdapter mListViewAdapter;
     private ImageView mEditComment;
 
@@ -99,16 +98,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
 
     private float mTouchDownY = 0.0f;
     private float mTouchMoveY = 0.0f;
-    // private int mCurrentScrollState = 0;
-    // private boolean mIsTouchUp = true;
     private boolean mIsFingUp = false;
-
-    // private static int SCROLL_STATE_TOUCH_SCROLL =
-    // OnScrollListener.SCROLL_STATE_TOUCH_SCROLL;
-    // private static int SCROLL_STATE_IDLE =
-    // OnScrollListener.SCROLL_STATE_IDLE;
-    // private static int SCROLL_STATE_FLING =
-    // OnScrollListener.SCROLL_STATE_FLING;
 
     private final static int TOUCH_FING_UP = 100;
     private final static int TOUCH_FING_DOWN = 101;
@@ -121,16 +111,13 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
     private final static int SELECT_SPECIFIED_LIST_ITEM = 107;
     private final static int UPDATE_DYNAMIC_INFO = 108;
     private final static int SEND_REPLY_FINISH = 109;
+    private final static int REFRESH_HEADER_PIC = 110;
 
     private AlphaAnimation mHideEditorAlphaAnimation;
     private AlphaAnimation mShowEditorAlphaAnimation;
 
     private TranslateAnimation mHideEditorTransAnimation;
     private TranslateAnimation mShowEditorTransAnimation;
-
-    // public static final Uri mCommentUri = Uri.parse("content://"
-    // + DataSetProvider.AUTHORITY + "/"
-    // + MarrySocialDBHelper.DATABASE_COMMENTS_TABLE);
 
     private MarrySocialDBHelper mDBHelper;
     private ExecutorService mExecutorService;
@@ -141,6 +128,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
     private HashMap<String, ContactsInfo> mUserInfoEntrys = new HashMap<String, ContactsInfo>();
 
     private DataSetChangeObserver mChangeObserver;
+    private DataSetChangeObserver mHeaderPicChangeObserver;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -166,9 +154,14 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
                 uploadCommentsOrBravosOrReplys(CommonDataStructure.KEY_COMMENTS);
                 mCommentEntrys.clear();
                 mCommentEntrys.addAll(loadCommentsItemFromDB());
-                mListViewAdapter.clearHeadPicsCache();
                 mListViewAdapter.notifyDataSetChanged();
                 Log.e(TAG, "nannan UPLOAD_COMMENT..");
+                break;
+            }
+
+            case REFRESH_HEADER_PIC: {
+                mListViewAdapter.clearHeadPicsCache();
+                mListViewAdapter.notifyDataSetChanged();
                 break;
             }
 
@@ -259,7 +252,8 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
                 .availableProcessors() * CommonDataStructure.THREAD_POOL_SIZE);
 
-        mChangeObserver = new DataSetChangeObserver(mHandler);
+        mChangeObserver = new DataSetChangeObserver(mHandler, UPLOAD_COMMENT);
+        mHeaderPicChangeObserver = new DataSetChangeObserver(mHandler, REFRESH_HEADER_PIC);
         this.getActivity()
                 .getContentResolver()
                 .registerContentObserver(CommonDataStructure.COMMENTURL, true,
@@ -275,7 +269,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
         this.getActivity()
                 .getContentResolver()
                 .registerContentObserver(CommonDataStructure.HEADPICSURL, true,
-                        mChangeObserver);
+                        mHeaderPicChangeObserver);
         Log.e(TAG, "nannan oncreate()..");
 
         SharedPreferences prefs = getActivity().getSharedPreferences(
@@ -429,20 +423,30 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
     private class DataSetChangeObserver extends ContentObserver {
 
         private Handler handler;
+        private int status;
 
-        public DataSetChangeObserver(Handler handler) {
+        public DataSetChangeObserver(Handler handler, int status) {
             super(handler);
             this.handler = handler;
+            this.status = status;
         }
 
         @Override
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
             // if (mContentDirty.compareAndSet(false, true)) {
-            handler.sendEmptyMessage(UPLOAD_COMMENT);
-            // handler.sendEmptyMessage(UPLOAD_BRAVO);
-            // handler.sendEmptyMessage(UPLOAD_REPLY);
-            Log.e(TAG, "nannan onChange()..");
+            switch(status) {
+            case REFRESH_HEADER_PIC: {
+                handler.sendEmptyMessage(REFRESH_HEADER_PIC);
+                break;
+            }
+            case UPLOAD_COMMENT: {
+                handler.sendEmptyMessage(UPLOAD_COMMENT);
+                break;
+            }
+            default:
+                break;
+            }
             // }
         }
     }
@@ -612,7 +616,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
             mHandler.sendEmptyMessageDelayed(SHOW_SOFT_INPUT_METHOD, 50);
             Message msg = mHandler.obtainMessage();
             msg.what = SELECT_SPECIFIED_LIST_ITEM;
-            msg.arg1 = position;
+            msg.arg1 = position + 1;
             mHandler.sendMessage(msg);
         }
     };

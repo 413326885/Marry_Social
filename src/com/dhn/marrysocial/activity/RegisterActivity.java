@@ -210,5 +210,6 @@ public class RegisterActivity extends Activity implements OnClickListener {
     private void startToLogin() {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
+        finish();
     }
 }
