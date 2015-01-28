@@ -72,7 +72,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
 
     private static final String[] CONTACTS_PROJECTION = {
             MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_PHONE_NUM,
-            MarrySocialDBHelper.KEY_NIKENAME, MarrySocialDBHelper.KEY_REALNAME,
+            MarrySocialDBHelper.KEY_NICKNAME, MarrySocialDBHelper.KEY_REALNAME,
             MarrySocialDBHelper.KEY_FIRST_DIRECT_FRIEND,
             MarrySocialDBHelper.KEY_DIRECT_FRIENDS,
             MarrySocialDBHelper.KEY_INDIRECT_ID,
@@ -85,7 +85,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
     private final String[] COMMENTS_PROJECTION = { MarrySocialDBHelper.KEY_UID,
             MarrySocialDBHelper.KEY_BUCKET_ID,
             MarrySocialDBHelper.KEY_CONTENTS,
-            MarrySocialDBHelper.KEY_AUTHOR_FULLNAME,
+            MarrySocialDBHelper.KEY_AUTHOR_NICKNAME,
             MarrySocialDBHelper.KEY_PHOTO_COUNT,
             MarrySocialDBHelper.KEY_BRAVO_STATUS,
             MarrySocialDBHelper.KEY_ADDED_TIME,
@@ -318,8 +318,8 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
             mUserPic.setImageBitmap(mUserHeadPic);
         }
 
-        mUserName.setText(mUserInfo.getNikeName());
-        mFriendName.setText(mUserInfo.getNikeName());
+        mUserName.setText(mUserInfo.getNickName());
+        mFriendName.setText(mUserInfo.getNickName());
         mFriendsDesc.setText(mUserInfo.getIntroduce());
 
         if (mUserInfoUid.equalsIgnoreCase(mAuthorUid)) {
@@ -440,7 +440,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
 
             userInfo.setUid(uid);
             userInfo.setPhoneNum(phoneNum);
-            userInfo.setNikeName(nickname);
+            userInfo.setNickName(nickname);
             userInfo.setRealName(realname);
             userInfo.setHeadPic(avatar);
             userInfo.setGender(gender);
@@ -493,7 +493,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
                 comment.setBucketId(bucketId);
                 comment.setCommentId(comment_id);
                 comment.setContents(contents);
-                comment.setFullName(full_name);
+                comment.setRealName(full_name);
                 comment.setPhotoCount(photo_count);
                 comment.setAddTime(Utils.getAddedTimeTitle(this, added_time));
                 comment.setIsBravo(bravo_status == MarrySocialDBHelper.BRAVO_CONFIRM);

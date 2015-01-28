@@ -10,8 +10,8 @@ public class CommentsItem {
 
     private String mUid;
     private String mAvatar;
-    private String mFullName;
-    private String mNikeName;
+    private String mRealName;
+    private String mNickName;
     private String mAddTime;
     private String mContents;
     private String mBucketId;
@@ -57,20 +57,20 @@ public class CommentsItem {
         this.mAvatar = mAvatar;
     }
 
-    public String getFulName() {
-        return mFullName;
+    public String getRealName() {
+        return mRealName;
     }
 
-    public void setFullName(String mFullName) {
-        this.mFullName = mFullName;
+    public void setRealName(String mFullName) {
+        this.mRealName = mFullName;
     }
 
-    public String getNikeName() {
-        return mNikeName;
+    public String getNickName() {
+        return mNickName;
     }
 
-    public void setNikeName(String mNikeName) {
-        this.mNikeName = mNikeName;
+    public void setNickName(String mNikeName) {
+        this.mNickName = mNikeName;
     }
 
     public String getAddTime() {

@@ -36,7 +36,7 @@ public class AboutUsActivity extends Activity implements OnClickListener {
         webSettings.setDisplayZoomControls(false);
         // 加载需要显示的网页
         // mWebViewBtn.loadUrl("http://123.57.136.5");
-        mWebViewBtn.loadUrl("http://wangjiwei.baijia.baidu.com/article/43422");
+        mWebViewBtn.loadUrl("http://www.pkjiao.com");
         // 设置Web视图
         mWebViewBtn.setWebViewClient(new MyWebViewClient());
     }

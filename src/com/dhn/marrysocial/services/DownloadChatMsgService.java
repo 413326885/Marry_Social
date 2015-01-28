@@ -36,7 +36,7 @@ public class DownloadChatMsgService extends Service {
     private static final String[] BRIEF_CHAT_PROJECTION = {
             MarrySocialDBHelper.KEY_TO_UID, MarrySocialDBHelper.KEY_CHAT_ID };
     private static final String[] CONTACTS_PROJECTION = {
-            MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_NIKENAME };
+            MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_NICKNAME };
 
     private final Timer mTimer = new Timer();
     private TimerTask mTimerTask;
@@ -175,7 +175,7 @@ public class DownloadChatMsgService extends Service {
         ContentValues insertValues = new ContentValues();
         insertValues.put(MarrySocialDBHelper.KEY_TO_UID, chatUserUid);
         insertValues.put(MarrySocialDBHelper.KEY_CHAT_ID, chat.getChatId());
-        insertValues.put(MarrySocialDBHelper.KEY_NIKENAME, nikename);
+        insertValues.put(MarrySocialDBHelper.KEY_NICKNAME, nikename);
         insertValues.put(MarrySocialDBHelper.KEY_CHAT_CONTENT,
                 chat.getChatContent());
         insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
@@ -190,7 +190,7 @@ public class DownloadChatMsgService extends Service {
         ContentValues updateValues = new ContentValues();
         updateValues.put(MarrySocialDBHelper.KEY_TO_UID, chatUserUid);
         updateValues.put(MarrySocialDBHelper.KEY_CHAT_ID, chat.getChatId());
-        updateValues.put(MarrySocialDBHelper.KEY_NIKENAME, nikename);
+        updateValues.put(MarrySocialDBHelper.KEY_NICKNAME, nikename);
         updateValues.put(MarrySocialDBHelper.KEY_CHAT_CONTENT,
                 chat.getChatContent());
         updateValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,

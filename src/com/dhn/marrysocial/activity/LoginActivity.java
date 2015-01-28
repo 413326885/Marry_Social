@@ -5,6 +5,7 @@ import java.util.concurrent.Executors;
 
 import com.dhn.marrysocial.MarrySocialMainActivity;
 import com.dhn.marrysocial.R;
+import com.dhn.marrysocial.base.ContactsInfo;
 import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.utils.MD5SecretUtils;
 import com.dhn.marrysocial.utils.Utils;
@@ -32,6 +33,8 @@ public class LoginActivity extends Activity implements OnClickListener {
     private static final int POOL_SIZE = 2;
     private static final int LOGIN_SUCCESS = 100;
     private static final int LOGIN_FAIL = 101;
+    private static final int NEEDFILLUSERINFO = 102;
+    private static final int NOTNEEDFILLUSERINFO = 103;
 
     private EditText mPhoneNumEditText;
     private EditText mPasswordEditText;
@@ -42,6 +45,7 @@ public class LoginActivity extends Activity implements OnClickListener {
     private String mUid;
     private String mPhoneNum;
     private String mPassword;
+    private String mAuthorName;
     private ExecutorService mExecutorService;
     private ProgressDialog mUploadProgressDialog;
 
@@ -58,14 +62,20 @@ public class LoginActivity extends Activity implements OnClickListener {
                 Editor editor = prefs.edit();
                 editor.putString(CommonDataStructure.UID, mUid);
                 editor.putString(CommonDataStructure.PHONE, mPhoneNum);
+                editor.putString(CommonDataStructure.AUTHOR_NAME, mAuthorName);
                 editor.putInt(CommonDataStructure.LOGINSTATUS,
                         CommonDataStructure.LOGIN_STATUS_LOGIN);
                 editor.commit();
-                startToMainActivity();
+                if (msg.arg1 == NEEDFILLUSERINFO) {
+                    redirectToFillUserInfoActivity();
+                } else {
+                    startToMainActivity();
+                }
                 break;
             }
             case LOGIN_FAIL: {
                 Toast.makeText(LoginActivity.this, "手机号与密码不匹配", 500).show();
+                mUploadProgressDialog.dismiss();
                 break;
             }
             default:
@@ -89,10 +99,8 @@ public class LoginActivity extends Activity implements OnClickListener {
         mForgetPassword.setOnClickListener(this);
         mReturnBack.setOnClickListener(this);
 
-        SharedPreferences prefs = LoginActivity.this
-                .getSharedPreferences(
-                        CommonDataStructure.PREFS_LAIQIAN_DEFAULT,
-                        MODE_PRIVATE);
+        SharedPreferences prefs = LoginActivity.this.getSharedPreferences(
+                CommonDataStructure.PREFS_LAIQIAN_DEFAULT, MODE_PRIVATE);
         mUid = prefs.getString(CommonDataStructure.UID, "");
         mPhoneNum = prefs.getString(CommonDataStructure.PHONE, "");
         if (mPhoneNum.length() != 0) {
@@ -171,7 +179,16 @@ public class LoginActivity extends Activity implements OnClickListener {
             mUid = Utils.loginSystem(CommonDataStructure.URL_USER_LOGIN,
                     phoneNum, password, macAddr);
             if (mUid != null && mUid.length() != 0) {
-                mHandler.sendEmptyMessage(LOGIN_SUCCESS);
+                ContactsInfo authorInfo = Utils.downloadUserInfo(
+                        CommonDataStructure.URL_GET_USER_PROFILE, mUid);
+                mAuthorName = authorInfo.getNickName();
+                Message msg = mHandler.obtainMessage(LOGIN_SUCCESS);
+                if (authorInfo == null) {
+                    msg.arg1 = NEEDFILLUSERINFO;
+                } else {
+                    msg.arg1 = NOTNEEDFILLUSERINFO;
+                }
+                mHandler.sendMessage(msg);
             } else {
                 mHandler.sendEmptyMessage(LOGIN_FAIL);
             }
@@ -180,6 +197,12 @@ public class LoginActivity extends Activity implements OnClickListener {
 
     private void startToMainActivity() {
         Intent intent = new Intent(this, MarrySocialMainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void redirectToFillUserInfoActivity() {
+        Intent intent = new Intent(this, FillUserInfoActivity.class);
         startActivity(intent);
     }
 }

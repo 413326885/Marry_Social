@@ -434,7 +434,7 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="18dp"
             android:alpha="0.5"
-            android:text="来自 立东 的好友" />
+            android:text="来着 楠楠 的好友" />
 
         <ImageView
             android:id="@+id/dynamic_info_pinglun"

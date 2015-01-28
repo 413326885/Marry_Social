@@ -89,7 +89,7 @@ public class ContactsListAdapter extends BaseAdapter {
             }
         });
 
-        holder.person_name.setText(mData.get(position).getNikeName());
+        holder.person_name.setText(mData.get(position).getNickName());
         mHeadPicBitmapLoader.loadImageBitmap(holder.person_pic, mData.get(position).getUid());
         holder.person_description.setText(String.format(mContext.getResources()
                 .getString(R.string.contacts_detail), mData.get(position).getFirstDirectFriend()));

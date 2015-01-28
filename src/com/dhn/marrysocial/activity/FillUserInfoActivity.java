@@ -153,17 +153,19 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
         public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
             case START_TO_UPLOAD_USER_HEADER: {
-                mUploadUserHeaderProgressDialog = ProgressDialog.show(
-                        FillUserInfoActivity.this, "上传头像", "正在上传头像，请稍后...",
-                        false, true);
+//                mUploadUserHeaderProgressDialog = ProgressDialog.show(
+//                        FillUserInfoActivity.this, "上传头像", "正在上传头像，请稍后...",
+//                        false, true);
                 mExecutorService.execute(new UploadHeadPics(mUid));
                 break;
             }
             case UPLOAD_USER_HEADER_FINISH: {
-                mUserHeadPic = mCropPhoto;
-                mHeaderImageView.setImageBitmap(mUserHeadPic);
-                mHeaderText.setVisibility(View.GONE);
-                mUploadUserHeaderProgressDialog.dismiss();
+                mUploadUserInfoProgressDialog.dismiss();
+                startToInviteFriends();
+                // mUserHeadPic = mCropPhoto;
+                // mHeaderImageView.setImageBitmap(mUserHeadPic);
+                // mHeaderText.setVisibility(View.GONE);
+//                mUploadUserHeaderProgressDialog.dismiss();
                 break;
             }
             case START_TO_UPLOAD_USER_INFO: {
@@ -174,20 +176,20 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
                 break;
             }
             case UPLOAD_USER_INFO_FINISH: {
-                mUploadUserInfoProgressDialog.dismiss();
                 SharedPreferences prefs = FillUserInfoActivity.this
                         .getSharedPreferences(
                                 CommonDataStructure.PREFS_LAIQIAN_DEFAULT,
                                 MODE_PRIVATE);
                 Editor editor = prefs.edit();
-                editor.putInt(CommonDataStructure.LOGINSTATUS, CommonDataStructure.LONIN_STATUS_FILLED_INFO);
+                editor.putInt(CommonDataStructure.LOGINSTATUS,
+                        CommonDataStructure.LONIN_STATUS_FILLED_INFO);
                 editor.commit();
-                startToInviteFriends();
                 break;
             }
             case UPLOAD_USER_INFO_FAIL: {
                 mUploadUserInfoProgressDialog.dismiss();
-                Toast.makeText(FillUserInfoActivity.this, "上传个人信息失败，请稍后重试", 500).show();
+                Toast.makeText(FillUserInfoActivity.this, "上传个人信息失败，请稍后重试", 500)
+                        .show();
                 break;
             }
             default:
@@ -279,7 +281,7 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
             break;
         }
         case R.id.userinfo_invite_friends: {
-//            startToInviteFriends();
+            // startToInviteFriends();
             if (inUserInfoValid()) {
                 mHandler.sendEmptyMessage(START_TO_UPLOAD_USER_INFO);
             }
@@ -507,7 +509,11 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
                 ImageUtils.savePhotoToSDCard(mCropPhoto,
                         CommonDataStructure.HEAD_PICS_DIR_URL, mCropPhotoName);
 
-                mHandler.sendEmptyMessage(START_TO_UPLOAD_USER_HEADER);
+                mUserHeadPic = mCropPhoto;
+                mHeaderImageView.setImageBitmap(mUserHeadPic);
+                mHeaderText.setVisibility(View.GONE);
+
+                // mHandler.sendEmptyMessage(START_TO_UPLOAD_USER_HEADER);
                 // iv_image.setImageBitmap(mCropPhoto);//联网才能上传照片
                 break;
             }
@@ -551,11 +557,13 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
         public void run() {
             String nickname = mUserInfoName.getText().toString();
             String intro = mUserinfoSignature.getText().toString();
-            String result = Utils.updateUserInfo(CommonDataStructure.URL_UPDATE_USER_INFO, uid,
-                    nickname, mGender, mAstro, mHobby, intro);
+            String result = Utils.updateUserInfo(
+                    CommonDataStructure.URL_UPDATE_USER_INFO, uid, nickname,
+                    mGender, mAstro, mHobby, intro);
 
             if (result != null && result.length() != 0) {
                 mHandler.sendEmptyMessage(UPLOAD_USER_INFO_FINISH);
+                mHandler.sendEmptyMessage(START_TO_UPLOAD_USER_HEADER);
             } else {
                 mHandler.sendEmptyMessage(UPLOAD_USER_INFO_FAIL);
             }

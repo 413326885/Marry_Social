@@ -82,22 +82,22 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
             ImageColumns.SIZE, };
 
     private static final String[] CONTACTS_PROJECTION = {
-        MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_PHONE_NUM,
-        MarrySocialDBHelper.KEY_NIKENAME, MarrySocialDBHelper.KEY_REALNAME,
-        MarrySocialDBHelper.KEY_FIRST_DIRECT_FRIEND,
-        MarrySocialDBHelper.KEY_DIRECT_FRIENDS,
-        MarrySocialDBHelper.KEY_INDIRECT_ID,
-        MarrySocialDBHelper.KEY_DIRECT_FRIENDS_COUNT,
-        MarrySocialDBHelper.KEY_HEADPIC, MarrySocialDBHelper.KEY_GENDER,
-        MarrySocialDBHelper.KEY_ASTRO, MarrySocialDBHelper.KEY_HOBBY,
-        MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX,
-        MarrySocialDBHelper.KEY_INTRODUCT };
-    
+            MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_PHONE_NUM,
+            MarrySocialDBHelper.KEY_NICKNAME, MarrySocialDBHelper.KEY_REALNAME,
+            MarrySocialDBHelper.KEY_FIRST_DIRECT_FRIEND,
+            MarrySocialDBHelper.KEY_DIRECT_FRIENDS,
+            MarrySocialDBHelper.KEY_INDIRECT_ID,
+            MarrySocialDBHelper.KEY_DIRECT_FRIENDS_COUNT,
+            MarrySocialDBHelper.KEY_HEADPIC, MarrySocialDBHelper.KEY_GENDER,
+            MarrySocialDBHelper.KEY_ASTRO, MarrySocialDBHelper.KEY_HOBBY,
+            MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX,
+            MarrySocialDBHelper.KEY_INTRODUCT };
+
     private static final String[] HEAD_PICS_PROJECTION = {
-        MarrySocialDBHelper.KEY_UID,
-        MarrySocialDBHelper.KEY_HEAD_PIC_BITMAP,
-        MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH,
-        MarrySocialDBHelper.KEY_PHOTO_REMOTE_THUMB_PATH };
+            MarrySocialDBHelper.KEY_UID,
+            MarrySocialDBHelper.KEY_HEAD_PIC_BITMAP,
+            MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH,
+            MarrySocialDBHelper.KEY_PHOTO_REMOTE_THUMB_PATH };
     // static final String[] INSERT_COMMENT_PROJECTION = {
     // MarrySocialDBHelper.KEY_UID,
     // MarrySocialDBHelper.KEY_AVATAR, MarrySocialDBHelper.KEY_NAME,
@@ -210,7 +210,7 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
                 }
             }
         };
-        
+
         mDBHelper = MarrySocialDBHelper.newInstance(this);
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
                 .availableProcessors() * POOL_SIZE);
@@ -223,7 +223,7 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
         mUserInfo = loadUserInfoFromDB(mUid);
         mUserHeadPic = loadUserHeadPicFromDB(mUid);
         mCommentPersonPic.setImageBitmap(mUserHeadPic);
-        mCommentPersonName.setText(mUserInfo.getRealName());
+        mCommentPersonName.setText(mUserInfo.getNickName());
     }
 
     @Override
@@ -465,7 +465,7 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
         values.put(MarrySocialDBHelper.KEY_ADDED_TIME, mCurrentEditTime);
         values.put(MarrySocialDBHelper.KEY_CONTENTS, mCommentDescription
                 .getText().toString());
-        values.put(MarrySocialDBHelper.KEY_AUTHOR_FULLNAME, mAuthorName);
+        values.put(MarrySocialDBHelper.KEY_AUTHOR_NICKNAME, mAuthorName);
         values.put(MarrySocialDBHelper.KEY_PHOTO_COUNT,
                 mOriginalThumbBitmapsPath.size());
         values.put(MarrySocialDBHelper.KEY_BRAVO_COUNT, 0);
@@ -511,7 +511,7 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
     private void finishActivity() {
         this.finish();
     }
-    
+
     private Bitmap loadUserHeadPicFromDB(String uid) {
 
         Bitmap headpic = null;
@@ -540,7 +540,7 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
         }
         return headpic;
     }
-    
+
     private ContactsInfo loadUserInfoFromDB(String uid) {
 
         ContactsInfo userInfo = new ContactsInfo();
@@ -574,7 +574,7 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
 
             userInfo.setUid(uid);
             userInfo.setPhoneNum(phoneNum);
-            userInfo.setNikeName(nickname);
+            userInfo.setNickName(nickname);
             userInfo.setRealName(realname);
             userInfo.setHeadPic(avatar);
             userInfo.setGender(gender);

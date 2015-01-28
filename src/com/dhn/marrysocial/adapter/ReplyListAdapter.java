@@ -79,7 +79,7 @@ public class ReplyListAdapter extends BaseAdapter {
     }
 
     private void setViewHolderLoyout(final ViewHolder holder, final int position) {
-        holder.reply_person_name.setText(mReplyItems.get(position).getFullName());
+        holder.reply_person_name.setText(mReplyItems.get(position).getNickname());
         holder.reply_content.setText(mReplyItems.get(position).getReplyContents());
         holder.reply_time.setText(mReplyItems.get(position).getReplyTime());
     }

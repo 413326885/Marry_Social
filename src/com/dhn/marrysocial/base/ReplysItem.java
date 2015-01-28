@@ -5,7 +5,7 @@ public class ReplysItem {
     private static final String TAG = "ReplysItem";
 
     private String mUid;
-    private String mFullName;
+    private String mNickName;
     private String mReplyContents;
     private String mCommentId;
     private String mReplyTime;
@@ -19,12 +19,12 @@ public class ReplysItem {
         this.mUid = mUid;
     }
 
-    public String getFullName() {
-        return mFullName;
+    public String getNickname() {
+        return mNickName;
     }
 
-    public void setFullName(String mFullName) {
-        this.mFullName = mFullName;
+    public void setNickname(String mNickName) {
+        this.mNickName = mNickName;
     }
 
     public String getReplyContents() {

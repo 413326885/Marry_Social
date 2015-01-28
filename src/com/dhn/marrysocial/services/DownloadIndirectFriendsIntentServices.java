@@ -78,18 +78,28 @@ public class DownloadIndirectFriendsIntentServices extends IntentService {
                         CommonDataStructure.URL_GET_USER_PROFILE, mUid);
                 if (authorInfo != null) {
                     insertContactToContactsDB(authorInfo);
-                    String headPicOrgUrl = CommonDataStructure.HEAD_PICS_ORG_PATH + authorInfo.getUid() + ".jpg";
-                    String headPicThumbUrl = CommonDataStructure.HEAD_PICS_THUMB_PATH + authorInfo.getUid() + ".jpg";
-                    Bitmap headPicBitmap = Utils.downloadHeadPicBitmap(headPicOrgUrl);
+                    String headPicOrgUrl = CommonDataStructure.HEAD_PICS_ORG_PATH
+                            + authorInfo.getUid() + ".jpg";
+                    String headPicThumbUrl = CommonDataStructure.HEAD_PICS_THUMB_PATH
+                            + authorInfo.getUid() + ".jpg";
+                    Bitmap headPicBitmap = Utils
+                            .downloadHeadPicBitmap(headPicOrgUrl);
                     if (headPicBitmap != null) {
                         if (!isUidExistInHeadPicDB(authorInfo.getUid())) {
-                            insertHeadPicToHeadPicsDB(headPicBitmap, authorInfo.getUid(), headPicOrgUrl, headPicThumbUrl);
+                            insertHeadPicToHeadPicsDB(headPicBitmap,
+                                    authorInfo.getUid(), headPicOrgUrl,
+                                    headPicThumbUrl);
                         } else {
-                            updateHeadPicToHeadPicsDB(headPicBitmap, authorInfo.getUid(), headPicOrgUrl, headPicThumbUrl);
+                            updateHeadPicToHeadPicsDB(headPicBitmap,
+                                    authorInfo.getUid(), headPicOrgUrl,
+                                    headPicThumbUrl);
                         }
                     }
                 }
             }
+
+            boolean isServerUpdated = Utils.updateIndirectServer(
+                    CommonDataStructure.URL_INDIRECT_SERVER_UPDATE, mUid);
 
             ArrayList<ContactsInfo> contactsList = Utils
                     .downloadInDirectFriendsList(
@@ -101,14 +111,21 @@ public class DownloadIndirectFriendsIntentServices extends IntentService {
                 if (!isContactExistInContactsDB(contact.getUid())) {
                     insertContactToContactsDB(contact);
                 }
-                String headPicOrgUrl = CommonDataStructure.HEAD_PICS_ORG_PATH + contact.getUid() + ".jpg";
-                String headPicThumbUrl = CommonDataStructure.HEAD_PICS_THUMB_PATH + contact.getUid() + ".jpg";
-                Bitmap headPicBitmap = Utils.downloadHeadPicBitmap(headPicOrgUrl);
+                String headPicOrgUrl = CommonDataStructure.HEAD_PICS_ORG_PATH
+                        + contact.getUid() + ".jpg";
+                String headPicThumbUrl = CommonDataStructure.HEAD_PICS_THUMB_PATH
+                        + contact.getUid() + ".jpg";
+                Bitmap headPicBitmap = Utils
+                        .downloadHeadPicBitmap(headPicOrgUrl);
                 if (headPicBitmap != null) {
                     if (!isUidExistInHeadPicDB(contact.getUid())) {
-                        insertHeadPicToHeadPicsDB(headPicBitmap, contact.getUid(), headPicOrgUrl, headPicThumbUrl);
+                        insertHeadPicToHeadPicsDB(headPicBitmap,
+                                contact.getUid(), headPicOrgUrl,
+                                headPicThumbUrl);
                     } else {
-                        updateHeadPicToHeadPicsDB(headPicBitmap, contact.getUid(), headPicOrgUrl, headPicThumbUrl);
+                        updateHeadPicToHeadPicsDB(headPicBitmap,
+                                contact.getUid(), headPicOrgUrl,
+                                headPicThumbUrl);
                     }
                 }
 
@@ -120,7 +137,7 @@ public class DownloadIndirectFriendsIntentServices extends IntentService {
     private void insertContactToContactsDB(ContactsInfo contact) {
         ContentValues values = new ContentValues();
         values.put(MarrySocialDBHelper.KEY_UID, contact.getUid());
-        values.put(MarrySocialDBHelper.KEY_NIKENAME, contact.getNikeName());
+        values.put(MarrySocialDBHelper.KEY_NICKNAME, contact.getNickName());
         values.put(MarrySocialDBHelper.KEY_REALNAME, contact.getRealName());
         values.put(MarrySocialDBHelper.KEY_HOBBY, contact.getHobby());
         values.put(MarrySocialDBHelper.KEY_GENDER, contact.getGender());
@@ -134,7 +151,8 @@ public class DownloadIndirectFriendsIntentServices extends IntentService {
                 contact.getDirectFriends());
         values.put(MarrySocialDBHelper.KEY_INDIRECT_ID, contact.getIndirectId());
         values.put(MarrySocialDBHelper.KEY_HEADPIC, contact.getHeadPic());
-        values.put(MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX, contact.getHeaderBkgIndex());
+        values.put(MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX,
+                contact.getHeaderBkgIndex());
 
         mDBHelper.insert(MarrySocialDBHelper.DATABASE_CONTACTS_TABLE, values);
     }
@@ -160,8 +178,8 @@ public class DownloadIndirectFriendsIntentServices extends IntentService {
         return true;
     }
 
-    private int insertHeadPicToHeadPicsDB(
-            Bitmap headPicBitmap, String uid, String orgUrl, String thumbUrl) {
+    private int insertHeadPicToHeadPicsDB(Bitmap headPicBitmap, String uid,
+            String orgUrl, String thumbUrl) {
 
         String headPicName = "head_pic_" + uid + ".jpg";
 
@@ -169,8 +187,7 @@ public class DownloadIndirectFriendsIntentServices extends IntentService {
         insertValues.put(MarrySocialDBHelper.KEY_UID, uid);
         insertValues.put(MarrySocialDBHelper.KEY_HEAD_PIC_BITMAP,
                 Utils.Bitmap2Bytes(headPicBitmap));
-        insertValues.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH,
-                orgUrl);
+        insertValues.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH, orgUrl);
         insertValues.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_THUMB_PATH,
                 thumbUrl);
         insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
@@ -181,16 +198,15 @@ public class DownloadIndirectFriendsIntentServices extends IntentService {
         return (int) (rowId);
     }
 
-    private void updateHeadPicToHeadPicsDB(
-            Bitmap headPicBitmap, String uid, String orgUrl, String thumbUrl) {
+    private void updateHeadPicToHeadPicsDB(Bitmap headPicBitmap, String uid,
+            String orgUrl, String thumbUrl) {
 
         String headPicName = "head_pic_" + uid + ".jpg";
 
         ContentValues insertValues = new ContentValues();
         insertValues.put(MarrySocialDBHelper.KEY_HEAD_PIC_BITMAP,
                 Utils.Bitmap2Bytes(headPicBitmap));
-        insertValues.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH,
-                orgUrl);
+        insertValues.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH, orgUrl);
         insertValues.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_THUMB_PATH,
                 thumbUrl);
         insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,

@@ -35,7 +35,7 @@ public class ContactsListFragment extends Fragment {
 
     private static final String[] PROJECTION = { MarrySocialDBHelper.KEY_UID,
             MarrySocialDBHelper.KEY_PHONE_NUM,
-            MarrySocialDBHelper.KEY_NIKENAME, MarrySocialDBHelper.KEY_REALNAME,
+            MarrySocialDBHelper.KEY_NICKNAME, MarrySocialDBHelper.KEY_REALNAME,
             MarrySocialDBHelper.KEY_FIRST_DIRECT_FRIEND,
             MarrySocialDBHelper.KEY_DIRECT_FRIENDS,
             MarrySocialDBHelper.KEY_INDIRECT_ID,
@@ -119,7 +119,7 @@ public class ContactsListFragment extends Fragment {
                 ContactsInfo contactItem = new ContactsInfo();
                 contactItem.setUid(uid);
                 contactItem.setPhoneNum(phoneNum);
-                contactItem.setNikeName(nickname);
+                contactItem.setNickName(nickname);
                 contactItem.setRealName(realname);
                 contactItem.setHeadPic(avatar);
                 contactItem.setGender(gender);

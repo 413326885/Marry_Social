@@ -19,6 +19,7 @@ import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
 import com.dhn.marrysocial.utils.Utils;
 import com.dhn.marrysocial.base.CommentsItem;
+import com.dhn.marrysocial.base.ContactsInfo;
 import com.dhn.marrysocial.base.ImagesItem;
 import com.dhn.marrysocial.base.ReplysItem;
 
@@ -39,12 +40,14 @@ public class DownloadCommentsIntentService extends IntentService {
             MarrySocialDBHelper.KEY_REPLY_ID };
 
     private static final String[] IMAGES_PROJECTION = {
-        MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_COMMENT_ID,
-        MarrySocialDBHelper.KEY_PHOTO_ID };
+            MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_COMMENT_ID,
+            MarrySocialDBHelper.KEY_PHOTO_ID };
+
+    private static final String[] CONTACTS_PROJECTION = { MarrySocialDBHelper.KEY_UID };
 
     private MarrySocialDBHelper mDBHelper;
     // private String mToken;
-     private String mUid;
+    private String mUid;
     private SharedPreferences mPrefs;
 
     private ExecutorService mExecutorService;
@@ -75,7 +78,7 @@ public class DownloadCommentsIntentService extends IntentService {
         Log.e(TAG,
                 "nannan DownloadCommentsIntentService onHandleIntent()  333333333333");
         if (!Utils.isActiveNetWorkAvailable(this)) {
-            Toast.makeText(this, R.string.network_not_available, 1000);
+            Toast.makeText(this, R.string.network_not_available, 1000).show();
             return;
         }
 
@@ -87,14 +90,17 @@ public class DownloadCommentsIntentService extends IntentService {
         @Override
         public void run() {
             Log.e(TAG, "nannan DownloadFiles ()  1234567890");
+
+            String indirectLists = loadIndirectsFromDB();
             Long addedTime = 0l;
-            ArrayList<CommentsItem> commentItems = Utils
-                    .downloadCommentsList(
-                            CommonDataStructure.URL_TOPIC_COMMENT_LIST,
-                            mUid, CommonDataStructure.INDIRECTIDS, "", "", "");
+
+            ArrayList<CommentsItem> commentItems = Utils.downloadCommentsList(
+                    CommonDataStructure.URL_TOPIC_COMMENT_LIST, mUid,
+                    indirectLists, "", "", "");
             if (commentItems == null || commentItems.size() == 0) {
                 return;
             }
+
             for (CommentsItem comment : commentItems) {
                 if (Long.valueOf(comment.getAddTime()) > addedTime) {
                     addedTime = Long.valueOf(comment.getAddTime());
@@ -128,8 +134,8 @@ public class DownloadCommentsIntentService extends IntentService {
         values.put(MarrySocialDBHelper.KEY_BUCKET_ID, addedTime.hashCode());
         values.put(MarrySocialDBHelper.KEY_ADDED_TIME, addedTime);
         values.put(MarrySocialDBHelper.KEY_CONTENTS, comment.getContents());
-        values.put(MarrySocialDBHelper.KEY_AUTHOR_FULLNAME,
-                comment.getFulName());
+        values.put(MarrySocialDBHelper.KEY_AUTHOR_NICKNAME,
+                comment.getNickName());
         values.put(MarrySocialDBHelper.KEY_PHOTO_COUNT, comment.getPhotoCount());
         values.put(MarrySocialDBHelper.KEY_BRAVO_COUNT, 0);
         values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
@@ -144,8 +150,8 @@ public class DownloadCommentsIntentService extends IntentService {
         insertValues.put(MarrySocialDBHelper.KEY_COMMENT_ID,
                 reply.getCommentId());
         insertValues.put(MarrySocialDBHelper.KEY_UID, reply.getUid());
-        insertValues.put(MarrySocialDBHelper.KEY_AUTHOR_FULLNAME,
-                reply.getFullName());
+        insertValues.put(MarrySocialDBHelper.KEY_AUTHOR_NICKNAME,
+                reply.getNickname());
         insertValues.put(MarrySocialDBHelper.KEY_REPLY_CONTENTS,
                 reply.getReplyContents());
         insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
@@ -163,19 +169,26 @@ public class DownloadCommentsIntentService extends IntentService {
         insertValues.put(MarrySocialDBHelper.KEY_COMMENT_ID,
                 image.getCommentId());
         insertValues.put(MarrySocialDBHelper.KEY_UID, image.getUid());
-        insertValues.put(MarrySocialDBHelper.KEY_BUCKET_ID, image.getBucketId());
-        insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
-                image.getAddTime());
+        insertValues
+                .put(MarrySocialDBHelper.KEY_BUCKET_ID, image.getBucketId());
+        insertValues
+                .put(MarrySocialDBHelper.KEY_ADDED_TIME, image.getAddTime());
         insertValues.put(MarrySocialDBHelper.KEY_PHOTO_ID, image.getPhotoId());
-        insertValues.put(MarrySocialDBHelper.KEY_PHOTO_POS, image.getPhotoPosition());
-        insertValues.put(MarrySocialDBHelper.KEY_PHOTO_NAME, image.getPhotoName());
-        insertValues.put(MarrySocialDBHelper.KEY_PHOTO_TYPE, image.getPhotoType());
-        insertValues.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH, image.getPhotoRemoteOrgPath());
-        insertValues.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_THUMB_PATH, image.getPhotoRemoteThumbPath());
+        insertValues.put(MarrySocialDBHelper.KEY_PHOTO_POS,
+                image.getPhotoPosition());
+        insertValues.put(MarrySocialDBHelper.KEY_PHOTO_NAME,
+                image.getPhotoName());
+        insertValues.put(MarrySocialDBHelper.KEY_PHOTO_TYPE,
+                image.getPhotoType());
+        insertValues.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH,
+                image.getPhotoRemoteOrgPath());
+        insertValues.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_THUMB_PATH,
+                image.getPhotoRemoteThumbPath());
         insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 MarrySocialDBHelper.NEED_DOWNLOAD_FROM_CLOUD);
 
-        mDBHelper.insert(MarrySocialDBHelper.DATABASE_IMAGES_TABLE, insertValues);
+        mDBHelper.insert(MarrySocialDBHelper.DATABASE_IMAGES_TABLE,
+                insertValues);
     }
 
     public boolean isCommentIdExistInCommentsDB(String commentId) {
@@ -240,5 +253,39 @@ public class DownloadCommentsIntentService extends IntentService {
             }
         }
         return true;
+    }
+
+    private String loadIndirectsFromDB() {
+
+        StringBuffer result = new StringBuffer();
+        ArrayList<String> indirects = new ArrayList<String>();
+
+        Cursor cursor = mDBHelper.query(
+                MarrySocialDBHelper.DATABASE_CONTACTS_TABLE,
+                CONTACTS_PROJECTION, null, null, null, null, null, null);
+        if (cursor == null) {
+            Log.w(TAG, "nannan query fail!");
+            return null;
+        }
+
+        try {
+            while (cursor.moveToNext()) {
+                String uid = cursor.getString(0);
+                indirects.add(uid);
+            }
+
+            for (String uid : indirects) {
+                result.append(uid);
+            }
+
+            return result.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return result.toString();
     }
 }

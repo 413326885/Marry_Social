@@ -74,11 +74,11 @@ public class ContactsInfo {
         this.mAvatar = mAvatar;
     }
 
-    public String getNikeName() {
+    public String getNickName() {
         return mNikeName;
     }
 
-    public void setNikeName(String mNikeName) {
+    public void setNickName(String mNikeName) {
         this.mNikeName = mNikeName;
     }
 

@@ -34,7 +34,7 @@ public class ChatMsgFragment extends Fragment {
 
     private static final String[] BRIEF_CHAT_PROJECTION = {
             MarrySocialDBHelper.KEY_TO_UID, MarrySocialDBHelper.KEY_CHAT_ID,
-            MarrySocialDBHelper.KEY_NIKENAME,
+            MarrySocialDBHelper.KEY_NICKNAME,
             MarrySocialDBHelper.KEY_CHAT_CONTENT,
             MarrySocialDBHelper.KEY_ADDED_TIME };
 

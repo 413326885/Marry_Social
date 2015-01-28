@@ -550,9 +550,11 @@ public class Utils {
 
                 JSONObject respData = response.getJSONObject("data");
                 int pos = respData.getInt("pos");
+                String photoId = respData.getString("pid");
                 String orginal = respData.getString("url");
                 String thumb = respData.getString("thumbnailurl");
                 resultEntry.result = true;
+                resultEntry.photoId = photoId;
                 resultEntry.pos = pos;
                 resultEntry.orgUrl = orginal;
                 resultEntry.thumbUrl = thumb;
@@ -1372,7 +1374,7 @@ public class Utils {
                 commentItem.setCommentId(comment.getString("tid"));
                 commentItem.setAddTime(comment.getString("addtime"));
                 commentItem.setContents(comment.getString("content"));
-                commentItem.setFullName(comment.getString("fullname"));
+                commentItem.setRealName(comment.getString("fullname"));
                 commentItem.setPhotoCount(Integer.valueOf(comment
                         .getString("pics")));
                 int replyCount = Integer.valueOf(comment.getString("replies"));
@@ -1384,7 +1386,7 @@ public class Utils {
                         ReplysItem reply = new ReplysItem();
                         reply.setCommentId(item.getString("tid"));
                         reply.setReplyContents(item.getString("content"));
-                        reply.setFullName(item.getString("fullname"));
+                        reply.setNickname(item.getString("fullname"));
                         reply.setUid(item.getString("tid"));
                         reply.setReplyId(item.getString("rid"));
                         reply.setReplyTime(item.getString("addtime"));
@@ -1713,7 +1715,7 @@ public class Utils {
                 ContactsInfo contactItem = new ContactsInfo();
                 contactItem.setUid(uid);
                 contactItem.setPhoneNum(phoneNum);
-                contactItem.setNikeName(nickname);
+                contactItem.setNickName(nickname);
                 contactItem.setRealName(realname);
                 contactItem.setHeadPic(avatar);
                 contactItem.setGender(gender);
@@ -1820,7 +1822,7 @@ public class Utils {
 
             contact.setUid(uid);
             contact.setPhoneNum(phoneNum);
-            contact.setNikeName(nickname);
+            contact.setNickName(nickname);
             contact.setRealName(realname);
             contact.setHeadPic(avatar);
             contact.setGender(gender);
@@ -1922,7 +1924,7 @@ public class Utils {
                 String uid = reply.getString("uid");
                 String replycontent = reply.getString("content");
                 String addtime = reply.getString("addtime");
-                String fullname = reply.getString("fullname");
+                String nickname = reply.getString("fullname");
 
                 ReplysItem item = new ReplysItem();
                 item.setReplyId(replyid);
@@ -1930,7 +1932,7 @@ public class Utils {
                 item.setUid(uid);
                 item.setReplyContents(replycontent);
                 item.setReplyTime(addtime);
-                item.setFullName(fullname);
+                item.setNickname(nickname);
 
                 replyItems.add(item);
             }
@@ -2026,7 +2028,8 @@ public class Utils {
                 commentItem.setCommentId(comment.getString("tid"));
                 commentItem.setAddTime(comment.getString("addtime"));
                 commentItem.setContents(comment.getString("content"));
-                commentItem.setFullName(comment.getString("fullname"));
+                commentItem.setRealName(comment.getString("fullname"));
+                commentItem.setNickName(comment.getString("fullname"));
                 int photoCount = Integer.valueOf(comment.getString("pics"));
                 commentItem.setPhotoCount(photoCount);
                 if (photoCount > 0) {
@@ -2781,4 +2784,85 @@ public class Utils {
         }
         return contactEntrys;
     }
+
+    public static boolean updateIndirectServer(String RequestURL, String uId) {
+
+        Log.e(TAG, "nannan updateIndirectServer ");
+        URL postUrl = null;
+        HttpURLConnection connection = null;
+        DataOutputStream output = null;
+        boolean result = false;
+
+        try {
+            postUrl = new URL(RequestURL);
+            if (postUrl == null)
+                return result;
+
+            connection = (HttpURLConnection) postUrl.openConnection();
+            if (connection == null)
+                return result;
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestMethod("POST");
+            connection.setUseCaches(false);
+            connection.setInstanceFollowRedirects(true);
+            connection.setRequestProperty("Content-Type",
+                    "application/x-www-form-urlencoded");
+            connection.connect();
+
+            OutputStream stream = connection.getOutputStream();
+            output = new DataOutputStream(stream);
+
+            JSONObject contactContent = new JSONObject();
+            contactContent.put("uid", uId);
+
+            String content = null;
+            content = "jsondata="
+                    + URLEncoder.encode(contactContent.toString(), "UTF-8");
+
+            if (content == null)
+                return result;
+
+            output.writeBytes(content);
+            output.flush();
+            output.close();
+
+            BufferedReader reader = null;
+            reader = new BufferedReader(new InputStreamReader(
+                    connection.getInputStream()));
+            StringBuffer resp = new StringBuffer();
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                resp.append(line);
+            }
+
+            Log.e(TAG, "nannan resp 555555555555 = " + resp);
+            JSONObject response = new JSONObject(resp.toString());
+            String code = response.getString("code");
+            if (!"200".equalsIgnoreCase(code)) {
+                return result;
+            }
+
+            String data = response.getString("data");
+            result = "true".equalsIgnoreCase(data);
+
+            reader.close();
+
+            return result;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+
+        return result;
+    }
+
 }

@@ -54,7 +54,7 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
             MarrySocialDBHelper.KEY_TO_UID, MarrySocialDBHelper.KEY_CHAT_ID };
 
     private static final String[] CONTACTS_PROJECTION = {
-            MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_NIKENAME };
+            MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_NICKNAME };
 
     private static final String[] HEAD_PICS_PROJECTION = {
             MarrySocialDBHelper.KEY_UID,
@@ -474,7 +474,7 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
         ContentValues insertValues = new ContentValues();
         insertValues.put(MarrySocialDBHelper.KEY_TO_UID, mToUid);
         insertValues.put(MarrySocialDBHelper.KEY_CHAT_ID, chat.getChatId());
-        insertValues.put(MarrySocialDBHelper.KEY_NIKENAME, mChatUserName);
+        insertValues.put(MarrySocialDBHelper.KEY_NICKNAME, mChatUserName);
         insertValues.put(MarrySocialDBHelper.KEY_CHAT_CONTENT,
                 chat.getChatContent());
         insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
@@ -487,7 +487,7 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
     private void updateLatestBriefChatMsgToBriefChatDB(BriefChatItem chat) {
         ContentValues values = new ContentValues();
         values.put(MarrySocialDBHelper.KEY_TO_UID, mToUid);
-        values.put(MarrySocialDBHelper.KEY_NIKENAME, mChatUserName);
+        values.put(MarrySocialDBHelper.KEY_NICKNAME, mChatUserName);
         values.put(MarrySocialDBHelper.KEY_CHAT_CONTENT, chat.chatContent);
         values.put(MarrySocialDBHelper.KEY_ADDED_TIME, chat.addTime);
 

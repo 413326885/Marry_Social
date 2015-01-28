@@ -10,12 +10,11 @@ import com.dhn.marrysocial.activity.EditCommentsActivity;
 import com.dhn.marrysocial.adapter.DynamicInfoListAdapter;
 import com.dhn.marrysocial.adapter.DynamicInfoListAdapter.onReplyBtnClickedListener;
 import com.dhn.marrysocial.base.CommentsItem;
+import com.dhn.marrysocial.base.ContactsInfo;
 import com.dhn.marrysocial.base.ReplysItem;
 import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
-import com.dhn.marrysocial.provider.DBContentChangeProvider;
 import com.dhn.marrysocial.services.DownloadCommentsIntentService;
-import com.dhn.marrysocial.services.ReadContactsIntentService;
 import com.dhn.marrysocial.services.UploadCommentsAndBravosAndReplysIntentService;
 import com.dhn.marrysocial.utils.Utils;
 import com.dhn.marrysocial.view.RefreshListView;
@@ -24,12 +23,10 @@ import com.dhn.marrysocial.R;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -46,15 +43,11 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
 import android.view.animation.TranslateAnimation;
 import android.view.ViewGroup;
 
-import android.widget.AbsListView;
-import android.widget.AbsListView.OnScrollListener;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -66,7 +59,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
     private final String[] COMMENTS_PROJECTION = { MarrySocialDBHelper.KEY_UID,
             MarrySocialDBHelper.KEY_BUCKET_ID,
             MarrySocialDBHelper.KEY_CONTENTS,
-            MarrySocialDBHelper.KEY_AUTHOR_FULLNAME,
+            MarrySocialDBHelper.KEY_AUTHOR_NICKNAME,
             MarrySocialDBHelper.KEY_PHOTO_COUNT,
             MarrySocialDBHelper.KEY_BRAVO_STATUS,
             MarrySocialDBHelper.KEY_ADDED_TIME,
@@ -74,12 +67,22 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
 
     private final String[] BRAVOS_PROJECTION = { MarrySocialDBHelper.KEY_ID,
             MarrySocialDBHelper.KEY_UID,
-            MarrySocialDBHelper.KEY_AUTHOR_FULLNAME };
+            MarrySocialDBHelper.KEY_AUTHOR_NICKNAME };
 
     private final String[] REPLYS_PROJECTION = { MarrySocialDBHelper.KEY_UID,
-            MarrySocialDBHelper.KEY_AUTHOR_FULLNAME,
+            MarrySocialDBHelper.KEY_AUTHOR_NICKNAME,
             MarrySocialDBHelper.KEY_REPLY_CONTENTS,
             MarrySocialDBHelper.KEY_ADDED_TIME };
+
+    private static final String[] CONTACTS_PROJECTION = { MarrySocialDBHelper.KEY_UID,
+            MarrySocialDBHelper.KEY_PHONE_NUM,
+            MarrySocialDBHelper.KEY_NICKNAME, MarrySocialDBHelper.KEY_REALNAME,
+            MarrySocialDBHelper.KEY_FIRST_DIRECT_FRIEND,
+            MarrySocialDBHelper.KEY_DIRECT_FRIENDS,
+            MarrySocialDBHelper.KEY_INDIRECT_ID,
+            MarrySocialDBHelper.KEY_DIRECT_FRIENDS_COUNT,
+            MarrySocialDBHelper.KEY_HEADPIC, MarrySocialDBHelper.KEY_GENDER,
+            MarrySocialDBHelper.KEY_ASTRO, MarrySocialDBHelper.KEY_HOBBY };
 
     private RefreshListView mListView;
     // private ListView mListView;
@@ -135,6 +138,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
     private ArrayList<CommentsItem> mCommentEntrys = new ArrayList<CommentsItem>();
     private HashMap<String, String> mBravoEntrys = new HashMap<String, String>();
     private HashMap<String, ArrayList<ReplysItem>> mReplyEntrys = new HashMap<String, ArrayList<ReplysItem>>();
+    private HashMap<String, ContactsInfo> mUserInfoEntrys = new HashMap<String, ContactsInfo>();
 
     private DataSetChangeObserver mChangeObserver;
 
@@ -298,6 +302,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
         mListViewAdapter.setCommentDataSource(mCommentEntrys);
         mListViewAdapter.setBravoDataSource(mBravoEntrys);
         mListViewAdapter.setReplyDataSource(mReplyEntrys);
+        mListViewAdapter.setUserInfoDataSource(mUserInfoEntrys);
         mListViewAdapter.setReplyBtnClickedListener(mReplyBtnClickedListener);
         mListView.setAdapter(mListViewAdapter);
         mListView.setEmptyView(emptyView);
@@ -479,7 +484,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
                 String uId = cursor.getString(0);
                 String bucketId = cursor.getString(1);
                 String contents = cursor.getString(2);
-                String full_name = cursor.getString(3);
+                String nick_name = cursor.getString(3);
                 int photo_count = cursor.getInt(4);
                 int bravo_status = cursor.getInt(5);
                 String added_time = cursor.getString(6);
@@ -488,7 +493,8 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
                 comment.setBucketId(bucketId);
                 comment.setCommentId(comment_id);
                 comment.setContents(contents);
-                comment.setFullName(full_name);
+                comment.setRealName(nick_name);
+                comment.setNickName(nick_name);
                 comment.setPhotoCount(photo_count);
                 comment.setAddTime(Utils.getAddedTimeTitle(getActivity(),
                         added_time));
@@ -518,6 +524,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
 
         @Override
         public void run() {
+            loadContactsFromDB();
             loadBravosFromDB(comment_id);
             loadReplysFromDB(comment_id);
             mHandler.sendEmptyMessage(UPDATE_DYNAMIC_INFO);
@@ -577,7 +584,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
             while (cursor.moveToNext()) {
                 ReplysItem item = new ReplysItem();
                 item.setCommentId(comment_id);
-                item.setFullName(cursor.getString(1));
+                item.setNickname(cursor.getString(1));
                 item.setReplyContents(cursor.getString(2));
                 item.setUid(cursor.getString(0));
                 replys.add(item);
@@ -648,7 +655,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
         insertValues.put(MarrySocialDBHelper.KEY_COMMENT_ID,
                 reply.getCommentId());
         insertValues.put(MarrySocialDBHelper.KEY_UID, mUid);
-        insertValues.put(MarrySocialDBHelper.KEY_AUTHOR_FULLNAME, mAuthorName);
+        insertValues.put(MarrySocialDBHelper.KEY_AUTHOR_NICKNAME, mAuthorName);
         insertValues.put(MarrySocialDBHelper.KEY_REPLY_CONTENTS,
                 reply.getReplyContents());
         insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
@@ -677,4 +684,58 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
         }
 
     };
+
+    private void loadContactsFromDB() {
+
+
+        MarrySocialDBHelper dbHelper = MarrySocialDBHelper
+                .newInstance(getActivity());
+        Cursor cursor = dbHelper.query(
+                MarrySocialDBHelper.DATABASE_CONTACTS_TABLE, CONTACTS_PROJECTION,
+                null, null, null, null, null, null);
+        if (cursor == null) {
+            Log.w(TAG, "nannan query fail!");
+            return ;
+        }
+
+        try {
+            while (cursor.moveToNext()) {
+                String uid = cursor.getString(0);
+                String phoneNum = cursor.getString(1);
+                String nickname = cursor.getString(2);
+                String realname = cursor.getString(3);
+                String firstDirectFriend = cursor.getString(4);
+                String directFriends = cursor.getString(5);
+                String indirectId = cursor.getString(6);
+                int directFriendsCount = cursor.getInt(7);
+                int avatar = Integer.valueOf(cursor.getInt(8));
+                int gender = Integer.valueOf(cursor.getInt(9));
+                int astro = Integer.valueOf(cursor.getInt(10));
+                int hobby = Integer.valueOf(cursor.getInt(11));
+
+                ContactsInfo contactItem = new ContactsInfo();
+                contactItem.setUid(uid);
+                contactItem.setPhoneNum(phoneNum);
+                contactItem.setNickName(nickname);
+                contactItem.setRealName(realname);
+                contactItem.setHeadPic(avatar);
+                contactItem.setGender(gender);
+                contactItem.setAstro(astro);
+                contactItem.setHobby(hobby);
+                contactItem.setIndirectId(indirectId);
+                contactItem.setFirstDirectFriend(firstDirectFriend);
+                contactItem.setDirectFriends(directFriends);
+                contactItem.setDirectFriendsCount(directFriendsCount);
+
+                mUserInfoEntrys.put(uid, contactItem);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return ;
+    }
 }

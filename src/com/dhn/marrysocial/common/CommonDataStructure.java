@@ -183,6 +183,10 @@ public class CommonDataStructure {
             + "NTEpTWmhJK09YSWswPSIsInZhbHVlIjoiT2Rpd05YTUhVamduTnZ1SGJ3ZDllMlFRY1hRWndudGJzOHNPXC9XQnZ0a"
             + "WM9IiwibWFjIjoiNTc2NDQ1MWU1ZjM3ZjI4ZDczZTA0ZmMzODk0ODhiOGY4ZjRhM2NhMTUxZDQ5NDc0NTNlYjEwZjdjZDc4NWQ2YSJ9";
 
+    public static final String CMD_INDIRECT_SERVER_UPDATE = "eyJpdiI6IjJkVWRFWGJyU1hmZU91b2NvbVQxZTRMbGk3"
+            + "RW9jS0w1dmVvVUZKTjhpNjQ9IiwidmFsdWUiOiJKWU1jWjdhMmVac213N09jb2drSTJ3UDgxV25TZWdHZHE3M1wvdV"
+            + "FvcXFEST0iLCJtYWMiOiIwOGYzZDVlMDEzMGIyNjMwMzgwN2UzZjdjZjc4OThiN2U2NjZiMDQwMWUxOTc4NjRhMWQ2ZjA5NTI0Y2NiY2ExIn0=";
+
     public static final String URL_UPLOAD_COMMON = "http://www.pkjiao.com/verify/post/";
 
     public static final String URL_TOKEN_CHECK = URL_UPLOAD_COMMON
@@ -240,6 +244,8 @@ public class CommonDataStructure {
             + CMD_UPLOAD_CONTACTS;
     public static final String URL_UPDATE_USERINFO = URL_UPLOAD_COMMON
             + CMD_UPDATE_USERINFO;
+    public static final String URL_INDIRECT_SERVER_UPDATE = URL_UPLOAD_COMMON
+            + CMD_INDIRECT_SERVER_UPDATE;
 
     public static final Uri COMMENTURL = Uri.parse("content://"
             + DBContentChangeProvider.AUTHORITY + "/"
@@ -320,6 +326,7 @@ public class CommonDataStructure {
     public static class UploadImageResultEntry {
         public boolean result;
         public int pos;
+        public String photoId;
         public String orgUrl;
         public String thumbUrl;
     }

@@ -4,42 +4,50 @@
     android:layout_height="match_parent" >
 
     <RelativeLayout
-        android:id="@+id/product_return"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/gray_bkg_selector"
-        android:clickable="true" >
+        android:id="@+id/product_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="95px"
+        android:background="#991abc9c" >
 
-        <ImageView
-            android:id="@+id/product_arrow"
+        <RelativeLayout
+            android:id="@+id/product_return"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:paddingBottom="10dp"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
-            android:paddingTop="10dp"
-            android:src="@drawable/ic_return_button" />
+            android:background="@drawable/gray_bkg_selector"
+            android:clickable="true" >
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@id/product_arrow"
-            android:alpha="0.8"
-            android:paddingBottom="10dp"
-            android:paddingLeft="8dp"
-            android:paddingRight="12dp"
-            android:paddingTop="10dp"
-            android:text="功能介绍"
-            android:textSize="16dp" />
+            <ImageView
+                android:id="@+id/product_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:paddingBottom="10dp"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:paddingTop="10dp"
+                android:src="@drawable/ic_return_button" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/product_arrow"
+                android:alpha="0.8"
+                android:paddingBottom="10dp"
+                android:paddingLeft="8dp"
+                android:paddingRight="12dp"
+                android:paddingTop="10dp"
+                android:text="功能介绍"
+                android:textColor="@color/white"
+                android:textSize="16dp" />
+        </RelativeLayout>
     </RelativeLayout>
 
     <WebView
         android:id="@+id/product_url"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/product_return" >
+        android:layout_below="@id/product_toolbar" >
     </WebView>
 
 </RelativeLayout>

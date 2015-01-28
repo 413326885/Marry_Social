@@ -257,6 +257,8 @@ public class UploadCommentsAndBravosAndReplysIntentService extends
                 uploadResult.orgUrl);
         values.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_THUMB_PATH,
                 uploadResult.thumbUrl);
+        values.put(MarrySocialDBHelper.KEY_PHOTO_ID,
+                uploadResult.photoId);
         if (uploadResult.result) {
             values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                     MarrySocialDBHelper.UPLOAD_TO_CLOUD_SUCCESS);

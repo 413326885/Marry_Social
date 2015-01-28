@@ -112,16 +112,17 @@ public class AsyncImageViewBitmapLoader {
                 Log.e(TAG, "nannan getBitmap()..  cursor == null");
                 return null;
             }
+            
             String photoLocalPath = "";
             String photoRemoteOrgPath = "";
             String photoRemoteThumbPath = "";
             String photoId = "";
-            if (cursor.moveToNext()) {
-                photoLocalPath = cursor.getString(1);
-                photoRemoteOrgPath = cursor.getString(2);
-                photoRemoteThumbPath = cursor.getString(3);
-                photoId = cursor.getString(4);
-            }
+
+            cursor.moveToNext();
+            photoLocalPath = cursor.getString(1);
+            photoRemoteOrgPath = cursor.getString(2);
+            photoRemoteThumbPath = cursor.getString(3);
+            photoId = cursor.getString(4);
 
             Bitmap thumbBitmap = null;
             Bitmap cropBitmap = null;
@@ -154,25 +155,6 @@ public class AsyncImageViewBitmapLoader {
             }
 
         }
-        // // 最后从指定的url中下载图片
-        // try {
-        // Bitmap bitmap = null;
-        // URL imageUrl = new URL(url);
-        // HttpURLConnection conn = (HttpURLConnection) imageUrl
-        // .openConnection();
-        // conn.setConnectTimeout(30000);
-        // conn.setReadTimeout(30000);
-        // conn.setInstanceFollowRedirects(true);
-        // InputStream is = conn.getInputStream();
-        // OutputStream os = new FileOutputStream(f);
-        // CopyStream(is, os);
-        // os.close();
-        // bitmap = decodeFile(f);
-        // return bitmap;
-        // } catch (Exception ex) {
-        // ex.printStackTrace();
-        // return null;
-        // }
         return null;
     }
 

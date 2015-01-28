@@ -50,7 +50,7 @@ public class DownloadNoticesService extends Service {
             MarrySocialDBHelper.KEY_REPLY_ID };
 
     private static final String[] CONTACTS_PROJECTION = {
-        MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_NIKENAME };
+        MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_NICKNAME };
 
     private final Timer mTimer = new Timer();
     private TimerTask mTimerTask;
@@ -284,7 +284,7 @@ public class DownloadNoticesService extends Service {
         insertValues.put(MarrySocialDBHelper.KEY_COMMENT_ID,
                 reply.getCommentId());
         insertValues.put(MarrySocialDBHelper.KEY_UID, reply.getUid());
-        insertValues.put(MarrySocialDBHelper.KEY_AUTHOR_FULLNAME, reply.getFullName());
+        insertValues.put(MarrySocialDBHelper.KEY_AUTHOR_NICKNAME, reply.getNickname());
         insertValues.put(MarrySocialDBHelper.KEY_REPLY_CONTENTS,
                 reply.getReplyContents());
         insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
@@ -301,7 +301,7 @@ public class DownloadNoticesService extends Service {
         insertValues.put(MarrySocialDBHelper.KEY_COMMENT_ID,
                 notice.getCommentId());
         insertValues.put(MarrySocialDBHelper.KEY_UID, notice.getFromUid());
-        insertValues.put(MarrySocialDBHelper.KEY_AUTHOR_FULLNAME, nikename);
+        insertValues.put(MarrySocialDBHelper.KEY_AUTHOR_NICKNAME, nikename);
         insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
                 notice.getTimeLine());
         insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,

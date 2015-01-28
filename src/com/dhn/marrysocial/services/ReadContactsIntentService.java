@@ -17,11 +17,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.dhn.marrysocial.common.CommonDataStructure;
+import com.dhn.marrysocial.database.MarrySocialDBHelper;
 import com.dhn.marrysocial.utils.Utils;
 
 import android.app.IntentService;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
@@ -34,15 +38,23 @@ public class ReadContactsIntentService extends IntentService {
 
     private static final String TAG = "ReadContactsIntentService";
 
-    public static final String POST_URL = "http://182.92.215.1/direct/add";
+    private static final String[] DIRECT_PROJECTION = {
+            MarrySocialDBHelper.KEY_PHONE_NUM,
+            MarrySocialDBHelper.KEY_REALNAME,
+            MarrySocialDBHelper.KEY_DIRECT_ID,
+            MarrySocialDBHelper.KEY_DIRECT_UID };
+
     public static final String FULL_NAME = "fullname";
     public static final String PHONE_NUM = "phone";
     public static final String UID = "uid";
 
+    private String mUid;
+    private MarrySocialDBHelper mDBHelper;
+    
     public ReadContactsIntentService() {
         super(TAG);
     }
-    
+
     public ReadContactsIntentService(String name) {
         super(name);
     }
@@ -50,6 +62,10 @@ public class ReadContactsIntentService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
+        SharedPreferences prefs = this.getSharedPreferences(
+                CommonDataStructure.PREFS_LAIQIAN_DEFAULT, MODE_PRIVATE);
+        mUid = prefs.getString(CommonDataStructure.UID, "");
+        mDBHelper = MarrySocialDBHelper.newInstance(this);
     }
 
     @Override
@@ -60,97 +76,26 @@ public class ReadContactsIntentService extends IntentService {
             return;
         }
 
-        URL postUrl = null;
-        try {
-            postUrl = new URL(POST_URL);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        if (postUrl == null)
+        ArrayList<CommonDataStructure.ContactEntry> contacts = getAllContactsInfo();
+        if (contacts == null || contacts.size() == 0) {
             return;
-
-        HttpURLConnection connection = null;
-        try {
-            connection = (HttpURLConnection) postUrl.openConnection();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-        if (connection == null)
+
+        ArrayList<CommonDataStructure.ContactEntry> resultEntry = Utils
+                .uploadUserContacts(
+                        CommonDataStructure.URL_UPLOAD_CONTACTS, mUid,
+                        contacts);
+        if (resultEntry == null || resultEntry.size() == 0) {
             return;
-
-        connection.setDoOutput(true);
-        connection.setDoInput(true);
-        try {
-            connection.setRequestMethod("POST");
-        } catch (ProtocolException e) {
-            e.printStackTrace();
         }
-        connection.setUseCaches(false);
-        connection.setInstanceFollowRedirects(true);
-        connection.setRequestProperty("Content-Type",
-                "application/x-www-form-urlencoded");
-
-        try {
-            connection.connect();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        DataOutputStream out = null;
-        try {
-            out = new DataOutputStream(connection.getOutputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        JSONArray contactList = new JSONArray();
-        ArrayList<ContactEntry> oriContacts = getAllContactsInfo(this);
-        for (ContactEntry entry : oriContacts) {
-            JSONObject contact = new JSONObject();
-            try {
-                contact.put(FULL_NAME, entry.contact_name);
-                contact.put(PHONE_NUM, entry.contact_phone_number);
-                contact.put(UID, "1");
-            } catch (JSONException e) {
-                e.printStackTrace();
+        for (CommonDataStructure.ContactEntry entry : resultEntry) {
+            if (!isPhoneNumExistInDirectDB(entry.contact_phone_number)) {
+                insertContactsToDirectDB(entry);
+            } else {
+                updateDirectIdToDirectDB(entry);
             }
-
-            contactList.put(contact);
         }
 
-
-        String content = null;
-        try {
-            content = "contacts="
-                    + URLEncoder.encode(contactList.toString(), "UTF-8");
-            Log.e(TAG, "nannan content = " + content);
-        } catch (UnsupportedEncodingException e1) {
-            e1.printStackTrace();
-        }
-
-        if (content == null)
-            return;
-        try {
-            out.writeBytes(content);
-            out.flush();
-            out.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new InputStreamReader(
-                    connection.getInputStream()));
-//            String line;
-//            while ((line = reader.readLine()) != null) {
-//                Log.e(TAG,"nannan response = " + line);
-//            }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        connection.disconnect();
     }
 
     @Override
@@ -158,21 +103,21 @@ public class ReadContactsIntentService extends IntentService {
         super.onDestroy();
     }
 
-    private ArrayList<ContactEntry> getAllContactsInfo(Context context) {
-        ArrayList<ContactEntry> contactMembers = new ArrayList<ContactEntry>();
+    private ArrayList<CommonDataStructure.ContactEntry> getAllContactsInfo() {
+        ArrayList<CommonDataStructure.ContactEntry> contactMembers = new ArrayList<CommonDataStructure.ContactEntry>();
         Cursor cursor = null;
 
         try {
             Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
             // 获取联系人表的电话里的信息 包括：名字，名字拼音，联系人id,电话号码；
             // 然后在根据"sort-key"排序
-            cursor = context.getContentResolver().query(
+            cursor = this.getContentResolver().query(
                     uri,
                     new String[] { "display_name", "sort_key", "contact_id",
                             "data1" }, null, null, "sort_key");
 
             while (cursor.moveToNext()) {
-                ContactEntry contact = new ContactEntry();
+                CommonDataStructure.ContactEntry contact = new CommonDataStructure.ContactEntry();
                 String name = cursor.getString(0);
                 String sortKey = getSortKey(cursor.getString(1));
                 String contact_phone = cursor
@@ -218,10 +163,56 @@ public class ReadContactsIntentService extends IntentService {
         return p.matcher(input).matches();
     }
 
-    static class ContactEntry {
-        public String contact_name;
-        public String contact_phone_number;
-        public int contact_id;
-        public String contact_sortKey;
+    private void insertContactsToDirectDB(
+            CommonDataStructure.ContactEntry contact) {
+
+        ContentValues insertValues = new ContentValues();
+        insertValues.put(MarrySocialDBHelper.KEY_PHONE_NUM,
+                contact.contact_phone_number);
+        insertValues
+                .put(MarrySocialDBHelper.KEY_REALNAME, contact.contact_name);
+        insertValues.put(MarrySocialDBHelper.KEY_DIRECT_ID, contact.direct_id);
+        insertValues
+                .put(MarrySocialDBHelper.KEY_DIRECT_UID, contact.direct_uid);
+
+        mDBHelper.insert(MarrySocialDBHelper.DATABASE_DIRECT_TABLE,
+                insertValues);
+    }
+
+    private void updateDirectIdToDirectDB(
+            CommonDataStructure.ContactEntry contact) {
+
+        ContentValues values = new ContentValues();
+        values.put(MarrySocialDBHelper.KEY_PHONE_NUM,
+                contact.contact_phone_number);
+        values.put(MarrySocialDBHelper.KEY_REALNAME, contact.contact_name);
+        values.put(MarrySocialDBHelper.KEY_DIRECT_ID, contact.direct_id);
+        values.put(MarrySocialDBHelper.KEY_DIRECT_UID, contact.direct_uid);
+
+        String whereClause = MarrySocialDBHelper.KEY_PHONE_NUM + " = " + '"'
+                + contact.contact_phone_number + '"';
+        mDBHelper.update(MarrySocialDBHelper.DATABASE_DIRECT_TABLE, values,
+                whereClause, null);
+    }
+
+    public boolean isPhoneNumExistInDirectDB(String phone) {
+        Cursor cursor = null;
+        try {
+            String whereclause = MarrySocialDBHelper.KEY_PHONE_NUM + " = "
+                    + '"' + phone + '"';
+            cursor = mDBHelper.query(MarrySocialDBHelper.DATABASE_DIRECT_TABLE,
+                    DIRECT_PROJECTION, whereclause, null, null, null, null,
+                    null);
+            if (cursor == null || cursor.getCount() == 0) {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return true;
     }
 }

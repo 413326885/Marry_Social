@@ -37,6 +37,7 @@ import com.dhn.marrysocial.activity.ViewPhotoActivity;
 import com.dhn.marrysocial.base.AsyncHeadPicBitmapLoader;
 import com.dhn.marrysocial.base.AsyncImageViewBitmapLoader;
 import com.dhn.marrysocial.base.CommentsItem;
+import com.dhn.marrysocial.base.ContactsInfo;
 import com.dhn.marrysocial.base.ReplysItem;
 import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
@@ -69,6 +70,7 @@ public class DynamicInfoListAdapter extends BaseAdapter {
     private ArrayList<CommentsItem> mCommentsData = new ArrayList<CommentsItem>();
     private HashMap<String, String> mBravoEntrys = new HashMap<String, String>();
     private HashMap<String, ArrayList<ReplysItem>> mReplyEntrys = new HashMap<String, ArrayList<ReplysItem>>();
+    private HashMap<String, ContactsInfo> mUserInfoEntrys = new HashMap<String, ContactsInfo>();
 
     private onReplyBtnClickedListener mReplyBtnClickedListener;
 
@@ -128,6 +130,10 @@ public class DynamicInfoListAdapter extends BaseAdapter {
         mReplyEntrys = source;
     }
 
+    public void setUserInfoDataSource(HashMap<String, ContactsInfo> source) {
+        mUserInfoEntrys = source;
+    }
+
     public void clearHeadPicsCache() {
         if (mHeadPicBitmapLoader != null) {
             mHeadPicBitmapLoader.clearCache();
@@ -168,7 +174,7 @@ public class DynamicInfoListAdapter extends BaseAdapter {
 
     private void setViewHolderLoyout(final ViewHolder holder, final int position) {
 
-        holder.mFullName.setText(mCommentsData.get(position).getFulName());
+        holder.mNickName.setText(mCommentsData.get(position).getNickName());
         holder.mDynamicBravo.setEnabled(!CommonDataStructure.INVALID_STR
                 .equalsIgnoreCase(mCommentsData.get(position).getCommentId()));
         holder.mDynamicBravo.setChecked(mCommentsData.get(position).isBravo());
@@ -200,6 +206,15 @@ public class DynamicInfoListAdapter extends BaseAdapter {
         });
         holder.mAddedTime.setText(mCommentsData.get(position).getAddTime());
         holder.mContents.setText(mCommentsData.get(position).getContents());
+        if (mUid.equalsIgnoreCase(mCommentsData.get(position).getUid())) {
+            holder.mDynamicInfoFriends.setVisibility(View.INVISIBLE);
+        } else {
+            holder.mDynamicInfoFriends.setVisibility(View.VISIBLE);
+            holder.mDynamicInfoFriends.setText(String.format(mContext
+                    .getResources().getString(R.string.contacts_detail),
+                    mUserInfoEntrys.get(mCommentsData.get(position).getUid())
+                            .getFirstDirectFriend()));
+        }
 
         mHeadPicBitmapLoader.loadImageBitmap(holder.mHeadPic, mCommentsData
                 .get(position).getUid());
@@ -218,10 +233,11 @@ public class DynamicInfoListAdapter extends BaseAdapter {
         RoundedImageView mHeadPic;
         CheckBox mDynamicBravo;
         ImageView mReplyBtn;
-        TextView mFullName;
+        TextView mNickName;
         TextView mAddedTime;
         TextView mContents;
         TextView mBravosAuthorNames;
+        TextView mDynamicInfoFriends;
         ImageView mCommentPics01;
         ImageView mCommentPics02;
         ImageView mCommentPics03;
@@ -256,7 +272,7 @@ public class DynamicInfoListAdapter extends BaseAdapter {
         ViewHolder holder = new ViewHolder();
         holder.mHeadPic = (RoundedImageView) convertView
                 .findViewById(R.id.dynamic_info_person_pic);
-        holder.mFullName = (TextView) convertView
+        holder.mNickName = (TextView) convertView
                 .findViewById(R.id.dynamic_info_name);
         holder.mDynamicBravo = (CheckBox) convertView
                 .findViewById(R.id.dynamic_info_bravo);
@@ -268,6 +284,8 @@ public class DynamicInfoListAdapter extends BaseAdapter {
                 .findViewById(R.id.dynamic_info_contents);
         holder.mBravosAuthorNames = (TextView) convertView
                 .findViewById(R.id.dynamic_info_bravo_authors);
+        holder.mDynamicInfoFriends = (TextView) convertView
+                .findViewById(R.id.dynamic_info_friend);
         holder.mCommentPics01 = (ImageView) convertView
                 .findViewById(R.id.comments_pics_01);
         holder.mCommentPics02 = (ImageView) convertView
@@ -542,7 +560,7 @@ public class DynamicInfoListAdapter extends BaseAdapter {
         if (replysCount <= 5) {
             for (int index = 0; index < replysCount; index++) {
                 replysFather.get(index).setVisibility(View.VISIBLE);
-                authors.get(index).setText(replys.get(index).getFullName());
+                authors.get(index).setText(replys.get(index).getNickname());
                 contents.get(index).setText(
                         replys.get(index).getReplyContents());
             }
@@ -553,7 +571,7 @@ public class DynamicInfoListAdapter extends BaseAdapter {
             }
             for (int index = 0; index < top5Replys.size(); index++) {
                 replysFather.get(index).setVisibility(View.VISIBLE);
-                authors.get(index).setText(top5Replys.get(index).getFullName());
+                authors.get(index).setText(top5Replys.get(index).getNickname());
                 contents.get(index).setText(
                         top5Replys.get(index).getReplyContents());
             }
@@ -614,7 +632,7 @@ public class DynamicInfoListAdapter extends BaseAdapter {
                     comment.getBucketId());
             insertValues.put(MarrySocialDBHelper.KEY_COMMENT_ID,
                     comment.getCommentId());
-            insertValues.put(MarrySocialDBHelper.KEY_AUTHOR_FULLNAME,
+            insertValues.put(MarrySocialDBHelper.KEY_AUTHOR_NICKNAME,
                     mAuthorName);
             insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
                     Long.toString(System.currentTimeMillis() / 1000));

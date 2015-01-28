@@ -32,7 +32,7 @@ public class ReplyListsActivity extends Activity implements OnClickListener {
     private static final String TAG = "ReplyListsActivity";
 
     private final String[] REPLYS_PROJECTION = { MarrySocialDBHelper.KEY_UID,
-            MarrySocialDBHelper.KEY_AUTHOR_FULLNAME,
+            MarrySocialDBHelper.KEY_AUTHOR_NICKNAME,
             MarrySocialDBHelper.KEY_REPLY_CONTENTS,
             MarrySocialDBHelper.KEY_ADDED_TIME };
 
@@ -118,7 +118,7 @@ public class ReplyListsActivity extends Activity implements OnClickListener {
                 ReplysItem reply = new ReplysItem();
                 reply.setCommentId(mCommentId);
                 reply.setReplyContents(replyContents);
-                reply.setFullName(mAuthorName);
+                reply.setNickname(mAuthorName);
                 reply.setUid(mUid);
                 insertReplysToReplyDB(reply);
                 mHandler.sendEmptyMessage(UPLOAD_REPLY);
@@ -147,7 +147,7 @@ public class ReplyListsActivity extends Activity implements OnClickListener {
             while (cursor.moveToNext()) {
                 ReplysItem item = new ReplysItem();
                 item.setCommentId(comment_id);
-                item.setFullName(cursor.getString(1));
+                item.setNickname(cursor.getString(1));
                 item.setReplyContents(cursor.getString(2));
                 item.setUid(cursor.getString(0));
                 String reply_time = cursor.getString(3);
@@ -170,7 +170,7 @@ public class ReplyListsActivity extends Activity implements OnClickListener {
         insertValues.put(MarrySocialDBHelper.KEY_COMMENT_ID,
                 reply.getCommentId());
         insertValues.put(MarrySocialDBHelper.KEY_UID, mUid);
-        insertValues.put(MarrySocialDBHelper.KEY_AUTHOR_FULLNAME, mAuthorName);
+        insertValues.put(MarrySocialDBHelper.KEY_AUTHOR_NICKNAME, mAuthorName);
         insertValues.put(MarrySocialDBHelper.KEY_REPLY_CONTENTS,
                 reply.getReplyContents());
         insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
