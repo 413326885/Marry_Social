@@ -298,7 +298,7 @@ public class CommonDataStructure {
     public static final int INVALID_NUM = -1;
     public static final String INVALID_STR = "-1";
 
-    public static final String INDIRECTIDS = "4";
+//    public static final String INDIRECTIDS = "4";
 
     public static final String KEY_SECRET_CODE = "marrysocial";
 

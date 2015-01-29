@@ -30,6 +30,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
 
     private static final int POOL_SIZE = 10;
     private static final int REGISTER_SUCCESS = 100;
+    private static final int NETWORK_INVALID = 101;
 
     private EditText mPhoneNumEditText;
     private EditText mPasswordEditText;
@@ -62,6 +63,12 @@ public class RegisterActivity extends Activity implements OnClickListener {
                         CommonDataStructure.LOGIN_STATUS_REGISTERED);
                 editor.commit();
                 startToFillUserinfo();
+                break;
+            }
+            case NETWORK_INVALID: {
+                Toast.makeText(RegisterActivity.this,
+                        R.string.network_not_available, Toast.LENGTH_SHORT)
+                        .show();
                 break;
             }
             default:
@@ -97,6 +104,12 @@ public class RegisterActivity extends Activity implements OnClickListener {
     public void onClick(View arg0) {
         switch (arg0.getId()) {
         case R.id.register_btn: {
+
+            if (!Utils.isActiveNetWorkAvailable(this)) {
+                mHandler.sendEmptyMessage(NETWORK_INVALID);
+                return;
+            }
+
             if (!isPhoneNumValid()) {
                 mPhoneNumEditText.requestFocus();
                 break;
@@ -116,14 +129,6 @@ public class RegisterActivity extends Activity implements OnClickListener {
             break;
         }
         case R.id.login_btn: {
-            // if (!isPhoneNumValid()) {
-            // mPhoneNumEditText.requestFocus();
-            // break;
-            // }
-            // if (!isPasswordValid()) {
-            // mPasswordEditText.requestFocus();
-            // break;
-            // }
             startToLogin();
             break;
         }

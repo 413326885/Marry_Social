@@ -36,6 +36,18 @@
             android:textColor="@color/main_color"
             android:textSize="18dp" />
 
+        <ImageView
+            android:id="@+id/dynamic_info_refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="12dp"
+            android:visibility="gone"
+            android:src="@drawable/ic_comment_refresh"
+            android:layout_toRightOf="@id/dynamic_info_name"
+            android:alpha="0.8" />
+
         <TextView
             android:id="@+id/dynamic_info_time"
             android:layout_width="wrap_content"

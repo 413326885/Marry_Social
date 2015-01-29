@@ -63,8 +63,6 @@ public class DownloadCommentsIntentService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.e(TAG,
-                "nannan DownloadCommentsIntentService onCreate()  2222222222222");
         mDBHelper = MarrySocialDBHelper.newInstance(this);
         mPrefs = this.getSharedPreferences(PREFS_LAIQIAN_DEFAULT, MODE_PRIVATE);
         // mToken = mPrefs.getString(CommonDataStructure.TOKEN, null);
@@ -75,10 +73,8 @@ public class DownloadCommentsIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.e(TAG,
-                "nannan DownloadCommentsIntentService onHandleIntent()  333333333333");
         if (!Utils.isActiveNetWorkAvailable(this)) {
-            Toast.makeText(this, R.string.network_not_available, 1000).show();
+            Toast.makeText(this, R.string.network_not_available, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -89,7 +85,6 @@ public class DownloadCommentsIntentService extends IntentService {
 
         @Override
         public void run() {
-            Log.e(TAG, "nannan DownloadFiles ()  1234567890");
 
             String indirectLists = loadIndirectsFromDB();
             Long addedTime = 0l;
@@ -125,7 +120,6 @@ public class DownloadCommentsIntentService extends IntentService {
 
     public void insertCommentsToDB(CommentsItem comment) {
 
-        Log.e(TAG, "nannan insertCommentsToDB ()  000000000000000");
         String addedTime = comment.getAddTime();
 
         ContentValues values = new ContentValues();

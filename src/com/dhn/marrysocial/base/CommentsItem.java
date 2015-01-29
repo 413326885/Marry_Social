@@ -18,6 +18,7 @@ public class CommentsItem {
     private String mCommentId;
 
     private int mPhotoCount;
+    private int mCurrrentStatus;
     private boolean mIsBravo;
 
     private Bitmap mHeadPic;
@@ -95,6 +96,14 @@ public class CommentsItem {
 
     public void setPhotoCount(int count) {
         this.mPhotoCount = count;
+    }
+
+    public int getCurrrentStatus() {
+        return mCurrrentStatus;
+    }
+
+    public void setCurrrentStatus(int mCurrrentStatus) {
+        this.mCurrrentStatus = mCurrrentStatus;
     }
 
     public boolean isBravo() {

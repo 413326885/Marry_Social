@@ -44,31 +44,32 @@ public class UploadCommentsAndBravosAndReplysIntentService extends
 
     private MarrySocialDBHelper mDBHelper;
     private String mToken;
-    private String mUId;
+    private String mUid;
     private SharedPreferences mPrefs;
 
     private ExecutorService mExecutorService;
 
     public UploadCommentsAndBravosAndReplysIntentService() {
         this(TAG);
-        Log.e(TAG, "nannan UploadCommentsIntentService()");
+    }
+
+    public UploadCommentsAndBravosAndReplysIntentService(String name) {
+        super(name);
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.e(TAG, "nannan onCreate()");
         mDBHelper = MarrySocialDBHelper.newInstance(this);
         mPrefs = this.getSharedPreferences(PREFS_LAIQIAN_DEFAULT, MODE_PRIVATE);
         mToken = mPrefs.getString(CommonDataStructure.TOKEN, null);
-        mUId = mPrefs.getString(CommonDataStructure.UID, null);
+        mUid = mPrefs.getString(CommonDataStructure.UID, null);
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
                 .availableProcessors() * CommonDataStructure.THREAD_POOL_SIZE);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.e(TAG, "nannan onStartCommand()");
         return super.onStartCommand(intent, flags, startId);
 
     }
@@ -76,19 +77,12 @@ public class UploadCommentsAndBravosAndReplysIntentService extends
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.e(TAG, "nannan onDestroy()");
-    }
-
-    public UploadCommentsAndBravosAndReplysIntentService(String name) {
-        super(name);
-        Log.e(TAG, "nannan UploadCommentsIntentService(name)");
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
 
         if (!Utils.isActiveNetWorkAvailable(this)) {
-            Toast.makeText(this, R.string.network_not_available, 1000);
             return;
         }
 
@@ -96,33 +90,33 @@ public class UploadCommentsAndBravosAndReplysIntentService extends
 
         switch (type) {
         case CommonDataStructure.KEY_COMMENTS: {
-            ArrayList<CommentsEntry> uploadComments = queryNeedUploadComments();
-            if (uploadComments == null || uploadComments.size() == 0) {
+            String bucket_id = intent
+                    .getStringExtra(MarrySocialDBHelper.KEY_BUCKET_ID);
+            CommentsEntry uploadComment = queryNeedUploadComments(bucket_id);
+            if (uploadComment == null) {
                 return;
             }
-            for (CommentsEntry comment : uploadComments) {
-                mExecutorService.execute(new UploadComments(comment, mToken));
-            }
+            mExecutorService.execute(new UploadComments(uploadComment, mToken));
             break;
         }
         case CommonDataStructure.KEY_BRAVOS: {
-            ArrayList<BravoEntry> uploadBravos = queryNeedUploadBravos();
-            if (uploadBravos == null || uploadBravos.size() == 0) {
+            String comment_id = intent
+                    .getStringExtra(MarrySocialDBHelper.KEY_COMMENT_ID);
+            BravoEntry uploadBravos = queryNeedUploadBravos(comment_id);
+            if (uploadBravos == null) {
                 return;
             }
-            for (BravoEntry bravo : uploadBravos) {
-                mExecutorService.execute(new UploadBravos(bravo, mToken));
-            }
+            mExecutorService.execute(new UploadBravos(uploadBravos, mToken));
             break;
         }
         case CommonDataStructure.KEY_REPLYS: {
-            ArrayList<ReplyEntry> uploadReplys = queryNeedUploadReplys();
-            if (uploadReplys == null || uploadReplys.size() == 0) {
+            String comment_id = intent
+                    .getStringExtra(MarrySocialDBHelper.KEY_COMMENT_ID);
+            ReplyEntry uploadReplys = queryNeedUploadReplys(comment_id);
+            if (uploadReplys == null) {
                 return;
             }
-            for (ReplyEntry reply : uploadReplys) {
-                mExecutorService.execute(new UploadReplys(reply, mToken));
-            }
+            mExecutorService.execute(new UploadReplys(uploadReplys, mToken));
             break;
         }
         default:
@@ -145,30 +139,27 @@ public class UploadCommentsAndBravosAndReplysIntentService extends
 
     }
 
-    private ArrayList<CommentsEntry> queryNeedUploadComments() {
-        ArrayList<CommentsEntry> commentEntrys = new ArrayList<CommentsEntry>();
+    private CommentsEntry queryNeedUploadComments(String bucket_id) {
+        CommentsEntry commentEntry = new CommentsEntry();
         Cursor cursor = null;
 
         try {
-            String whereclause = MarrySocialDBHelper.KEY_CURRENT_STATUS + " = "
-                    + MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD;
-            String orderBy = MarrySocialDBHelper.KEY_ID + " ASC ";
+            String whereclause = MarrySocialDBHelper.KEY_BUCKET_ID + " = "
+                    + bucket_id;
             cursor = mDBHelper.query(
                     MarrySocialDBHelper.DATABASE_COMMENTS_TABLE,
-                    COMMENTS_PROJECTION, whereclause, null, null, null, orderBy,
+                    COMMENTS_PROJECTION, whereclause, null, null, null, null,
                     null);
             if (cursor == null) {
-                return commentEntrys;
+                return null;
             }
             while (cursor.moveToNext()) {
-                CommentsEntry comment = new CommentsEntry();
                 String uId = cursor.getString(0);
                 String bucketId = cursor.getString(1);
                 String contents = cursor.getString(2);
-                comment.uId = uId;
-                comment.bucketId = bucketId;
-                comment.contents = contents;
-                commentEntrys.add(comment);
+                commentEntry.uId = uId;
+                commentEntry.bucketId = bucketId;
+                commentEntry.contents = contents;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -178,7 +169,7 @@ public class UploadCommentsAndBravosAndReplysIntentService extends
             }
 
         }
-        return commentEntrys;
+        return commentEntry;
     }
 
     private ArrayList<ImagesEntry> queryNeedUploadImages(String uid,
@@ -228,10 +219,11 @@ public class UploadCommentsAndBravosAndReplysIntentService extends
         values.put(MarrySocialDBHelper.KEY_COMMENT_ID, tid);
         values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 MarrySocialDBHelper.UPLOAD_TO_CLOUD_SUCCESS);
-        ContentResolver  resolver = this.getContentResolver();
-        resolver.update(CommonDataStructure.COMMENTURL, values, whereClause, null);
-//        mDBHelper.update(MarrySocialDBHelper.DATABASE_COMMENTS_TABLE, values,
-//                whereClause, null);
+        ContentResolver resolver = this.getContentResolver();
+        resolver.update(CommonDataStructure.COMMENTURL, values, whereClause,
+                null);
+        // mDBHelper.update(MarrySocialDBHelper.DATABASE_COMMENTS_TABLE, values,
+        // whereClause, null);
     }
 
     private void updateCommentIdOfImages(String uid, String bucket_id,
@@ -257,8 +249,7 @@ public class UploadCommentsAndBravosAndReplysIntentService extends
                 uploadResult.orgUrl);
         values.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_THUMB_PATH,
                 uploadResult.thumbUrl);
-        values.put(MarrySocialDBHelper.KEY_PHOTO_ID,
-                uploadResult.photoId);
+        values.put(MarrySocialDBHelper.KEY_PHOTO_ID, uploadResult.photoId);
         if (uploadResult.result) {
             values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                     MarrySocialDBHelper.UPLOAD_TO_CLOUD_SUCCESS);
@@ -365,31 +356,31 @@ public class UploadCommentsAndBravosAndReplysIntentService extends
                 return;
             }
 
-            updateReplyStatusOfReplys(result.uId, result.commentId, result.replyId,
-                    MarrySocialDBHelper.UPLOAD_TO_CLOUD_SUCCESS);
+            updateReplyStatusOfReplys(result.uId, result.commentId,
+                    result.replyId, MarrySocialDBHelper.UPLOAD_TO_CLOUD_SUCCESS);
         }
     }
 
-    private ArrayList<BravoEntry> queryNeedUploadBravos() {
-        ArrayList<BravoEntry> bravoEntrys = new ArrayList<BravoEntry>();
+    private BravoEntry queryNeedUploadBravos(String comment_id) {
+        BravoEntry bravoEntrys = new BravoEntry();
         Cursor cursor = null;
 
         try {
-            String whereclause = MarrySocialDBHelper.KEY_CURRENT_STATUS
-                    + " = " + MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD;
+            String whereclause = MarrySocialDBHelper.KEY_COMMENT_ID + " = "
+                    + comment_id + " AND " + MarrySocialDBHelper.KEY_UID + " ="
+                    + mUid + " AND " + MarrySocialDBHelper.KEY_CURRENT_STATUS
+                    + " =" + MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD;
             cursor = mDBHelper.query(MarrySocialDBHelper.DATABASE_BRAVOS_TABLE,
                     BRAVOS_PROJECTION, whereclause, null, null, null, null,
                     null);
             if (cursor == null) {
-                return bravoEntrys;
+                return null;
             }
             while (cursor.moveToNext()) {
-                BravoEntry bravo = new BravoEntry();
                 String uId = cursor.getString(0);
                 String commentId = cursor.getString(1);
-                bravo.uId = uId;
-                bravo.commentId = commentId;
-                bravoEntrys.add(bravo);
+                bravoEntrys.uId = uId;
+                bravoEntrys.commentId = commentId;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -402,28 +393,28 @@ public class UploadCommentsAndBravosAndReplysIntentService extends
         return bravoEntrys;
     }
 
-    private ArrayList<ReplyEntry> queryNeedUploadReplys() {
-        ArrayList<ReplyEntry> replyEntrys = new ArrayList<ReplyEntry>();
+    private ReplyEntry queryNeedUploadReplys(String comment_id) {
+        ReplyEntry replyEntrys = new ReplyEntry();
         Cursor cursor = null;
 
         try {
-            String whereclause = MarrySocialDBHelper.KEY_CURRENT_STATUS
-                    + " = " + MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD;
+            String whereclause = MarrySocialDBHelper.KEY_COMMENT_ID + " = "
+                    + comment_id + " AND " + MarrySocialDBHelper.KEY_UID + " ="
+                    + mUid + " AND " + MarrySocialDBHelper.KEY_CURRENT_STATUS
+                    + " =" + MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD;
             cursor = mDBHelper.query(MarrySocialDBHelper.DATABASE_REPLYS_TABLE,
                     REPLYS_PROJECTION, whereclause, null, null, null, null,
                     null);
             if (cursor == null) {
-                return replyEntrys;
+                return null;
             }
             while (cursor.moveToNext()) {
-                ReplyEntry reply = new ReplyEntry();
                 String uId = cursor.getString(0);
                 String commentId = cursor.getString(1);
                 String replyContent = cursor.getString(2);
-                reply.uId = uId;
-                reply.commentId = commentId;
-                reply.replyContent = replyContent;
-                replyEntrys.add(reply);
+                replyEntrys.uId = uId;
+                replyEntrys.commentId = commentId;
+                replyEntrys.replyContent = replyContent;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -447,8 +438,8 @@ public class UploadCommentsAndBravosAndReplysIntentService extends
                 whereClause, null);
     }
 
-    private void updateReplyStatusOfReplys(String uid, String comment_id, String reply_id,
-            int updataStatus) {
+    private void updateReplyStatusOfReplys(String uid, String comment_id,
+            String reply_id, int updataStatus) {
         String whereClause = MarrySocialDBHelper.KEY_UID + " = " + uid
                 + " AND " + MarrySocialDBHelper.KEY_COMMENT_ID + " = "
                 + comment_id;

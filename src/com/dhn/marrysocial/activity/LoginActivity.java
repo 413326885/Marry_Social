@@ -35,6 +35,7 @@ public class LoginActivity extends Activity implements OnClickListener {
     private static final int LOGIN_FAIL = 101;
     private static final int NEEDFILLUSERINFO = 102;
     private static final int NOTNEEDFILLUSERINFO = 103;
+    private static final int NETWORK_INVALID = 104;
 
     private EditText mPhoneNumEditText;
     private EditText mPasswordEditText;
@@ -78,6 +79,12 @@ public class LoginActivity extends Activity implements OnClickListener {
                 mUploadProgressDialog.dismiss();
                 break;
             }
+            case NETWORK_INVALID: {
+                Toast.makeText(LoginActivity.this,
+                        R.string.network_not_available, Toast.LENGTH_SHORT)
+                        .show();
+                break;
+            }
             default:
                 break;
             }
@@ -115,6 +122,12 @@ public class LoginActivity extends Activity implements OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
         case R.id.login_btn: {
+
+            if (!Utils.isActiveNetWorkAvailable(this)) {
+                mHandler.sendEmptyMessage(NETWORK_INVALID);
+                return;
+            }
+
             if (!isPhoneNumValid()) {
                 mPhoneNumEditText.requestFocus();
                 break;

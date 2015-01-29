@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ReplyListsActivity extends Activity implements OnClickListener {
 
@@ -47,6 +48,7 @@ public class ReplyListsActivity extends Activity implements OnClickListener {
             MarrySocialDBHelper.KEY_PHOTO_REMOTE_THUMB_PATH };
 
     private final static int UPLOAD_REPLY = 100;
+    private final static int NETWORK_INVALID = 101;
 
     private ListView mListView;
     private ReplyListAdapter mListViewAdapter;
@@ -73,7 +75,13 @@ public class ReplyListsActivity extends Activity implements OnClickListener {
                 mListViewAdapter.notifyDataSetChanged();
                 Utils.hideSoftInputMethod(mReplyContent);
                 mReplyContent.setText(null);
-                uploadCommentsOrBravosOrReplys(CommonDataStructure.KEY_REPLYS);
+                uploadReplysToCloud(CommonDataStructure.KEY_REPLYS, mCommentId);
+                break;
+            }
+            case NETWORK_INVALID: {
+                Toast.makeText(ReplyListsActivity.this,
+                        R.string.network_not_available, Toast.LENGTH_SHORT)
+                        .show();
                 break;
             }
             default:
@@ -137,6 +145,10 @@ public class ReplyListsActivity extends Activity implements OnClickListener {
             break;
         }
         case R.id.reply_list_reply_send: {
+            if (!Utils.isActiveNetWorkAvailable(this)) {
+                mHandler.sendEmptyMessage(NETWORK_INVALID);
+                return;
+            }
             String replyContents = mReplyContent.getText().toString();
             if (replyContents != null && replyContents.length() != 0) {
                 ReplysItem reply = new ReplysItem();
@@ -205,12 +217,12 @@ public class ReplyListsActivity extends Activity implements OnClickListener {
         resolver.insert(CommonDataStructure.REPLYURL, insertValues);
     }
 
-    private void uploadCommentsOrBravosOrReplys(int uploadType) {
-        Log.e(TAG, "nannan uploadCommentsOrBravosOrReplys()..");
+    private void uploadReplysToCloud(int uploadType, String comment_id) {
         Intent serviceIntent = new Intent(this,
                 UploadCommentsAndBravosAndReplysIntentService.class);
         serviceIntent.putExtra(CommonDataStructure.KEY_UPLOAD_TYPE, uploadType);
-        this.startService(serviceIntent);
+        serviceIntent.putExtra(MarrySocialDBHelper.KEY_COMMENT_ID, comment_id);
+        startService(serviceIntent);
     }
 
     private Bitmap loadUserHeadPicFromDB(String uid) {

@@ -17,6 +17,7 @@ import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
 import com.dhn.marrysocial.provider.DBContentChangeProvider;
 import com.dhn.marrysocial.roundedimageview.RoundedImageView;
+import com.dhn.marrysocial.services.UploadCommentsAndBravosAndReplysIntentService;
 import com.dhn.marrysocial.utils.Utils;
 
 import android.app.Activity;
@@ -121,6 +122,7 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
     private String mCameraFilePath;
     private EditCommentsPhotoViewAdapter mPhotoViewAdapter;
     private String mCurrentEditTime;
+    private String mBucketId;
 
     private ProgressDialog mUploadProgressDialog;
     private Handler mHandler;
@@ -428,16 +430,10 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
         public String comment_content;
     }
 
-    public void sendCommentEntrys() {
-        insertCommentsToDB();
-        insertImagesToDB();
-        // UploadCommentContentEntry entry = new UploadCommentContentEntry();
-        // entry.u_id = "1";
-        // entry.comment_content = mCommentDescription.getText().toString();
-        // mTid = Utils.uploadCommentContentFile(COMMENT_POST_URL, entry);
-        // if (mTid != null) {
-        // }
-    }
+    // public void sendCommentEntrys() {
+    // insertCommentsToDB();
+    // insertImagesToDB();
+    // }
 
     class UploadFiles implements Runnable {
 
@@ -446,7 +442,9 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
 
         @Override
         public void run() {
-            sendCommentEntrys();
+            insertCommentsToDB();
+            insertImagesToDB();
+            uploadCommentsToCloud(CommonDataStructure.KEY_COMMENTS, mBucketId);
             mHandler.sendEmptyMessage(UPLOAD_FINISH);
         }
 
@@ -455,11 +453,12 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
     public void insertCommentsToDB() {
         long time = System.currentTimeMillis() / 1000;
         mCurrentEditTime = Long.toString(time);
+        mBucketId = String.valueOf(mCurrentEditTime.hashCode());
 
         ContentValues values = new ContentValues();
         values.put(MarrySocialDBHelper.KEY_UID, mUid);
         values.put(MarrySocialDBHelper.KEY_BUCKET_ID,
-                mCurrentEditTime.hashCode());
+                mBucketId);
         values.put(MarrySocialDBHelper.KEY_COMMENT_ID,
                 CommonDataStructure.INVALID_STR);
         values.put(MarrySocialDBHelper.KEY_ADDED_TIME, mCurrentEditTime);
@@ -491,7 +490,7 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
             ContentValues values = new ContentValues();
             values.put(MarrySocialDBHelper.KEY_UID, mUid);
             values.put(MarrySocialDBHelper.KEY_BUCKET_ID,
-                    mCurrentEditTime.hashCode());
+                    mBucketId);
             values.put(MarrySocialDBHelper.KEY_COMMENT_ID,
                     CommonDataStructure.INVALID_STR);
             values.put(MarrySocialDBHelper.KEY_ADDED_TIME, mCurrentEditTime);
@@ -595,5 +594,13 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
             }
         }
         return userInfo;
+    }
+
+    private void uploadCommentsToCloud(int uploadType, String bucket_id) {
+        Intent serviceIntent = new Intent(this,
+                UploadCommentsAndBravosAndReplysIntentService.class);
+        serviceIntent.putExtra(CommonDataStructure.KEY_UPLOAD_TYPE, uploadType);
+        serviceIntent.putExtra(MarrySocialDBHelper.KEY_BUCKET_ID, bucket_id);
+        startService(serviceIntent);
     }
 }

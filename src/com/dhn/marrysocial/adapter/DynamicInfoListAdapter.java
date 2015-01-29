@@ -22,6 +22,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnticipateOvershootInterpolator;
 import android.view.animation.BounceInterpolator;
+import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
@@ -29,6 +30,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dhn.marrysocial.R;
 import com.dhn.marrysocial.activity.EditCommentsActivity;
@@ -45,6 +47,7 @@ import com.dhn.marrysocial.roundedimageview.RoundedImageView;
 import com.dhn.marrysocial.services.DeleteCommentsAndBravosAndReplysIntentServices;
 import com.dhn.marrysocial.services.DownloadCommentsIntentService;
 import com.dhn.marrysocial.services.UploadCommentsAndBravosAndReplysIntentService;
+import com.dhn.marrysocial.utils.Utils;
 
 public class DynamicInfoListAdapter extends BaseAdapter {
 
@@ -58,6 +61,7 @@ public class DynamicInfoListAdapter extends BaseAdapter {
     private LayoutInflater mInflater;
     private ScaleAnimation mBravoScaleAnimation;
     private ScaleAnimation mReplyScaleAnimation;
+    private RotateAnimation mRefreshAnimation;
 
     private String mUid;
     private String mAuthorName;
@@ -89,10 +93,6 @@ public class DynamicInfoListAdapter extends BaseAdapter {
                 Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
                 0.5f);
         mBravoScaleAnimation.setInterpolator(new BounceInterpolator());
-        // mBravoScaleAnimation.setInterpolator(new
-        // AnticipateOvershootInterpolator());
-        // mBravoScaleAnimation.setInterpolator(new
-        // AccelerateDecelerateInterpolator());
         mBravoScaleAnimation.setDuration(100);
         mBravoScaleAnimation.setFillAfter(true);
         mBravoScaleAnimation.setFillBefore(true);
@@ -104,6 +104,11 @@ public class DynamicInfoListAdapter extends BaseAdapter {
         mReplyScaleAnimation.setDuration(100);
         mReplyScaleAnimation.setFillAfter(true);
         mReplyScaleAnimation.setFillBefore(true);
+
+        mRefreshAnimation = new RotateAnimation(0f, 1440f,
+                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+                0.5f);
+        mRefreshAnimation.setDuration(4000);
 
         SharedPreferences prefs = mContext.getSharedPreferences(
                 CommonDataStructure.PREFS_LAIQIAN_DEFAULT,
@@ -197,6 +202,24 @@ public class DynamicInfoListAdapter extends BaseAdapter {
                 mReplyBtnClickedListener.onReplyBtnClicked(position);
             }
         });
+
+        holder.mRefreshBtn.clearAnimation();
+        holder.mRefreshBtn.setVisibility(View.GONE);
+        if (mCommentsData.get(position).getCurrrentStatus() == MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD
+                || mCommentsData.get(position).getCurrrentStatus() == MarrySocialDBHelper.UPLOAD_TO_CLOUD_FAIL) {
+            holder.mRefreshBtn.setVisibility(View.VISIBLE);
+            holder.mRefreshBtn.setOnClickListener(new OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    holder.mRefreshBtn.startAnimation(mRefreshAnimation);
+                    uploadCommentsToCloud(
+                            CommonDataStructure.KEY_COMMENTS, mCommentsData
+                                    .get(position).getBucketId());
+                }
+            });
+        }
+
         holder.mReplyTipsTitle.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -233,6 +256,7 @@ public class DynamicInfoListAdapter extends BaseAdapter {
         RoundedImageView mHeadPic;
         CheckBox mDynamicBravo;
         ImageView mReplyBtn;
+        ImageView mRefreshBtn;
         TextView mNickName;
         TextView mAddedTime;
         TextView mContents;
@@ -278,6 +302,8 @@ public class DynamicInfoListAdapter extends BaseAdapter {
                 .findViewById(R.id.dynamic_info_bravo);
         holder.mReplyBtn = (ImageView) convertView
                 .findViewById(R.id.dynamic_info_pinglun);
+        holder.mRefreshBtn = (ImageView) convertView
+                .findViewById(R.id.dynamic_info_refresh);
         holder.mAddedTime = (TextView) convertView
                 .findViewById(R.id.dynamic_info_time);
         holder.mContents = (TextView) convertView
@@ -595,7 +621,7 @@ public class DynamicInfoListAdapter extends BaseAdapter {
             updateBravoStatusOfCommentsDB(comment, isChecked);
             if (isChecked) {
                 insertBravoStatusToBravosDB(comment);
-                uploadCommentsOrBravosOrReplysToCloud(CommonDataStructure.KEY_BRAVOS);
+                uploadBravosToCloud(CommonDataStructure.KEY_BRAVOS, comment.getCommentId());
             } else {
                 updateBravoStatusToBravosDB(comment);
                 if (Integer.valueOf(comment.getCommentId()) != -1) {
@@ -711,11 +737,11 @@ public class DynamicInfoListAdapter extends BaseAdapter {
         mContext.startActivity(intent);
     }
 
-    private void uploadCommentsOrBravosOrReplysToCloud(int uploadType) {
-        Log.e(TAG, "nannan uploadCommentsOrBravosOrReplys()..");
+    private void uploadBravosToCloud(int uploadType, String comment_id) {
         Intent serviceIntent = new Intent(mContext,
                 UploadCommentsAndBravosAndReplysIntentService.class);
         serviceIntent.putExtra(CommonDataStructure.KEY_UPLOAD_TYPE, uploadType);
+        serviceIntent.putExtra(MarrySocialDBHelper.KEY_COMMENT_ID, comment_id);
         mContext.startService(serviceIntent);
     }
 
@@ -725,4 +751,13 @@ public class DynamicInfoListAdapter extends BaseAdapter {
         serviceIntent.putExtra(CommonDataStructure.KEY_UPLOAD_TYPE, uploadType);
         mContext.startService(serviceIntent);
     }
+
+    private void uploadCommentsToCloud(int uploadType, String bucket_id) {
+        Intent serviceIntent = new Intent(mContext,
+                UploadCommentsAndBravosAndReplysIntentService.class);
+        serviceIntent.putExtra(CommonDataStructure.KEY_UPLOAD_TYPE, uploadType);
+        serviceIntent.putExtra(MarrySocialDBHelper.KEY_BUCKET_ID, bucket_id);
+        mContext.startService(serviceIntent);
+    }
+
 }

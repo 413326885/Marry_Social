@@ -50,6 +50,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class DynamicInfoFragment extends Fragment implements OnClickListener {
 
@@ -63,7 +64,8 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
             MarrySocialDBHelper.KEY_PHOTO_COUNT,
             MarrySocialDBHelper.KEY_BRAVO_STATUS,
             MarrySocialDBHelper.KEY_ADDED_TIME,
-            MarrySocialDBHelper.KEY_COMMENT_ID };
+            MarrySocialDBHelper.KEY_COMMENT_ID,
+            MarrySocialDBHelper.KEY_CURRENT_STATUS };
 
     private final String[] BRAVOS_PROJECTION = { MarrySocialDBHelper.KEY_ID,
             MarrySocialDBHelper.KEY_UID,
@@ -112,6 +114,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
     private final static int UPDATE_DYNAMIC_INFO = 108;
     private final static int SEND_REPLY_FINISH = 109;
     private final static int REFRESH_HEADER_PIC = 110;
+    private final static int NETWORK_INVALID = 111;
 
     private AlphaAnimation mHideEditorAlphaAnimation;
     private AlphaAnimation mShowEditorAlphaAnimation;
@@ -151,7 +154,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
             }
 
             case UPLOAD_COMMENT: {
-                uploadCommentsOrBravosOrReplys(CommonDataStructure.KEY_COMMENTS);
+//                uploadCommentsOrBravosOrReplys(CommonDataStructure.KEY_COMMENTS);
                 mCommentEntrys.clear();
                 mCommentEntrys.addAll(loadCommentsItemFromDB());
                 mListViewAdapter.notifyDataSetChanged();
@@ -165,15 +168,15 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
                 break;
             }
 
-            case UPLOAD_BRAVO: {
-                uploadCommentsOrBravosOrReplys(CommonDataStructure.KEY_BRAVOS);
-                break;
-            }
-
-            case UPLOAD_REPLY: {
-                uploadCommentsOrBravosOrReplys(CommonDataStructure.KEY_REPLYS);
-                break;
-            }
+//            case UPLOAD_BRAVO: {
+//                uploadCommentsOrBravosOrReplys(CommonDataStructure.KEY_BRAVOS);
+//                break;
+//            }
+//
+//            case UPLOAD_REPLY: {
+//                uploadCommentsOrBravosOrReplys(CommonDataStructure.KEY_REPLYS);
+//                break;
+//            }
 
             case START_TO_LOAD_BRAVO_REPLY: {
                 if (mCommentEntrys != null && mCommentEntrys.size() != 0) {
@@ -206,7 +209,11 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
                 mReplyContents.setText(null);
                 hideReplyFootBar();
                 Utils.hideSoftInputMethod(mReplyFoot);
-                uploadCommentsOrBravosOrReplys(CommonDataStructure.KEY_REPLYS);
+                break;
+            }
+
+            case NETWORK_INVALID: {
+                Toast.makeText(getActivity(), R.string.network_not_available, Toast.LENGTH_SHORT).show();
                 break;
             }
 
@@ -451,24 +458,21 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
         }
     }
 
-    private void uploadCommentsOrBravosOrReplys(int uploadType) {
-        Log.e(TAG, "nannan uploadCommentsOrBravosOrReplys()..");
+    private void uploadReplysToCloud(int uploadType, String comment_id) {
         Intent serviceIntent = new Intent(getActivity(),
                 UploadCommentsAndBravosAndReplysIntentService.class);
         serviceIntent.putExtra(CommonDataStructure.KEY_UPLOAD_TYPE, uploadType);
+        serviceIntent.putExtra(MarrySocialDBHelper.KEY_COMMENT_ID, comment_id);
         getActivity().startService(serviceIntent);
     }
 
     private void downloadUserComments() {
-        Log.e(TAG,
-                "nannan downloadUserComments()..  1111111111111111111111111111111111111");
         Intent serviceIntent = new Intent(getActivity(),
                 DownloadCommentsIntentService.class);
         getActivity().startService(serviceIntent);
     }
 
     private ArrayList<CommentsItem> loadCommentsItemFromDB() {
-        Log.e(TAG, "nannan loadCommentsItemFromDB()..");
         ArrayList<CommentsItem> commentEntrys = new ArrayList<CommentsItem>();
         Cursor cursor = null;
 
@@ -478,7 +482,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
             String orderBy = MarrySocialDBHelper.KEY_ADDED_TIME + " DESC";
             cursor = mDBHelper.query(
                     MarrySocialDBHelper.DATABASE_COMMENTS_TABLE,
-                    COMMENTS_PROJECTION, null, null, null, null, orderBy, null);
+                    COMMENTS_PROJECTION, whereclause, null, null, null, orderBy, null);
             if (cursor == null) {
                 Log.e(TAG, "nannan loadCommentsItemFromDB()..  cursor == null");
                 return commentEntrys;
@@ -493,6 +497,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
                 int bravo_status = cursor.getInt(5);
                 String added_time = cursor.getString(6);
                 String comment_id = cursor.getString(7);
+                int current_status = cursor.getInt(8);
                 comment.setUid(uId);
                 comment.setBucketId(bucketId);
                 comment.setCommentId(comment_id);
@@ -500,6 +505,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
                 comment.setRealName(nick_name);
                 comment.setNickName(nick_name);
                 comment.setPhotoCount(photo_count);
+                comment.setCurrrentStatus(current_status);
                 comment.setAddTime(Utils.getAddedTimeTitle(getActivity(),
                         added_time));
                 comment.setIsBravo(bravo_status == MarrySocialDBHelper.BRAVO_CONFIRM);
@@ -643,12 +649,17 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
 
         @Override
         public void onClick(View v) {
+            if (!Utils.isActiveNetWorkAvailable(getActivity())) {
+                mHandler.sendEmptyMessage(NETWORK_INVALID);
+                return;
+            }
             CommentsItem comment = (CommentsItem) (mListViewAdapter
                     .getItem(mReplyCommentsPosition));
             ReplysItem reply = new ReplysItem();
             reply.setCommentId(comment.getCommentId());
             reply.setReplyContents(mReplyContents.getText().toString());
             insertReplysToReplyDB(reply);
+            uploadReplysToCloud(CommonDataStructure.KEY_REPLYS, comment.getCommentId());
             mHandler.sendEmptyMessage(SEND_REPLY_FINISH);
             mHandler.sendEmptyMessage(UPDATE_DYNAMIC_INFO);
         }

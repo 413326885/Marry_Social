@@ -1305,7 +1305,7 @@ public class Utils {
     }
 
     public static ArrayList<CommentsItem> downloadCommentsWithReplyList(
-            String RequestURL, DownloadCommentsEntry entry) {
+            String RequestURL, DownloadCommentsEntry entry, String indirects) {
 
         Log.e(TAG, "nannan downloadCommentsList   4444444444");
         URL postUrl = null;
@@ -1336,7 +1336,7 @@ public class Utils {
 
             JSONObject commentContent = new JSONObject();
             commentContent.put("uid", "3");
-            commentContent.put("indirectuids", CommonDataStructure.INDIRECTIDS);
+            commentContent.put("indirectuids", indirects);
             // commentContent.put("datetime", entry.addedTime);
 
             String content = null;
@@ -1416,7 +1416,7 @@ public class Utils {
         return null;
     }
 
-    public static ArrayList<NoticesItem> downloadIndirectNoticesList(
+    public static ArrayList<NoticesItem> downloadNoticesList(
             String RequestURL, String uId, String timeStamp, int noticeType) {
 
         Log.e(TAG, "nannan downloadNoticesList");
