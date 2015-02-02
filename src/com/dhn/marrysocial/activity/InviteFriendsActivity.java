@@ -115,11 +115,12 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
         mDBHelper = MarrySocialDBHelper.newInstance(this);
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
                 .availableProcessors() * POOL_SIZE);
+//
+//        mContactList.clear();
+//        mContactList.addAll(getAllContactsInfo());
+//        mListAdapter.notifyDataSetChanged();
 
-        mContactList.clear();
-        mContactList.addAll(getAllContactsInfo());
-        mListAdapter.notifyDataSetChanged();
-
+        mHandler.sendEmptyMessage(START_TO_UPLOAD_CONTACTS);
     }
 
     @Override

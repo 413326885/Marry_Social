@@ -75,7 +75,6 @@ public class ReplyListsActivity extends Activity implements OnClickListener {
                 mListViewAdapter.notifyDataSetChanged();
                 Utils.hideSoftInputMethod(mReplyContent);
                 mReplyContent.setText(null);
-                uploadReplysToCloud(CommonDataStructure.KEY_REPLYS, mCommentId);
                 break;
             }
             case NETWORK_INVALID: {
@@ -151,12 +150,18 @@ public class ReplyListsActivity extends Activity implements OnClickListener {
             }
             String replyContents = mReplyContent.getText().toString();
             if (replyContents != null && replyContents.length() != 0) {
+                long time = System.currentTimeMillis() / 1000;
+                String replyTime = Long.toString(time);
+                String bucketId = String.valueOf(replyTime.hashCode());
                 ReplysItem reply = new ReplysItem();
                 reply.setCommentId(mCommentId);
                 reply.setReplyContents(replyContents);
                 reply.setNickname(mAuthorName);
                 reply.setUid(mUid);
+                reply.setBucketId(bucketId);
+                reply.setReplyTime(replyTime);
                 insertReplysToReplyDB(reply);
+                uploadReplysToCloud(CommonDataStructure.KEY_REPLYS, mCommentId, bucketId);
                 mHandler.sendEmptyMessage(UPLOAD_REPLY);
             }
             break;
@@ -208,8 +213,9 @@ public class ReplyListsActivity extends Activity implements OnClickListener {
         insertValues.put(MarrySocialDBHelper.KEY_AUTHOR_NICKNAME, mAuthorName);
         insertValues.put(MarrySocialDBHelper.KEY_REPLY_CONTENTS,
                 reply.getReplyContents());
+        insertValues.put(MarrySocialDBHelper.KEY_BUCKET_ID, reply.getBucketId());
         insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
-                Long.toString(System.currentTimeMillis() / 1000));
+                reply.getReplyTime());
         insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD);
 
@@ -217,11 +223,12 @@ public class ReplyListsActivity extends Activity implements OnClickListener {
         resolver.insert(CommonDataStructure.REPLYURL, insertValues);
     }
 
-    private void uploadReplysToCloud(int uploadType, String comment_id) {
+    private void uploadReplysToCloud(int uploadType, String comment_id, String bucket_id) {
         Intent serviceIntent = new Intent(this,
                 UploadCommentsAndBravosAndReplysIntentService.class);
         serviceIntent.putExtra(CommonDataStructure.KEY_UPLOAD_TYPE, uploadType);
         serviceIntent.putExtra(MarrySocialDBHelper.KEY_COMMENT_ID, comment_id);
+        serviceIntent.putExtra(MarrySocialDBHelper.KEY_BUCKET_ID, bucket_id);
         startService(serviceIntent);
     }
 

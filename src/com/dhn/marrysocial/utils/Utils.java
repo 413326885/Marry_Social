@@ -1416,8 +1416,8 @@ public class Utils {
         return null;
     }
 
-    public static ArrayList<NoticesItem> downloadNoticesList(
-            String RequestURL, String uId, String timeStamp, int noticeType) {
+    public static ArrayList<NoticesItem> downloadNoticesList(String RequestURL,
+            String uId, String timeStamp, int noticeType) {
 
         Log.e(TAG, "nannan downloadNoticesList");
         URL postUrl = null;
@@ -1472,7 +1472,7 @@ public class Utils {
                 resp.append(line);
             }
 
-            Log.e(TAG, "nannan resp 555555555555 = " + resp);
+            // Log.e(TAG, "nannan resp 555555555555 = " + resp);
             JSONObject response = new JSONObject(resp.toString());
             String code = response.getString("code");
             if (!"200".equalsIgnoreCase(code)) {
@@ -1909,7 +1909,7 @@ public class Utils {
                 resp.append(line);
             }
 
-            Log.e(TAG, "nannan resp 555555555555 = " + resp);
+            // Log.e(TAG, "nannan resp 555555555555 = " + resp);
             JSONObject response = new JSONObject(resp.toString());
             String code = response.getString("code");
             if (!"200".equalsIgnoreCase(code)) {
@@ -1924,6 +1924,7 @@ public class Utils {
                 String uid = reply.getString("uid");
                 String replycontent = reply.getString("content");
                 String addtime = reply.getString("addtime");
+                String bucketId = String.valueOf(addtime.hashCode());
                 String nickname = reply.getString("fullname");
 
                 ReplysItem item = new ReplysItem();
@@ -1933,6 +1934,7 @@ public class Utils {
                 item.setReplyContents(replycontent);
                 item.setReplyTime(addtime);
                 item.setNickname(nickname);
+                item.setBucketId(bucketId);
 
                 replyItems.add(item);
             }
@@ -2726,12 +2728,14 @@ public class Utils {
 
                 contactList.put(contact);
             }
+            JSONObject contact = new JSONObject();
+            contact.put("contacts", contactList.toString());
 
             String content = "jsondata="
-                    + URLEncoder.encode(contactList.toString(), "UTF-8");
-            Log.e(TAG, "nannan chatMsg = " + contactList.toString());
+                    + URLEncoder.encode(contact.toString(), "UTF-8");
+            Log.e(TAG, "nannan contacts = " + contactList.toString());
             Log.e(TAG, "nannan content = " + content);
-            
+
             if (content == null)
                 return contactEntrys;
 
@@ -2753,7 +2757,7 @@ public class Utils {
             if (!"200".equalsIgnoreCase(code)) {
                 return contactEntrys;
             }
-            
+
             JSONObject data = response.getJSONObject("data");
             Iterator<String> iterator = data.keys();
             while (iterator.hasNext()) {

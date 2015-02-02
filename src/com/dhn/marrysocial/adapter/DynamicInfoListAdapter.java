@@ -213,9 +213,8 @@ public class DynamicInfoListAdapter extends BaseAdapter {
                 @Override
                 public void onClick(View v) {
                     holder.mRefreshBtn.startAnimation(mRefreshAnimation);
-                    uploadCommentsToCloud(
-                            CommonDataStructure.KEY_COMMENTS, mCommentsData
-                                    .get(position).getBucketId());
+                    uploadCommentsToCloud(CommonDataStructure.KEY_COMMENTS,
+                            mCommentsData.get(position).getBucketId());
                 }
             });
         }
@@ -621,12 +620,13 @@ public class DynamicInfoListAdapter extends BaseAdapter {
             updateBravoStatusOfCommentsDB(comment, isChecked);
             if (isChecked) {
                 insertBravoStatusToBravosDB(comment);
-                uploadBravosToCloud(CommonDataStructure.KEY_BRAVOS, comment.getCommentId());
+                uploadBravosToCloud(CommonDataStructure.KEY_BRAVOS,
+                        comment.getCommentId());
             } else {
                 updateBravoStatusToBravosDB(comment);
-                if (Integer.valueOf(comment.getCommentId()) != -1) {
-                    deleteCommentsOrBravosOrReplysFromCloud(CommonDataStructure.KEY_BRAVOS);
-                }
+                // if (Integer.valueOf(comment.getCommentId()) != -1) {
+                deleteBravosFromCloud(CommonDataStructure.KEY_BRAVOS);
+                // }
             }
 
         }
@@ -635,13 +635,13 @@ public class DynamicInfoListAdapter extends BaseAdapter {
     private void updateBravoStatusOfCommentsDB(CommentsItem comment,
             boolean isChecked) {
         String whereClause = null;
-        if (Integer.valueOf(comment.getCommentId()) == -1) {
-            whereClause = MarrySocialDBHelper.KEY_BUCKET_ID + " = "
-                    + comment.getBucketId();
-        } else {
-            whereClause = MarrySocialDBHelper.KEY_COMMENT_ID + " = "
-                    + comment.getCommentId();
-        }
+        // if (Integer.valueOf(comment.getCommentId()) == -1) {
+        // whereClause = MarrySocialDBHelper.KEY_BUCKET_ID + " = "
+        // + comment.getBucketId();
+        // } else {
+        whereClause = MarrySocialDBHelper.KEY_COMMENT_ID + " = "
+                + comment.getCommentId();
+        // }
         ContentValues values = new ContentValues();
         values.put(MarrySocialDBHelper.KEY_BRAVO_STATUS,
                 isChecked ? MarrySocialDBHelper.BRAVO_CONFIRM
@@ -669,15 +669,15 @@ public class DynamicInfoListAdapter extends BaseAdapter {
             resolver.insert(CommonDataStructure.BRAVOURL, insertValues);
         } else {
             String whereClause = null;
-            if (Integer.valueOf(comment.getCommentId()) == -1) {
-                whereClause = MarrySocialDBHelper.KEY_BUCKET_ID + " = "
-                        + comment.getBucketId() + " AND "
-                        + MarrySocialDBHelper.KEY_UID + " = " + mUid;
-            } else {
-                whereClause = MarrySocialDBHelper.KEY_COMMENT_ID + " = "
-                        + comment.getCommentId() + " AND "
-                        + MarrySocialDBHelper.KEY_UID + " = " + mUid;
-            }
+            // if (Integer.valueOf(comment.getCommentId()) == -1) {
+            // whereClause = MarrySocialDBHelper.KEY_BUCKET_ID + " = "
+            // + comment.getBucketId() + " AND "
+            // + MarrySocialDBHelper.KEY_UID + " = " + mUid;
+            // } else {
+            whereClause = MarrySocialDBHelper.KEY_COMMENT_ID + " = "
+                    + comment.getCommentId() + " AND "
+                    + MarrySocialDBHelper.KEY_UID + " = " + mUid;
+            // }
             ContentResolver resolver = mContext.getContentResolver();
             ContentValues values = new ContentValues();
             values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
@@ -692,21 +692,20 @@ public class DynamicInfoListAdapter extends BaseAdapter {
 
         String whereClause = null;
         ContentResolver resolver = mContext.getContentResolver();
-        if (Integer.valueOf(comment.getCommentId()) == -1) {
-            whereClause = MarrySocialDBHelper.KEY_BUCKET_ID + " = "
-                    + comment.getBucketId() + " AND "
-                    + MarrySocialDBHelper.KEY_UID + " = " + mUid;
-            resolver.delete(CommonDataStructure.BRAVOURL, whereClause, null);
-        } else {
-            whereClause = MarrySocialDBHelper.KEY_COMMENT_ID + " = "
-                    + comment.getCommentId() + " AND "
-                    + MarrySocialDBHelper.KEY_UID + " = " + mUid;
-            ContentValues values = new ContentValues();
-            values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
-                    MarrySocialDBHelper.NEED_DELETE_FROM_CLOUD);
-            resolver.update(CommonDataStructure.BRAVOURL, values, whereClause,
-                    null);
-        }
+        // if (Integer.valueOf(comment.getCommentId()) == -1) {
+        // whereClause = MarrySocialDBHelper.KEY_BUCKET_ID + " = "
+        // + comment.getBucketId() + " AND "
+        // + MarrySocialDBHelper.KEY_UID + " = " + mUid;
+        // resolver.delete(CommonDataStructure.BRAVOURL, whereClause, null);
+        // } else {
+        whereClause = MarrySocialDBHelper.KEY_COMMENT_ID + " = "
+                + comment.getCommentId() + " AND "
+                + MarrySocialDBHelper.KEY_UID + " = " + mUid;
+        ContentValues values = new ContentValues();
+        values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
+                MarrySocialDBHelper.NEED_DELETE_FROM_CLOUD);
+        resolver.update(CommonDataStructure.BRAVOURL, values, whereClause, null);
+        // }
     }
 
     public boolean isCommentIdExist(String commentId) {
@@ -745,10 +744,10 @@ public class DynamicInfoListAdapter extends BaseAdapter {
         mContext.startService(serviceIntent);
     }
 
-    private void deleteCommentsOrBravosOrReplysFromCloud(int uploadType) {
+    private void deleteBravosFromCloud(int uploadType) {
         Intent serviceIntent = new Intent(mContext,
                 DeleteCommentsAndBravosAndReplysIntentServices.class);
-        serviceIntent.putExtra(CommonDataStructure.KEY_UPLOAD_TYPE, uploadType);
+        serviceIntent.putExtra(CommonDataStructure.KEY_DELETE_TYPE, uploadType);
         mContext.startService(serviceIntent);
     }
 

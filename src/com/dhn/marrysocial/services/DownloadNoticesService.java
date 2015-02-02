@@ -37,7 +37,7 @@ public class DownloadNoticesService extends Service {
     private static final int TIME_TO_DOWNLOAD_MYSELF_REPLYS = 106;
 
     private static final int POOL_SIZE = 10;
-    private static final int TIME_SCHEDULE = 1000;
+    private static final int TIME_SCHEDULE = 120000;
 
     private static final String[] COMMENTS_PROJECTION = {
             MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_BUCKET_ID,
@@ -58,7 +58,6 @@ public class DownloadNoticesService extends Service {
 
     private String mUid;
     private String mAuthorName;
-    private String mIndirectLists;
     private MarrySocialDBHelper mDBHelper;
     private ExecutorService mExecutorService;
 
@@ -128,7 +127,6 @@ public class DownloadNoticesService extends Service {
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
                 .availableProcessors() * POOL_SIZE);
 
-        mIndirectLists = loadIndirectsFromDB();
     }
 
     @Override
@@ -200,6 +198,7 @@ public class DownloadNoticesService extends Service {
 
         @Override
         public void run() {
+            String indirectLists = loadIndirectsFromDB();
             ArrayList<NoticesItem> noticeItems = Utils
                     .downloadNoticesList(
                             CommonDataStructure.URL_INDIRECT_NOTICE_LIST, mUid,
@@ -210,7 +209,7 @@ public class DownloadNoticesService extends Service {
             for (NoticesItem notice : noticeItems) {
                 ArrayList<ReplysItem> replyItems = Utils.downloadReplysList(
                         CommonDataStructure.URL_REPLY_LIST, notice.getUid(),
-                        notice.getCommentId(), mIndirectLists,
+                        notice.getCommentId(), indirectLists,
                         "");
                 if (replyItems == null || replyItems.size() == 0) {
                     continue;

@@ -10,6 +10,7 @@ public class ReplysItem {
     private String mCommentId;
     private String mReplyTime;
     private String mReplyId;
+    private String mBucketId;
 
     public String getUid() {
         return mUid;
@@ -57,5 +58,13 @@ public class ReplysItem {
 
     public void setReplyId(String mReplyId) {
         this.mReplyId = mReplyId;
+    }
+
+    public String getBucketId() {
+        return mBucketId;
+    }
+
+    public void setBucketId(String mBucketId) {
+        this.mBucketId = mBucketId;
     }
 }

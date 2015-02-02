@@ -269,7 +269,7 @@ public class DownloadCommentsIntentService extends IntentService {
             }
 
             for (String uid : indirects) {
-                result.append(uid);
+                result.append(uid).append(",");
             }
 
             return result.toString();

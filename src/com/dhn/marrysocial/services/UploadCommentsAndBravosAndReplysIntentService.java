@@ -40,7 +40,8 @@ public class UploadCommentsAndBravosAndReplysIntentService extends
 
     private static final String[] REPLYS_PROJECTION = {
             MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_COMMENT_ID,
-            MarrySocialDBHelper.KEY_REPLY_CONTENTS };
+            MarrySocialDBHelper.KEY_REPLY_CONTENTS,
+            MarrySocialDBHelper.KEY_BUCKET_ID };
 
     private MarrySocialDBHelper mDBHelper;
     private String mToken;
@@ -112,7 +113,10 @@ public class UploadCommentsAndBravosAndReplysIntentService extends
         case CommonDataStructure.KEY_REPLYS: {
             String comment_id = intent
                     .getStringExtra(MarrySocialDBHelper.KEY_COMMENT_ID);
-            ReplyEntry uploadReplys = queryNeedUploadReplys(comment_id);
+            String bucket_id = intent
+                    .getStringExtra(MarrySocialDBHelper.KEY_BUCKET_ID);
+            ReplyEntry uploadReplys = queryNeedUploadReplys(comment_id,
+                    bucket_id);
             if (uploadReplys == null) {
                 return;
             }
@@ -357,7 +361,8 @@ public class UploadCommentsAndBravosAndReplysIntentService extends
             }
 
             updateReplyStatusOfReplys(result.uId, result.commentId,
-                    result.replyId, MarrySocialDBHelper.UPLOAD_TO_CLOUD_SUCCESS);
+                    result.replyId, reply.bucketId,
+                    MarrySocialDBHelper.UPLOAD_TO_CLOUD_SUCCESS);
         }
     }
 
@@ -393,15 +398,17 @@ public class UploadCommentsAndBravosAndReplysIntentService extends
         return bravoEntrys;
     }
 
-    private ReplyEntry queryNeedUploadReplys(String comment_id) {
+    private ReplyEntry queryNeedUploadReplys(String comment_id, String bucket_id) {
         ReplyEntry replyEntrys = new ReplyEntry();
         Cursor cursor = null;
 
         try {
-            String whereclause = MarrySocialDBHelper.KEY_COMMENT_ID + " = "
-                    + comment_id + " AND " + MarrySocialDBHelper.KEY_UID + " ="
-                    + mUid + " AND " + MarrySocialDBHelper.KEY_CURRENT_STATUS
-                    + " =" + MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD;
+            String whereclause = MarrySocialDBHelper.KEY_BUCKET_ID + " = "
+                    + bucket_id + " AND " + MarrySocialDBHelper.KEY_COMMENT_ID
+                    + " = " + comment_id + " AND "
+                    + MarrySocialDBHelper.KEY_UID + " =" + mUid + " AND "
+                    + MarrySocialDBHelper.KEY_CURRENT_STATUS + " ="
+                    + MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD;
             cursor = mDBHelper.query(MarrySocialDBHelper.DATABASE_REPLYS_TABLE,
                     REPLYS_PROJECTION, whereclause, null, null, null, null,
                     null);
@@ -412,9 +419,11 @@ public class UploadCommentsAndBravosAndReplysIntentService extends
                 String uId = cursor.getString(0);
                 String commentId = cursor.getString(1);
                 String replyContent = cursor.getString(2);
+                String bucketId = cursor.getString(3);
                 replyEntrys.uId = uId;
                 replyEntrys.commentId = commentId;
                 replyEntrys.replyContent = replyContent;
+                replyEntrys.bucketId = bucketId;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -439,10 +448,11 @@ public class UploadCommentsAndBravosAndReplysIntentService extends
     }
 
     private void updateReplyStatusOfReplys(String uid, String comment_id,
-            String reply_id, int updataStatus) {
+            String reply_id, String bucket_id, int updataStatus) {
         String whereClause = MarrySocialDBHelper.KEY_UID + " = " + uid
                 + " AND " + MarrySocialDBHelper.KEY_COMMENT_ID + " = "
-                + comment_id;
+                + comment_id + " AND " + MarrySocialDBHelper.KEY_BUCKET_ID
+                + " = " + bucket_id;
         ContentValues values = new ContentValues();
         values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS, updataStatus);
         values.put(MarrySocialDBHelper.KEY_REPLY_ID, reply_id);
@@ -470,6 +480,7 @@ public class UploadCommentsAndBravosAndReplysIntentService extends
     static class ReplyEntry {
         public String uId;
         public String commentId;
+        public String bucketId;
         public String replyContent;
     }
 }

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -117,6 +118,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
     private ListView mListView;
     private DynamicInfoListAdapter mListViewAdapter;
     private ArrayList<CommentsItem> mCommentEntrys = new ArrayList<CommentsItem>();
+    private HashMap<String, ContactsInfo> mUserInfoEntrys = new HashMap<String, ContactsInfo>();
 
     private RelativeLayout mReturnBtn;
     private RelativeLayout mHeaderLayout;
@@ -192,10 +194,11 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         mDBHelper = MarrySocialDBHelper.newInstance(this);
 
         generateDBData();
+        loadContactsFromDB();
 
         Intent data = getIntent();
         mUserInfoUid = data.getStringExtra(MarrySocialDBHelper.KEY_UID);
-        mUserInfo = loadUserInfoFromDB(mUserInfoUid);
+        mUserInfo = mUserInfoEntrys.get(mUserInfoUid);
         mUserHeadPic = loadUserHeadPicFromDB(mUserInfoUid);
 
         mReturnBtn = (RelativeLayout) findViewById(R.id.contacts_info_return);
@@ -225,6 +228,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         mListView.addHeaderView(mContactsInfoHeader);
         mListViewAdapter = new DynamicInfoListAdapter(this);
         mListViewAdapter.setCommentDataSource(mCommentEntrys);
+        mListViewAdapter.setUserInfoDataSource(mUserInfoEntrys);
         mListView.setAdapter(mListViewAdapter);
 
         SharedPreferences prefs = this.getSharedPreferences(
@@ -253,7 +257,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
 
-        mUserInfo = loadUserInfoFromDB(mUserInfoUid);
+        mUserInfo = mUserInfoEntrys.get(mUserInfoUid);
 
         mContactsInfoHeaderHeight = mContactsInfoHeader.getMeasuredHeight();
         mContactsInfoHeaderWidth = mContactsInfoHeader.getMeasuredWidth();
@@ -407,52 +411,53 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         return headpic;
     }
 
-    private ContactsInfo loadUserInfoFromDB(String uid) {
+    private void loadContactsFromDB() {
 
-        ContactsInfo userInfo = new ContactsInfo();
-
-        String whereClause = MarrySocialDBHelper.KEY_UID + " = " + uid;
-
-        Cursor cursor = mDBHelper.query(
+        MarrySocialDBHelper dbHelper = MarrySocialDBHelper
+                .newInstance(this);
+        Cursor cursor = dbHelper.query(
                 MarrySocialDBHelper.DATABASE_CONTACTS_TABLE,
-                CONTACTS_PROJECTION, whereClause, null, null, null, null, null);
+                CONTACTS_PROJECTION, null, null, null, null, null, null);
         if (cursor == null) {
             Log.w(TAG, "nannan query fail!");
-            return null;
+            return;
         }
 
         try {
-            cursor.moveToNext();
+            while (cursor.moveToNext()) {
+                String uid = cursor.getString(0);
+                String phoneNum = cursor.getString(1);
+                String nickname = cursor.getString(2);
+                String realname = cursor.getString(3);
+                String firstDirectFriend = cursor.getString(4);
+                String directFriends = cursor.getString(5);
+                String indirectId = cursor.getString(6);
+                int directFriendsCount = cursor.getInt(7);
+                int avatar = Integer.valueOf(cursor.getInt(8));
+                int gender = Integer.valueOf(cursor.getInt(9));
+                int astro = Integer.valueOf(cursor.getInt(10));
+                int hobby = Integer.valueOf(cursor.getInt(11));
+                String headerBkg = cursor.getString(12);
+                String introduce = cursor.getString(13);
 
-            String phoneNum = cursor.getString(1);
-            String nickname = cursor.getString(2);
-            String realname = cursor.getString(3);
-            String firstDirectFriend = cursor.getString(4);
-            String directFriends = cursor.getString(5);
-            String indirectId = cursor.getString(6);
-            int directFriendsCount = cursor.getInt(7);
-            int avatar = Integer.valueOf(cursor.getInt(8));
-            int gender = Integer.valueOf(cursor.getInt(9));
-            int astro = Integer.valueOf(cursor.getInt(10));
-            int hobby = Integer.valueOf(cursor.getInt(11));
-            String headerBkg = cursor.getString(12);
-            String introduce = cursor.getString(13);
+                ContactsInfo contactItem = new ContactsInfo();
+                contactItem.setUid(uid);
+                contactItem.setPhoneNum(phoneNum);
+                contactItem.setNickName(nickname);
+                contactItem.setRealName(realname);
+                contactItem.setHeadPic(avatar);
+                contactItem.setGender(gender);
+                contactItem.setAstro(astro);
+                contactItem.setHobby(hobby);
+                contactItem.setIndirectId(indirectId);
+                contactItem.setFirstDirectFriend(firstDirectFriend);
+                contactItem.setDirectFriends(directFriends);
+                contactItem.setDirectFriendsCount(directFriendsCount);
+                contactItem.setHeaderBkgIndex(headerBkg);
+                contactItem.setIntroduce(introduce);
 
-            userInfo.setUid(uid);
-            userInfo.setPhoneNum(phoneNum);
-            userInfo.setNickName(nickname);
-            userInfo.setRealName(realname);
-            userInfo.setHeadPic(avatar);
-            userInfo.setGender(gender);
-            userInfo.setAstro(astro);
-            userInfo.setHobby(hobby);
-            userInfo.setIntroduce(introduce);
-            userInfo.setIndirectId(indirectId);
-            userInfo.setFirstDirectFriend(firstDirectFriend);
-            userInfo.setDirectFriends(directFriends);
-            userInfo.setDirectFriendsCount(directFriendsCount);
-            userInfo.setHeaderBkgIndex(headerBkg);
-
+                mUserInfoEntrys.put(uid, contactItem);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -460,7 +465,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
                 cursor.close();
             }
         }
-        return userInfo;
+        return;
     }
 
     private ArrayList<CommentsItem> loadUserCommentsFromDB(String uid) {
@@ -484,7 +489,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
                 String uId = cursor.getString(0);
                 String bucketId = cursor.getString(1);
                 String contents = cursor.getString(2);
-                String full_name = cursor.getString(3);
+                String nick_name = cursor.getString(3);
                 int photo_count = cursor.getInt(4);
                 int bravo_status = cursor.getInt(5);
                 String added_time = cursor.getString(6);
@@ -493,7 +498,8 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
                 comment.setBucketId(bucketId);
                 comment.setCommentId(comment_id);
                 comment.setContents(contents);
-                comment.setRealName(full_name);
+                comment.setRealName(nick_name);
+                comment.setNickName(nick_name);
                 comment.setPhotoCount(photo_count);
                 comment.setAddTime(Utils.getAddedTimeTitle(this, added_time));
                 comment.setIsBravo(bravo_status == MarrySocialDBHelper.BRAVO_CONFIRM);

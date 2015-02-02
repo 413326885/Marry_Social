@@ -76,8 +76,8 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
             MarrySocialDBHelper.KEY_REPLY_CONTENTS,
             MarrySocialDBHelper.KEY_ADDED_TIME };
 
-    private static final String[] CONTACTS_PROJECTION = { MarrySocialDBHelper.KEY_UID,
-            MarrySocialDBHelper.KEY_PHONE_NUM,
+    private static final String[] CONTACTS_PROJECTION = {
+            MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_PHONE_NUM,
             MarrySocialDBHelper.KEY_NICKNAME, MarrySocialDBHelper.KEY_REALNAME,
             MarrySocialDBHelper.KEY_FIRST_DIRECT_FRIEND,
             MarrySocialDBHelper.KEY_DIRECT_FRIENDS,
@@ -154,7 +154,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
             }
 
             case UPLOAD_COMMENT: {
-//                uploadCommentsOrBravosOrReplys(CommonDataStructure.KEY_COMMENTS);
+                // uploadCommentsOrBravosOrReplys(CommonDataStructure.KEY_COMMENTS);
                 mCommentEntrys.clear();
                 mCommentEntrys.addAll(loadCommentsItemFromDB());
                 mListViewAdapter.notifyDataSetChanged();
@@ -168,15 +168,15 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
                 break;
             }
 
-//            case UPLOAD_BRAVO: {
-//                uploadCommentsOrBravosOrReplys(CommonDataStructure.KEY_BRAVOS);
-//                break;
-//            }
-//
-//            case UPLOAD_REPLY: {
-//                uploadCommentsOrBravosOrReplys(CommonDataStructure.KEY_REPLYS);
-//                break;
-//            }
+            // case UPLOAD_BRAVO: {
+            // uploadCommentsOrBravosOrReplys(CommonDataStructure.KEY_BRAVOS);
+            // break;
+            // }
+            //
+            // case UPLOAD_REPLY: {
+            // uploadCommentsOrBravosOrReplys(CommonDataStructure.KEY_REPLYS);
+            // break;
+            // }
 
             case START_TO_LOAD_BRAVO_REPLY: {
                 if (mCommentEntrys != null && mCommentEntrys.size() != 0) {
@@ -213,7 +213,8 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
             }
 
             case NETWORK_INVALID: {
-                Toast.makeText(getActivity(), R.string.network_not_available, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), R.string.network_not_available,
+                        Toast.LENGTH_SHORT).show();
                 break;
             }
 
@@ -260,7 +261,8 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
                 .availableProcessors() * CommonDataStructure.THREAD_POOL_SIZE);
 
         mChangeObserver = new DataSetChangeObserver(mHandler, UPLOAD_COMMENT);
-        mHeaderPicChangeObserver = new DataSetChangeObserver(mHandler, REFRESH_HEADER_PIC);
+        mHeaderPicChangeObserver = new DataSetChangeObserver(mHandler,
+                REFRESH_HEADER_PIC);
         this.getActivity()
                 .getContentResolver()
                 .registerContentObserver(CommonDataStructure.COMMENTURL, true,
@@ -284,6 +286,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
                 getActivity().MODE_PRIVATE);
         mUid = prefs.getString(CommonDataStructure.UID, "");
         mAuthorName = prefs.getString(CommonDataStructure.AUTHOR_NAME, "");
+        loadContactsFromDB();
 
     }
 
@@ -442,7 +445,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
             // if (mContentDirty.compareAndSet(false, true)) {
-            switch(status) {
+            switch (status) {
             case REFRESH_HEADER_PIC: {
                 handler.sendEmptyMessage(REFRESH_HEADER_PIC);
                 break;
@@ -458,11 +461,12 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
         }
     }
 
-    private void uploadReplysToCloud(int uploadType, String comment_id) {
+    private void uploadReplysToCloud(int uploadType, String comment_id, String bucket_id) {
         Intent serviceIntent = new Intent(getActivity(),
                 UploadCommentsAndBravosAndReplysIntentService.class);
         serviceIntent.putExtra(CommonDataStructure.KEY_UPLOAD_TYPE, uploadType);
         serviceIntent.putExtra(MarrySocialDBHelper.KEY_COMMENT_ID, comment_id);
+        serviceIntent.putExtra(MarrySocialDBHelper.KEY_BUCKET_ID, bucket_id);
         getActivity().startService(serviceIntent);
     }
 
@@ -482,7 +486,8 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
             String orderBy = MarrySocialDBHelper.KEY_ADDED_TIME + " DESC";
             cursor = mDBHelper.query(
                     MarrySocialDBHelper.DATABASE_COMMENTS_TABLE,
-                    COMMENTS_PROJECTION, whereclause, null, null, null, orderBy, null);
+                    COMMENTS_PROJECTION, whereclause, null, null, null,
+                    orderBy, null);
             if (cursor == null) {
                 Log.e(TAG, "nannan loadCommentsItemFromDB()..  cursor == null");
                 return commentEntrys;
@@ -542,6 +547,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
     }
 
     private void loadBravosFromDB(String comment_id) {
+
         StringBuffer author_names = new StringBuffer();
         Cursor cursor = null;
 
@@ -577,6 +583,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
     }
 
     private void loadReplysFromDB(String comment_id) {
+
         ArrayList<ReplysItem> replys = new ArrayList<ReplysItem>();
         Cursor cursor = null;
 
@@ -655,26 +662,33 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
             }
             CommentsItem comment = (CommentsItem) (mListViewAdapter
                     .getItem(mReplyCommentsPosition));
+            long time = System.currentTimeMillis() / 1000;
+            String replyTime = Long.toString(time);
+            String bucketId = String.valueOf(replyTime.hashCode());
             ReplysItem reply = new ReplysItem();
             reply.setCommentId(comment.getCommentId());
             reply.setReplyContents(mReplyContents.getText().toString());
+            reply.setReplyTime(replyTime);
+            reply.setBucketId(bucketId);
             insertReplysToReplyDB(reply);
-            uploadReplysToCloud(CommonDataStructure.KEY_REPLYS, comment.getCommentId());
+            uploadReplysToCloud(CommonDataStructure.KEY_REPLYS,
+                    comment.getCommentId(), bucketId);
             mHandler.sendEmptyMessage(SEND_REPLY_FINISH);
             mHandler.sendEmptyMessage(UPDATE_DYNAMIC_INFO);
         }
     };
 
     private void insertReplysToReplyDB(ReplysItem reply) {
+
         ContentValues insertValues = new ContentValues();
         insertValues.put(MarrySocialDBHelper.KEY_COMMENT_ID,
                 reply.getCommentId());
         insertValues.put(MarrySocialDBHelper.KEY_UID, mUid);
+        insertValues.put(MarrySocialDBHelper.KEY_BUCKET_ID, reply.getBucketId());
         insertValues.put(MarrySocialDBHelper.KEY_AUTHOR_NICKNAME, mAuthorName);
         insertValues.put(MarrySocialDBHelper.KEY_REPLY_CONTENTS,
                 reply.getReplyContents());
-        insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
-                Long.toString(System.currentTimeMillis() / 1000));
+        insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME, reply.getReplyTime());
         insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD);
 
@@ -702,15 +716,14 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
 
     private void loadContactsFromDB() {
 
-
         MarrySocialDBHelper dbHelper = MarrySocialDBHelper
                 .newInstance(getActivity());
         Cursor cursor = dbHelper.query(
-                MarrySocialDBHelper.DATABASE_CONTACTS_TABLE, CONTACTS_PROJECTION,
-                null, null, null, null, null, null);
+                MarrySocialDBHelper.DATABASE_CONTACTS_TABLE,
+                CONTACTS_PROJECTION, null, null, null, null, null, null);
         if (cursor == null) {
             Log.w(TAG, "nannan query fail!");
-            return ;
+            return;
         }
 
         try {
@@ -751,6 +764,6 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
                 cursor.close();
             }
         }
-        return ;
+        return;
     }
 }

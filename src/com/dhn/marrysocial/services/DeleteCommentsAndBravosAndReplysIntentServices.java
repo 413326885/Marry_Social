@@ -71,7 +71,6 @@ public class DeleteCommentsAndBravosAndReplysIntentServices extends
     protected void onHandleIntent(Intent intent) {
 
         if (!Utils.isActiveNetWorkAvailable(this)) {
-            Toast.makeText(this, R.string.network_not_available, 1000);
             return;
         }
 
