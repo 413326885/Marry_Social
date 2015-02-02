@@ -29,7 +29,7 @@ public class DownloadChatMsgService extends Service {
     private static final String TAG = "DownloadChatMsgService";
 
     private static final int POOL_SIZE = 10;
-    private static final int TIME_SCHEDULE = 2000;
+    private static final int TIME_SCHEDULE = 5000;
 
     private static final int TIME_TO_DOWNLOAD_CHAT_MSG = 100;
 

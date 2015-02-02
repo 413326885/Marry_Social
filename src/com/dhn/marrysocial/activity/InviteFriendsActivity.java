@@ -67,20 +67,20 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
         public void handleMessage(Message msg) {
             switch (msg.what) {
             case START_TO_UPLOAD_CONTACTS: {
-                mUploadProgressDialog = ProgressDialog.show(
-                        InviteFriendsActivity.this, "获取好友",
-                        "正在为你计算好友信息，请稍后...", false, true);
+//                mUploadProgressDialog = ProgressDialog.show(
+//                        InviteFriendsActivity.this, "获取好友",
+//                        "正在为你计算好友信息，请稍后...", false, true);
                 mExecutorService.execute(new UploadUserContacts(mUid));
                 break;
             }
             case UPLOAD_CONTACTS_SUCCESS: {
-                mUploadProgressDialog.dismiss();
+//                mUploadProgressDialog.dismiss();
                 loadContactsFromDirectDB();
                 mListAdapter.notifyDataSetChanged();
                 break;
             }
             case READ_USER_CONTACTS_FAIL: {
-                mUploadProgressDialog.dismiss();
+//                mUploadProgressDialog.dismiss();
                 Toast.makeText(InviteFriendsActivity.this, "读取通讯录失败", 1000)
                         .show();
                 break;
@@ -115,10 +115,10 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
         mDBHelper = MarrySocialDBHelper.newInstance(this);
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
                 .availableProcessors() * POOL_SIZE);
-//
-//        mContactList.clear();
-//        mContactList.addAll(getAllContactsInfo());
-//        mListAdapter.notifyDataSetChanged();
+
+        mContactList.clear();
+        mContactList.addAll(getAllContactsInfo());
+        mListAdapter.notifyDataSetChanged();
 
         mHandler.sendEmptyMessage(START_TO_UPLOAD_CONTACTS);
     }
