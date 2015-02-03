@@ -143,7 +143,8 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         setContentView(R.layout.chat_msg_layout);
 
         Intent data = getIntent();
@@ -229,6 +230,8 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
     @Override
     protected void onResume() {
         super.onResume();
+        updateReadStatusToChatsDB(mChatId);
+        updateHasNewMsgStatusToBriefChatsDB(mChatId);
         loadChatMsgsFromChatsDB(mChatId);
         mListViewAdapter.notifyDataSetChanged();
         mUploadChatMsgsTask = new UploadChatMsgsTask();
@@ -306,6 +309,8 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
         insertValues.put(MarrySocialDBHelper.KEY_MSG_TYPE, chat.getMsgType());
         insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
                 chat.getAddedTime());
+        insertValues.put(MarrySocialDBHelper.KEY_READ_STATUS,
+                MarrySocialDBHelper.MSG_READED);
         insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 chat.getCurrentStatus());
 
@@ -481,6 +486,8 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
                 chat.getChatContent());
         insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
                 chat.getAddedTime());
+        insertValues.put(MarrySocialDBHelper.KEY_HAS_NEW_MSG,
+                MarrySocialDBHelper.HAS_NO_MSG);
 
         mDBHelper.insert(MarrySocialDBHelper.DATABASE_BRIEF_CHAT_TABLE,
                 insertValues);
@@ -492,6 +499,8 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
         values.put(MarrySocialDBHelper.KEY_NICKNAME, mChatUserName);
         values.put(MarrySocialDBHelper.KEY_CHAT_CONTENT, chat.chatContent);
         values.put(MarrySocialDBHelper.KEY_ADDED_TIME, chat.addTime);
+        values.put(MarrySocialDBHelper.KEY_HAS_NEW_MSG,
+                MarrySocialDBHelper.HAS_NO_MSG);
 
         String whereClause = MarrySocialDBHelper.KEY_CHAT_ID + " = " + '"'
                 + chat.chatId + '"';
@@ -586,5 +595,28 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
             }
         }
         return headpic;
+    }
+
+    private void updateReadStatusToChatsDB(String mChatId) {
+        ContentValues values = new ContentValues();
+        values.put(MarrySocialDBHelper.KEY_READ_STATUS,
+                MarrySocialDBHelper.MSG_READED);
+        String whereClause = MarrySocialDBHelper.KEY_CHAT_ID + " = " + '"'
+                + mChatId + '"' + " AND " + MarrySocialDBHelper.KEY_READ_STATUS
+                + " = " + MarrySocialDBHelper.MSG_NOT_READ;
+        mDBHelper.update(MarrySocialDBHelper.DATABASE_CHATS_TABLE, values,
+                whereClause, null);
+    }
+
+    private void updateHasNewMsgStatusToBriefChatsDB(String mChatId) {
+        ContentValues values = new ContentValues();
+        values.put(MarrySocialDBHelper.KEY_HAS_NEW_MSG,
+                MarrySocialDBHelper.HAS_NO_MSG);
+
+        String whereClause = MarrySocialDBHelper.KEY_CHAT_ID + " = " + '"'
+                + mChatId + '"' + " AND " + MarrySocialDBHelper.KEY_HAS_NEW_MSG
+                + " = " + MarrySocialDBHelper.HAS_NEW_MSG;
+        mDBHelper.update(MarrySocialDBHelper.DATABASE_BRIEF_CHAT_TABLE, values,
+                whereClause, null);
     }
 }

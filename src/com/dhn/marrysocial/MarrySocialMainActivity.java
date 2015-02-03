@@ -8,6 +8,7 @@ import com.dhn.marrysocial.activity.LoginActivity;
 import com.dhn.marrysocial.activity.RegisterActivity;
 import com.dhn.marrysocial.activity.SettingsActivity;
 import com.dhn.marrysocial.adapter.ViewPagerFragmentAdapter;
+import com.dhn.marrysocial.base.NotificationManagerControl;
 import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
 import com.dhn.marrysocial.fragment.ChatMsgFragment;
@@ -51,6 +52,8 @@ public class MarrySocialMainActivity extends FragmentActivity implements
     private ImageButton mInviteFriends;
 
     private String mUid;
+    
+    private NotificationManagerControl mNotificationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +64,7 @@ public class MarrySocialMainActivity extends FragmentActivity implements
         SharedPreferences prefs = this.getSharedPreferences(
                 CommonDataStructure.PREFS_LAIQIAN_DEFAULT, MODE_PRIVATE);
         mUid = prefs.getString(CommonDataStructure.UID, "");
+        mNotificationManager = NotificationManagerControl.newInstance(this);
 
         mSettings = (ImageButton) findViewById(R.id.actionbar_setting);
         mUserCenter = (ImageButton) findViewById(R.id.actionbar_user_center);
@@ -79,6 +83,7 @@ public class MarrySocialMainActivity extends FragmentActivity implements
     protected void onResume() {
         super.onResume();
         redirectToCorrespondActivityIfNeeded();
+        mNotificationManager.cancelAll();
         // initViewPager();
     }
 

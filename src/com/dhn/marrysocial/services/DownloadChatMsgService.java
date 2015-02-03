@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 import com.dhn.marrysocial.adapter.ChatMsgViewAdapter.IMsgViewType;
 import com.dhn.marrysocial.base.ChatMsgItem;
 import com.dhn.marrysocial.base.NoticesItem;
+import com.dhn.marrysocial.base.NotificationManagerControl;
 import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
 import com.dhn.marrysocial.utils.Utils;
@@ -16,9 +17,12 @@ import com.dhn.marrysocial.utils.Utils;
 import android.app.Service;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -33,18 +37,27 @@ public class DownloadChatMsgService extends Service {
 
     private static final int TIME_TO_DOWNLOAD_CHAT_MSG = 100;
 
+    private static final String[] COUNT_PROJECTION = { "count(*)" };
     private static final String[] BRIEF_CHAT_PROJECTION = {
             MarrySocialDBHelper.KEY_TO_UID, MarrySocialDBHelper.KEY_CHAT_ID };
     private static final String[] CONTACTS_PROJECTION = {
             MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_NICKNAME };
+
+    private static final String[] HEAD_PICS_PROJECTION = {
+            MarrySocialDBHelper.KEY_UID,
+            MarrySocialDBHelper.KEY_HEAD_PIC_BITMAP,
+            MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH,
+            MarrySocialDBHelper.KEY_PHOTO_REMOTE_THUMB_PATH };
 
     private final Timer mTimer = new Timer();
     private TimerTask mTimerTask;
 
     private String mUid;
     private String mAuthorName;
+    private Context mContext;
     private MarrySocialDBHelper mDBHelper;
     private ExecutorService mExecutorService;
+    private NotificationManagerControl mNotificationManager;
 
     Handler mHandler = new Handler() {
 
@@ -83,9 +96,11 @@ public class DownloadChatMsgService extends Service {
         mUid = prefs.getString(CommonDataStructure.UID, "");
         mAuthorName = prefs.getString(CommonDataStructure.AUTHOR_NAME, "");
 
-        mDBHelper = MarrySocialDBHelper.newInstance(getApplicationContext());
+        mContext = getApplicationContext();
+        mDBHelper = MarrySocialDBHelper.newInstance(mContext);
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
                 .availableProcessors() * POOL_SIZE);
+        mNotificationManager = NotificationManagerControl.newInstance(mContext);
     }
 
     @Override
@@ -118,13 +133,22 @@ public class DownloadChatMsgService extends Service {
                 if (nikename == null || nikename.length() == 0) {
                     nikename = "房东是傻逼";
                 }
-                Log.e(TAG,
-                        "nannan DownloadChatMsgs  insertChatMsgToChatsDB $$$$$$$$$$$$$$$$$");
                 if (!isChatIdExistInBriefChatDB(chatMsg.getChatId())) {
-                    insertBriefChatMsgToBriefChatDB(chatMsg, nikename, chatUserUid);
+                    insertBriefChatMsgToBriefChatDB(chatMsg, nikename,
+                            chatUserUid);
                 } else {
-                    updateBriefChatMsgToBriefChatDB(chatMsg, nikename, chatUserUid);
+                    updateBriefChatMsgToBriefChatDB(chatMsg, nikename,
+                            chatUserUid);
                 }
+
+                if (!Utils.isAppRunningForeground(mContext)) {
+                    int msgCount = getNewMsgCount(chatMsg.getChatId());
+                    Bitmap header = loadUserHeadPicFromDB(chatUserUid);
+                    mNotificationManager.showChatMsgNotification(header,
+                            nikename, chatMsg.getChatContent(), msgCount,
+                            chatMsg.getChatId());
+                }
+
                 return;
             }
         }
@@ -141,6 +165,8 @@ public class DownloadChatMsgService extends Service {
         insertValues.put(MarrySocialDBHelper.KEY_MSG_TYPE, chat.getMsgType());
         insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
                 chat.getAddedTime());
+        insertValues.put(MarrySocialDBHelper.KEY_READ_STATUS,
+                MarrySocialDBHelper.MSG_NOT_READ);
         insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 chat.getCurrentStatus());
 
@@ -180,6 +206,8 @@ public class DownloadChatMsgService extends Service {
                 chat.getChatContent());
         insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
                 chat.getAddedTime());
+        insertValues.put(MarrySocialDBHelper.KEY_HAS_NEW_MSG,
+                MarrySocialDBHelper.HAS_NEW_MSG);
 
         ContentResolver resolver = getApplicationContext().getContentResolver();
         resolver.insert(CommonDataStructure.BRIEFCHATURL, insertValues);
@@ -195,6 +223,8 @@ public class DownloadChatMsgService extends Service {
                 chat.getChatContent());
         updateValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
                 chat.getAddedTime());
+        updateValues.put(MarrySocialDBHelper.KEY_HAS_NEW_MSG,
+                MarrySocialDBHelper.HAS_NEW_MSG);
 
         String whereclause = MarrySocialDBHelper.KEY_CHAT_ID + " = " + '"'
                 + chat.getChatId() + '"';
@@ -225,5 +255,62 @@ public class DownloadChatMsgService extends Service {
             }
         }
         return nikename;
+    }
+
+    private Bitmap loadUserHeadPicFromDB(String uid) {
+
+        Bitmap headpic = null;
+
+        String whereClause = MarrySocialDBHelper.KEY_UID + " = " + uid;
+        Cursor cursor = mDBHelper
+                .query(MarrySocialDBHelper.DATABASE_HEAD_PICS_TABLE,
+                        HEAD_PICS_PROJECTION, whereClause, null, null, null,
+                        null, null);
+
+        if (cursor == null) {
+            Log.w(TAG, "nannan query fail!");
+            return null;
+        }
+
+        try {
+            cursor.moveToNext();
+            byte[] in = cursor.getBlob(1);
+            headpic = BitmapFactory.decodeByteArray(in, 0, in.length);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return headpic;
+    }
+
+    private int getNewMsgCount(String chatId) {
+        int count = 0;
+
+        String whereClause = MarrySocialDBHelper.KEY_CHAT_ID + " = " + '"'
+                + chatId + '"' + " AND " + MarrySocialDBHelper.KEY_READ_STATUS
+                + " = " + MarrySocialDBHelper.MSG_NOT_READ;
+        Cursor cursor = mDBHelper.query(
+                MarrySocialDBHelper.DATABASE_CHATS_TABLE, COUNT_PROJECTION,
+                whereClause, null, null, null, null, null);
+
+        if (cursor == null) {
+            Log.w(TAG, "nannan query fail!");
+            return count;
+        }
+
+        try {
+            cursor.moveToNext();
+            count = cursor.getInt(0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return count;
     }
 }

@@ -34,6 +34,10 @@ public class MarrySocialDBHelper {
 
     public static final int BRAVO_CANCEL = 0;
     public static final int BRAVO_CONFIRM = 1;
+    public static final int MSG_READED = 0;
+    public static final int MSG_NOT_READ = 1;
+    public static final int HAS_NO_MSG = 0;
+    public static final int HAS_NEW_MSG = 1;
 
     // for contacts table
     public static final String KEY_UID = "uid";
@@ -50,6 +54,7 @@ public class MarrySocialDBHelper {
     public static final String KEY_INDIRECT_ID = "indirect_id";
     public static final String KEY_HEADER_BACKGROUND_INDEX = "header_background_index";
     public static final String KEY_INTRODUCT = "introduce";
+    public static final String KEY_READ_STATUS = "read_status";
 
     // for comments table
     public static final String KEY_ID = "_id";
@@ -85,6 +90,7 @@ public class MarrySocialDBHelper {
     public static final String KEY_TO_UID = "to_uid";
     public static final String KEY_CHAT_CONTENT = "chat_content";
     public static final String KEY_MSG_TYPE = "msg_type";
+    public static final String KEY_HAS_NEW_MSG = "has_new_msg";
 
     // for head pics table
     public static final String KEY_HEAD_PIC_BITMAP = "headpicbitmap";
@@ -96,12 +102,12 @@ public class MarrySocialDBHelper {
     private static final String DATABASE_CREATE_CONTACTS = "create table contacts ( "
             + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, phone_num text, nickname text, realname text, "
             + "hobby integer, gender integer, astro integer, introduce text, directfriendscount integer, "
-            + "firstdirectfriend text, directfriends text, indirect_id text, avatar integer, header_background_index text )";
+            + "firstdirectfriend text, directfriends text, indirect_id text, avatar integer, header_background_index text, read_status integer )";
 
     private static final String DATABASE_CREATE_COMMENTS = "create table comments ( "
             + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, bucket_id text, comment_id text, "
             + "added_time text, contents text, author_nickname text, photo_count integer, "
-            + "bravo_count integer, bravo_status integer, current_status integer )";
+            + "bravo_count integer, bravo_status integer, current_status integer, read_status integer )";
 
     private static final String DATABASE_CREATE_IMAGES = "create table images ( "
             + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, bucket_id text, comment_id text, "
@@ -110,19 +116,19 @@ public class MarrySocialDBHelper {
 
     private static final String DATABASE_CREATE_BRAVOS = "create table bravos ("
             + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, bucket_id text, comment_id text, "
-            + "author_nickname text, added_time text, current_status integer )";
+            + "author_nickname text, added_time text, current_status integer, read_status integer )";
 
     private static final String DATABASE_CREATE_REPLYS = "create table replys ("
             + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, bucket_id text, comment_id text, reply_id text, "
-            + "author_nickname text, reply_contents text, added_time text, current_status integer )";
+            + "author_nickname text, reply_contents text, added_time text, current_status integer, read_status integer )";
 
     private static final String DATABASE_CREATE_CHATS = "create table chats ("
             + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, chat_id text, from_uid text, to_uid text, "
-            + "chat_content text, msg_type integer, added_time text, current_status integer )";
+            + "chat_content text, msg_type integer, added_time text, current_status integer, read_status integer )";
 
     private static final String DATABASE_CREATE_BRIEF_CHAT = "create table briefchat ("
             + "_id integer PRIMARY KEY AUTOINCREMENT, to_uid text, chat_id text, nickname text, "
-            + "chat_content text, added_time text )";
+            + "chat_content text, added_time text, has_new_msg integer )";
 
     private static final String DATABASE_CREATE_HEAD_PICS = "create table headpics ("
             + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, headpicbitmap blob, "

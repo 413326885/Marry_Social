@@ -35,6 +35,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.ActivityManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -83,6 +85,7 @@ public class Utils {
 
     public static int mThumbPhotoWidth = 720;
     public static int mCropCenterThumbPhotoWidth = 200;
+    public static int mTinyCropCenterThumbPhotoWidth = 100;
 
     private static final int TIME_OUT = 100 * 1000; // 超时时间
     private static final String CHARSET = "utf-8";
@@ -2869,4 +2872,16 @@ public class Utils {
         return result;
     }
 
+    public static boolean isAppRunningForeground(Context context) {
+        ActivityManager am = (ActivityManager) context
+                .getSystemService(Context.ACTIVITY_SERVICE);
+        ComponentName cn = am.getRunningTasks(1).get(0).topActivity;
+        String currentPackageName = cn.getPackageName();
+        if (!TextUtils.isEmpty(currentPackageName)
+                && currentPackageName.equals(context.getPackageName())) {
+            return true;
+        }
+
+        return false;
+    }
 }
