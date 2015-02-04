@@ -74,7 +74,14 @@ public class DownloadCommentsIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         if (!Utils.isActiveNetWorkAvailable(this)) {
-            Toast.makeText(this, R.string.network_not_available, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.network_not_available,
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int loginStatus = mPrefs.getInt(CommonDataStructure.LOGINSTATUS,
+                CommonDataStructure.LOGIN_STATUS_NO_USER);
+        if (loginStatus != CommonDataStructure.LOGIN_STATUS_LOGIN) {
             return;
         }
 

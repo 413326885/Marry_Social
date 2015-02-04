@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.dhn.marrysocial.MarrySocialMainActivity;
 import com.dhn.marrysocial.R;
+import com.dhn.marrysocial.base.DataCleanManager;
 import com.dhn.marrysocial.common.CommonDataStructure;
 
 public class SettingsActivity extends Activity implements OnClickListener {
@@ -94,26 +95,31 @@ public class SettingsActivity extends Activity implements OnClickListener {
         builder.setTitle("退出登录");
         builder.setMessage("退出当前账号？");
         builder.setNegativeButton("取消", null);
-        builder.setPositiveButton("确定", new android.content.DialogInterface.OnClickListener() {
+        builder.setPositiveButton("确定",
+                new android.content.DialogInterface.OnClickListener() {
 
-            @Override
-            public void onClick(DialogInterface arg0, int arg1) {
-                SharedPreferences prefs = context
-                        .getSharedPreferences(
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        SharedPreferences prefs = context.getSharedPreferences(
                                 CommonDataStructure.PREFS_LAIQIAN_DEFAULT,
                                 MODE_PRIVATE);
-                Editor editor = prefs.edit();
-                editor.putInt(CommonDataStructure.LOGINSTATUS,
-                        CommonDataStructure.LONIN_STATUS_LOGOUT);
-                editor.commit();
-                redirectToMainActivity();
-            }
-        });
+                        Editor editor = prefs.edit();
+                        editor.putInt(CommonDataStructure.LOGINSTATUS,
+                                CommonDataStructure.LONIN_STATUS_LOGOUT);
+                        editor.commit();
+                        DataCleanManager.cleanApplicationData(context,
+                                CommonDataStructure.DOWNLOAD_PICS_DIR_URL,
+                                CommonDataStructure.HEAD_PICS_DIR_URL,
+                                CommonDataStructure.BACKGROUND_PICS_DIR_URL);
+                        redirectToRegisterActivity();
+                    }
+                });
         builder.create().show();
     }
 
-    private void redirectToMainActivity() {
-        Intent intent = new Intent(this, MarrySocialMainActivity.class);
+    private void redirectToRegisterActivity() {
+        Intent intent = new Intent(this, RegisterActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
     }

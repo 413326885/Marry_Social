@@ -65,6 +65,13 @@ public class DownloadIndirectFriendsIntentServices extends IntentService {
             Toast.makeText(this, R.string.network_not_available, 1000);
             return;
         }
+
+        int loginStatus = mPrefs.getInt(CommonDataStructure.LOGINSTATUS,
+                CommonDataStructure.LOGIN_STATUS_NO_USER);
+        if (loginStatus != CommonDataStructure.LOGIN_STATUS_LOGIN) {
+            return;
+        }
+
         mExecutorService.execute(new DownloadContacts());
     }
 

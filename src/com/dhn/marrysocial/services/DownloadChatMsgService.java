@@ -54,6 +54,7 @@ public class DownloadChatMsgService extends Service {
 
     private String mUid;
     private String mAuthorName;
+    private SharedPreferences mPrefs;
     private Context mContext;
     private MarrySocialDBHelper mDBHelper;
     private ExecutorService mExecutorService;
@@ -86,15 +87,23 @@ public class DownloadChatMsgService extends Service {
         mTimerTask = new TimerTask() {
             @Override
             public void run() {
+
+                int loginStatus = mPrefs.getInt(
+                        CommonDataStructure.LOGINSTATUS,
+                        CommonDataStructure.LOGIN_STATUS_NO_USER);
+                if (loginStatus != CommonDataStructure.LOGIN_STATUS_LOGIN) {
+                    return;
+                }
+
                 mHandler.sendEmptyMessage(TIME_TO_DOWNLOAD_CHAT_MSG);
             }
         };
         mTimer.schedule(mTimerTask, TIME_SCHEDULE, TIME_SCHEDULE);
 
-        SharedPreferences prefs = this.getSharedPreferences(
+        mPrefs = this.getSharedPreferences(
                 CommonDataStructure.PREFS_LAIQIAN_DEFAULT, this.MODE_PRIVATE);
-        mUid = prefs.getString(CommonDataStructure.UID, "");
-        mAuthorName = prefs.getString(CommonDataStructure.AUTHOR_NAME, "");
+        mUid = mPrefs.getString(CommonDataStructure.UID, "");
+        mAuthorName = mPrefs.getString(CommonDataStructure.AUTHOR_NAME, "");
 
         mContext = getApplicationContext();
         mDBHelper = MarrySocialDBHelper.newInstance(mContext);
@@ -114,6 +123,7 @@ public class DownloadChatMsgService extends Service {
         @Override
         public void run() {
             Log.e(TAG, "nannan DownloadChatMsgs ");
+
             while (true) {
 
                 ChatMsgItem chatMsg = Utils.downloadChatMsg(

@@ -302,6 +302,7 @@ public class CommonDataStructure {
 
     public static final String KEY_SECRET_CODE = "marrysocial";
 
+    public static final int LOGIN_STATUS_NO_USER = 0;
     public static final int LOGIN_STATUS_REGISTERED = 1;
     public static final int LONIN_STATUS_FILLED_INFO = 2;
     public static final int LOGIN_STATUS_LOGIN = 3;

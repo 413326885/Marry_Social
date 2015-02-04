@@ -58,6 +58,7 @@ public class DownloadNoticesService extends Service {
 
     private String mUid;
     private String mAuthorName;
+    private SharedPreferences mPrefs;
     private MarrySocialDBHelper mDBHelper;
     private ExecutorService mExecutorService;
 
@@ -79,18 +80,18 @@ public class DownloadNoticesService extends Service {
                 mExecutorService.execute(new DownloadReplyNotices());
                 break;
             }
-//            case TIME_TO_DOWNLOAD_MYSELF_COMMENTS: {
-//                mExecutorService.execute(new DownloadMyselfCommentNotices());
-//                break;
-//            }
-//            case TIME_TO_DOWNLOAD_MYSELF_BRAVOS: {
-//                mExecutorService.execute(new DownloadMyselfBravoNotices());
-//                break;
-//            }
-//            case TIME_TO_DOWNLOAD_MYSELF_REPLYS: {
-//                mExecutorService.execute(new DownloadMyselfReplyNotices());
-//                break;
-//            }
+            // case TIME_TO_DOWNLOAD_MYSELF_COMMENTS: {
+            // mExecutorService.execute(new DownloadMyselfCommentNotices());
+            // break;
+            // }
+            // case TIME_TO_DOWNLOAD_MYSELF_BRAVOS: {
+            // mExecutorService.execute(new DownloadMyselfBravoNotices());
+            // break;
+            // }
+            // case TIME_TO_DOWNLOAD_MYSELF_REPLYS: {
+            // mExecutorService.execute(new DownloadMyselfReplyNotices());
+            // break;
+            // }
             default:
                 break;
             }
@@ -108,20 +109,27 @@ public class DownloadNoticesService extends Service {
         mTimerTask = new TimerTask() {
             @Override
             public void run() {
+
+                int loginStatus = mPrefs.getInt(
+                        CommonDataStructure.LOGINSTATUS,
+                        CommonDataStructure.LOGIN_STATUS_NO_USER);
+                if (loginStatus != CommonDataStructure.LOGIN_STATUS_LOGIN) {
+                    return;
+                }
+
                 mHandler.sendEmptyMessage(TIME_TO_DOWNLOAD_INDIRECT_BRAVOS);
-//                mHandler.sendEmptyMessage(TIME_TO_DOWNLOAD_MYSELF_BRAVOS);
-                mHandler.sendEmptyMessage(
-                        TIME_TO_DOWNLOAD_INDIRECT_REPLYS);
-//                mHandler.sendEmptyMessageDelayed(
-//                        TIME_TO_DOWNLOAD_MYSELF_REPLYS, TIME_SCHEDULE);
+                // mHandler.sendEmptyMessage(TIME_TO_DOWNLOAD_MYSELF_BRAVOS);
+                mHandler.sendEmptyMessage(TIME_TO_DOWNLOAD_INDIRECT_REPLYS);
+                // mHandler.sendEmptyMessageDelayed(
+                // TIME_TO_DOWNLOAD_MYSELF_REPLYS, TIME_SCHEDULE);
             }
         };
         mTimer.schedule(mTimerTask, TIME_SCHEDULE, TIME_SCHEDULE);
 
-        SharedPreferences prefs = this.getSharedPreferences(
+        mPrefs = this.getSharedPreferences(
                 CommonDataStructure.PREFS_LAIQIAN_DEFAULT, this.MODE_PRIVATE);
-        mUid = prefs.getString(CommonDataStructure.UID, "");
-        mAuthorName = prefs.getString(CommonDataStructure.AUTHOR_NAME, "");
+        mUid = mPrefs.getString(CommonDataStructure.UID, "");
+        mAuthorName = mPrefs.getString(CommonDataStructure.AUTHOR_NAME, "");
 
         mDBHelper = MarrySocialDBHelper.newInstance(getApplicationContext());
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
@@ -144,10 +152,9 @@ public class DownloadNoticesService extends Service {
 
         @Override
         public void run() {
-            ArrayList<NoticesItem> noticeItems = Utils
-                    .downloadNoticesList(
-                            CommonDataStructure.URL_INDIRECT_NOTICE_LIST, mUid,
-                            "", CommonDataStructure.NOTICE_BRAVO);
+            ArrayList<NoticesItem> noticeItems = Utils.downloadNoticesList(
+                    CommonDataStructure.URL_INDIRECT_NOTICE_LIST, mUid, "",
+                    CommonDataStructure.NOTICE_BRAVO);
             if (noticeItems == null || noticeItems.size() == 0) {
                 return;
             }
@@ -160,7 +167,7 @@ public class DownloadNoticesService extends Service {
                 if (!isBravoIdExistInBravosDB(notice.getFromUid(),
                         notice.getCommentId())) {
                     insertBravoToBravosDB(notice, nikename);
-                    if((notice.getUid()).equalsIgnoreCase(notice.getFromUid())) {
+                    if ((notice.getUid()).equalsIgnoreCase(notice.getFromUid())) {
                         updateCommentsBravoStatus(notice.getCommentId(),
                                 MarrySocialDBHelper.BRAVO_CONFIRM);
                     }
@@ -170,47 +177,45 @@ public class DownloadNoticesService extends Service {
 
     }
 
-//    class DownloadMyselfBravoNotices implements Runnable {
-//
-//        @Override
-//        public void run() {
-//            Log.e(TAG, "nannan DownloadMyselfBravoNotices");
-//            ArrayList<NoticesItem> noticeItems = Utils
-//                    .downloadMyselfNoticesList(
-//                            CommonDataStructure.URL_MYSELF_NOTICE_LIST, mUid,
-//                            "", CommonDataStructure.NOTICE_BRAVO);
-//            if (noticeItems == null || noticeItems.size() == 0) {
-//                return;
-//            }
-//            Log.e(TAG, "nannan DownloadMyselfBravoNotices 1111");
-//            for (NoticesItem notice : noticeItems) {
-//                if (!isBravoIdExistInBravosDB(mUid, notice.getCommentId())) {
-//                    insertBravoToBravosDB(notice, mAuthorName);
-//                    updateCommentsBravoStatus(notice.getCommentId(),
-//                            MarrySocialDBHelper.BRAVO_CONFIRM);
-//                }
-//            }
-//        }
-//
-//    }
+    // class DownloadMyselfBravoNotices implements Runnable {
+    //
+    // @Override
+    // public void run() {
+    // Log.e(TAG, "nannan DownloadMyselfBravoNotices");
+    // ArrayList<NoticesItem> noticeItems = Utils
+    // .downloadMyselfNoticesList(
+    // CommonDataStructure.URL_MYSELF_NOTICE_LIST, mUid,
+    // "", CommonDataStructure.NOTICE_BRAVO);
+    // if (noticeItems == null || noticeItems.size() == 0) {
+    // return;
+    // }
+    // Log.e(TAG, "nannan DownloadMyselfBravoNotices 1111");
+    // for (NoticesItem notice : noticeItems) {
+    // if (!isBravoIdExistInBravosDB(mUid, notice.getCommentId())) {
+    // insertBravoToBravosDB(notice, mAuthorName);
+    // updateCommentsBravoStatus(notice.getCommentId(),
+    // MarrySocialDBHelper.BRAVO_CONFIRM);
+    // }
+    // }
+    // }
+    //
+    // }
 
     class DownloadReplyNotices implements Runnable {
 
         @Override
         public void run() {
             String indirectLists = loadIndirectsFromDB();
-            ArrayList<NoticesItem> noticeItems = Utils
-                    .downloadNoticesList(
-                            CommonDataStructure.URL_INDIRECT_NOTICE_LIST, mUid,
-                            "", CommonDataStructure.NOTICE_REPLY);
+            ArrayList<NoticesItem> noticeItems = Utils.downloadNoticesList(
+                    CommonDataStructure.URL_INDIRECT_NOTICE_LIST, mUid, "",
+                    CommonDataStructure.NOTICE_REPLY);
             if (noticeItems == null || noticeItems.size() == 0) {
                 return;
             }
             for (NoticesItem notice : noticeItems) {
                 ArrayList<ReplysItem> replyItems = Utils.downloadReplysList(
                         CommonDataStructure.URL_REPLY_LIST, notice.getUid(),
-                        notice.getCommentId(), indirectLists,
-                        "");
+                        notice.getCommentId(), indirectLists, "");
                 if (replyItems == null || replyItems.size() == 0) {
                     continue;
                 }
@@ -225,37 +230,37 @@ public class DownloadNoticesService extends Service {
 
     }
 
-//    class DownloadMyselfReplyNotices implements Runnable {
-//
-//        @Override
-//        public void run() {
-//            Log.e(TAG, "nannan DownloadMyselfReplyNotices");
-//            ArrayList<NoticesItem> noticeItems = Utils
-//                    .downloadMyselfNoticesList(
-//                            CommonDataStructure.URL_MYSELF_NOTICE_LIST, mUid,
-//                            "", CommonDataStructure.NOTICE_REPLY);
-//            if (noticeItems == null || noticeItems.size() == 0) {
-//                return;
-//            }
-//            Log.e(TAG, "nannan DownloadMyselfReplyNotices 1111");
-//            for (NoticesItem notice : noticeItems) {
-//                ArrayList<ReplysItem> replyItems = Utils.downloadReplysList(
-//                        CommonDataStructure.URL_REPLY_LIST, notice.getUid(),
-//                        notice.getCommentId(), CommonDataStructure.INDIRECTIDS,
-//                        "");
-//                if (replyItems == null || replyItems.size() == 0) {
-//                    continue;
-//                }
-//                for (ReplysItem reply : replyItems) {
-//                    if (!isReplyIdExistInReplysDB(reply.getReplyId())) {
-//                        insertReplysToReplyDB(reply);
-//                    }
-//                }
-//            }
-//            // mHandler.sendEmptyMessage(TIME_TO_DOWNLOAD_INDIRECT_COMMENTS);
-//        }
-//
-//    }
+    // class DownloadMyselfReplyNotices implements Runnable {
+    //
+    // @Override
+    // public void run() {
+    // Log.e(TAG, "nannan DownloadMyselfReplyNotices");
+    // ArrayList<NoticesItem> noticeItems = Utils
+    // .downloadMyselfNoticesList(
+    // CommonDataStructure.URL_MYSELF_NOTICE_LIST, mUid,
+    // "", CommonDataStructure.NOTICE_REPLY);
+    // if (noticeItems == null || noticeItems.size() == 0) {
+    // return;
+    // }
+    // Log.e(TAG, "nannan DownloadMyselfReplyNotices 1111");
+    // for (NoticesItem notice : noticeItems) {
+    // ArrayList<ReplysItem> replyItems = Utils.downloadReplysList(
+    // CommonDataStructure.URL_REPLY_LIST, notice.getUid(),
+    // notice.getCommentId(), CommonDataStructure.INDIRECTIDS,
+    // "");
+    // if (replyItems == null || replyItems.size() == 0) {
+    // continue;
+    // }
+    // for (ReplysItem reply : replyItems) {
+    // if (!isReplyIdExistInReplysDB(reply.getReplyId())) {
+    // insertReplysToReplyDB(reply);
+    // }
+    // }
+    // }
+    // // mHandler.sendEmptyMessage(TIME_TO_DOWNLOAD_INDIRECT_COMMENTS);
+    // }
+    //
+    // }
 
     class DownloadIndirectCommentNotices implements Runnable {
 
