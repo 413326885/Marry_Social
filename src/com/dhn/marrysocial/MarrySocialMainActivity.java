@@ -9,6 +9,7 @@ import com.dhn.marrysocial.activity.RegisterActivity;
 import com.dhn.marrysocial.activity.SettingsActivity;
 import com.dhn.marrysocial.adapter.ViewPagerFragmentAdapter;
 import com.dhn.marrysocial.base.NotificationManagerControl;
+import com.dhn.marrysocial.broadcast.receive.NewTipsBroadcastReceiver;
 import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
 import com.dhn.marrysocial.fragment.ChatMsgFragment;
@@ -19,7 +20,10 @@ import com.dhn.marrysocial.services.DownloadIndirectFriendsIntentServices;
 import com.dhn.marrysocial.services.DownloadNoticesService;
 import com.dhn.marrysocial.viewpagerindicator.TabPageIndicator;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -32,6 +36,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 public class MarrySocialMainActivity extends FragmentActivity implements
@@ -50,10 +55,13 @@ public class MarrySocialMainActivity extends FragmentActivity implements
     private ImageButton mSettings;
     private ImageButton mUserCenter;
     private ImageButton mInviteFriends;
+    private ImageView mNewCommentsTips;
 
     private String mUid;
-    
+
     private NotificationManagerControl mNotificationManager;
+    private NewTipsBroadcastReceiver mBroadcastReceiver;
+    private SharedPreferences mPrefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,22 +69,33 @@ public class MarrySocialMainActivity extends FragmentActivity implements
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.marrysocial_main);
 
-        SharedPreferences prefs = this.getSharedPreferences(
+        mPrefs = this.getSharedPreferences(
                 CommonDataStructure.PREFS_LAIQIAN_DEFAULT, MODE_PRIVATE);
-        mUid = prefs.getString(CommonDataStructure.UID, "");
+        mUid = mPrefs.getString(CommonDataStructure.UID, "");
         mNotificationManager = NotificationManagerControl.newInstance(this);
 
         mSettings = (ImageButton) findViewById(R.id.actionbar_setting);
         mUserCenter = (ImageButton) findViewById(R.id.actionbar_user_center);
         mInviteFriends = (ImageButton) findViewById(R.id.actionbar_invite_friends);
+        mNewCommentsTips = (ImageView) findViewById(R.id.community_headbar_comments_new_tips);
         mSettings.setOnClickListener(this);
         mUserCenter.setOnClickListener(this);
         mInviteFriends.setOnClickListener(this);
+
+        mBroadcastReceiver = new NewTipsBroadcastReceiver();
+        mBroadcastReceiver.setBroadcastListener(mBroadcastListener);
+
+        if (mPrefs.getInt(CommonDataStructure.COMMENTS_COUNT, 0) == 0) {
+            mNewCommentsTips.setVisibility(View.INVISIBLE);
+        } else {
+            mNewCommentsTips.setVisibility(View.VISIBLE);
+        }
 
         initViewPager();
         downloadUserContacts();
         startDownloadNoticesServices();
         startDownloadChatMsgServices();
+        registerReceiver(mBroadcastReceiver, getIntentFilter());
     }
 
     @Override
@@ -151,6 +170,7 @@ public class MarrySocialMainActivity extends FragmentActivity implements
         super.onDestroy();
         stopDownloadNoticesServices();
         stopDownloadChatmsgServices();
+        unregisterReceiver(mBroadcastReceiver);
     }
 
     private void downloadUserContacts() {
@@ -235,5 +255,32 @@ public class MarrySocialMainActivity extends FragmentActivity implements
         Intent intent = new Intent(this, RegisterActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    private NewTipsBroadcastReceiver.BroadcastListener mBroadcastListener = new NewTipsBroadcastReceiver.BroadcastListener() {
+
+        @Override
+        public void onReceivedNewComments() {
+            if (mPrefs.getInt(CommonDataStructure.COMMENTS_COUNT, 0) == 0) {
+                mNewCommentsTips.setVisibility(View.INVISIBLE);
+            } else {
+                mNewCommentsTips.setVisibility(View.VISIBLE);
+            }
+        }
+
+        @Override
+        public void onReceivedNewChatMsgs() {
+        }
+
+        @Override
+        public void onReceivedNewContacts() {
+        }
+
+    };
+
+    protected IntentFilter getIntentFilter() {
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(CommonDataStructure.KEY_BROADCAST_ACTION);
+        return intentFilter;
     }
 }

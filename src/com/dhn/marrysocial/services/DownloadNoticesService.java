@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 
 import com.dhn.marrysocial.base.CommentsItem;
 import com.dhn.marrysocial.base.NoticesItem;
+import com.dhn.marrysocial.base.NotificationManagerControl;
 import com.dhn.marrysocial.base.ReplysItem;
 import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
@@ -18,6 +19,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Handler;
@@ -37,7 +39,7 @@ public class DownloadNoticesService extends Service {
     private static final int TIME_TO_DOWNLOAD_MYSELF_REPLYS = 106;
 
     private static final int POOL_SIZE = 10;
-    private static final int TIME_SCHEDULE = 120000;
+    private static final int TIME_SCHEDULE = 1200;
 
     private static final String[] COMMENTS_PROJECTION = {
             MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_BUCKET_ID,
@@ -61,6 +63,7 @@ public class DownloadNoticesService extends Service {
     private SharedPreferences mPrefs;
     private MarrySocialDBHelper mDBHelper;
     private ExecutorService mExecutorService;
+    private NotificationManagerControl mNotificationManager;
 
     Handler mHandler = new Handler() {
 
@@ -69,7 +72,7 @@ public class DownloadNoticesService extends Service {
             super.handleMessage(msg);
             switch (msg.what) {
             case TIME_TO_DOWNLOAD_INDIRECT_COMMENTS: {
-                mExecutorService.execute(new DownloadIndirectCommentNotices());
+                mExecutorService.execute(new DownloadCommentNotices());
                 break;
             }
             case TIME_TO_DOWNLOAD_INDIRECT_BRAVOS: {
@@ -118,8 +121,10 @@ public class DownloadNoticesService extends Service {
                 }
 
                 mHandler.sendEmptyMessage(TIME_TO_DOWNLOAD_INDIRECT_BRAVOS);
-                // mHandler.sendEmptyMessage(TIME_TO_DOWNLOAD_MYSELF_BRAVOS);
                 mHandler.sendEmptyMessage(TIME_TO_DOWNLOAD_INDIRECT_REPLYS);
+                mHandler.sendEmptyMessage(TIME_TO_DOWNLOAD_INDIRECT_COMMENTS);
+
+                // mHandler.sendEmptyMessage(TIME_TO_DOWNLOAD_MYSELF_BRAVOS);
                 // mHandler.sendEmptyMessageDelayed(
                 // TIME_TO_DOWNLOAD_MYSELF_REPLYS, TIME_SCHEDULE);
             }
@@ -134,6 +139,8 @@ public class DownloadNoticesService extends Service {
         mDBHelper = MarrySocialDBHelper.newInstance(getApplicationContext());
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
                 .availableProcessors() * POOL_SIZE);
+        mNotificationManager = NotificationManagerControl
+                .newInstance(getApplicationContext());
 
     }
 
@@ -262,41 +269,44 @@ public class DownloadNoticesService extends Service {
     //
     // }
 
-    class DownloadIndirectCommentNotices implements Runnable {
+    class DownloadCommentNotices implements Runnable {
 
         @Override
         public void run() {
-            // ArrayList<NoticesItem> noticeItems = Utils.downloadNoticesList(
-            // CommonDataStructure.URL_TOPIC_COMMENT_WITH_REPLY_LIST,
-            // null, null);
-            // if (noticeItems == null || noticeItems.size() == 0) {
-            // return;
-            // }
-            // for (NoticesItem notice : noticeItems) {
-            // String nikename =
-            // queryNikenameFromContactsDB(notice.getFromUid());
-            // }
+            ArrayList<NoticesItem> noticeItems = Utils.downloadNoticesList(
+                    CommonDataStructure.URL_INDIRECT_NOTICE_LIST, mUid, "",
+                    CommonDataStructure.NOTICE_COMMENT);
+            if (noticeItems == null || noticeItems.size() == 0) {
+                return;
+            }
+            int comments_count = mPrefs.getInt(
+                    CommonDataStructure.COMMENTS_COUNT, 0);
+            comments_count += noticeItems.size();
+            Editor editor = mPrefs.edit();
+            editor.putInt(CommonDataStructure.COMMENTS_COUNT, comments_count);
+            editor.commit();
+            mNotificationManager.showCommentsNotification(comments_count);
         }
 
     }
 
-    class DownloadMyselfCommentNotices implements Runnable {
-
-        @Override
-        public void run() {
-            // ArrayList<NoticesItem> noticeItems = Utils.downloadNoticesList(
-            // CommonDataStructure.URL_TOPIC_COMMENT_WITH_REPLY_LIST,
-            // null, null);
-            // if (noticeItems == null || noticeItems.size() == 0) {
-            // return;
-            // }
-            // for (NoticesItem notice : noticeItems) {
-            // String nikename =
-            // queryNikenameFromContactsDB(notice.getFromUid());
-            // }
-        }
-
-    }
+    // class DownloadMyselfCommentNotices implements Runnable {
+    //
+    // @Override
+    // public void run() {
+    // // ArrayList<NoticesItem> noticeItems = Utils.downloadNoticesList(
+    // // CommonDataStructure.URL_TOPIC_COMMENT_WITH_REPLY_LIST,
+    // // null, null);
+    // // if (noticeItems == null || noticeItems.size() == 0) {
+    // // return;
+    // // }
+    // // for (NoticesItem notice : noticeItems) {
+    // // String nikename =
+    // // queryNikenameFromContactsDB(notice.getFromUid());
+    // // }
+    // }
+    //
+    // }
 
     private void insertReplysToReplyDB(ReplysItem reply) {
         ContentValues insertValues = new ContentValues();

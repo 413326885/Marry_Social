@@ -30,6 +30,8 @@ public class CommonDataStructure {
     public static final String HOBBY = "hobby";
     public static final String INTRODUCE = "intro";
     public static final String LOGINSTATUS = "login_status";
+    public static final String COMMENTS_COUNT = "comments_count";
+    public static final String AUTH_CODE = "code";
 
     public static final String IMAGE_CACHE_DIR = ".com.dhn.marrysocial";
     public static final String DOWNLOAD_PICS_DIR = "downloadPics";
@@ -187,6 +189,10 @@ public class CommonDataStructure {
             + "RW9jS0w1dmVvVUZKTjhpNjQ9IiwidmFsdWUiOiJKWU1jWjdhMmVac213N09jb2drSTJ3UDgxV25TZWdHZHE3M1wvdV"
             + "FvcXFEST0iLCJtYWMiOiIwOGYzZDVlMDEzMGIyNjMwMzgwN2UzZjdjZjc4OThiN2U2NjZiMDQwMWUxOTc4NjRhMWQ2ZjA5NTI0Y2NiY2ExIn0=";
 
+    public static final String CMD_SEND_AUTHCODE = "eyJpdiI6IjhTZVF5YThLbFJhR1EwTWpTRkRNdXFncXplNk54SjZhc"
+            + "nRXUXNBV2g2ekE9IiwidmFsdWUiOiJhTjNtbzBJeTZyUHRrd203ZDVyZXg3OEdFaFhnb2l0elpBcnMzS1JyaVM0PSI"
+            + "sIm1hYyI6IjQ3YzI5YTE2NDdlOWI0NTQ4ODQwOWIwMDY1MjlhZjY5NjBjMDM2MjQxMTFmNmRiZmU3MTcyOTE4NjhiYTgyNTcifQ==";
+
     public static final String URL_UPLOAD_COMMON = "http://www.pkjiao.com/verify/post/";
 
     public static final String URL_TOKEN_CHECK = URL_UPLOAD_COMMON
@@ -246,6 +252,8 @@ public class CommonDataStructure {
             + CMD_UPDATE_USERINFO;
     public static final String URL_INDIRECT_SERVER_UPDATE = URL_UPLOAD_COMMON
             + CMD_INDIRECT_SERVER_UPDATE;
+    public static final String URL_SEND_AUTHCODE = URL_UPLOAD_COMMON
+            + CMD_SEND_AUTHCODE;
 
     public static final Uri COMMENTURL = Uri.parse("content://"
             + DBContentChangeProvider.AUTHORITY + "/"
@@ -285,6 +293,12 @@ public class CommonDataStructure {
     public static final String KEY_UPLOAD_TYPE = "upload_type";
     public static final String KEY_DELETE_TYPE = "delete_type";
 
+    public static final String KEY_BROADCAST_ACTION = "com.dhn.marrysocial.broadcast.action";
+    public static final String KEY_BROADCAST_CMDID = "broadcast_cmdid";
+    public static final int KEY_NEW_COMMENTS = 1;
+    public static final int KEY_NEW_CHAT_MSG = 2;
+    public static final int KEY_NEW_CONTACTS = 3;
+
     public static final int KEY_COMMENTS = 100;
     public static final int KEY_BRAVOS = 101;
     public static final int KEY_REPLYS = 102;
@@ -298,7 +312,7 @@ public class CommonDataStructure {
     public static final int INVALID_NUM = -1;
     public static final String INVALID_STR = "-1";
 
-//    public static final String INDIRECTIDS = "4";
+    // public static final String INDIRECTIDS = "4";
 
     public static final String KEY_SECRET_CODE = "marrysocial";
 

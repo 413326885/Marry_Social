@@ -36,7 +36,8 @@ public class ChatMsgFragment extends Fragment {
             MarrySocialDBHelper.KEY_TO_UID, MarrySocialDBHelper.KEY_CHAT_ID,
             MarrySocialDBHelper.KEY_NICKNAME,
             MarrySocialDBHelper.KEY_CHAT_CONTENT,
-            MarrySocialDBHelper.KEY_ADDED_TIME };
+            MarrySocialDBHelper.KEY_ADDED_TIME,
+            MarrySocialDBHelper.KEY_HAS_NEW_MSG };
 
     private ListView mListView;
     private ChatMsgListAdapter mListViewAdapter;
@@ -142,6 +143,7 @@ public class ChatMsgFragment extends Fragment {
                 item.chatContent = cursor.getString(3);
                 String chat_time = cursor.getString(4);
                 item.addTime = chat_time;
+                item.hasNewMsg = cursor.getInt(5);
                 mBriefChatItems.add(item);
             }
 
@@ -160,6 +162,7 @@ public class ChatMsgFragment extends Fragment {
         public String nikename;
         public String chatContent;
         public String addTime;
+        public int hasNewMsg;
     }
 
     private class DataSetChangeObserver extends ContentObserver {

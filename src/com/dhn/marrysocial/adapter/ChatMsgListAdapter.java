@@ -17,6 +17,7 @@ import com.dhn.marrysocial.R;
 import com.dhn.marrysocial.activity.ChatMsgActivity;
 import com.dhn.marrysocial.base.AsyncHeadPicBitmapLoader;
 import com.dhn.marrysocial.base.ChatMsgItem;
+import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
 import com.dhn.marrysocial.fragment.ChatMsgFragment;
 import com.dhn.marrysocial.utils.Utils;
@@ -76,6 +77,8 @@ public class ChatMsgListAdapter extends BaseAdapter {
                     .findViewById(R.id.chat_msg_description);
             holder.chat_time = (TextView) convertView
                     .findViewById(R.id.chat_msg_time);
+            holder.chat_new = (ImageView) convertView
+                    .findViewById(R.id.chat_msg_new);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -86,6 +89,12 @@ public class ChatMsgListAdapter extends BaseAdapter {
         String time = chatItem.addTime;
         String chat_time = time.substring(0, time.length() - 6);
         holder.chat_time.setText(Utils.getAddedTimeTitle(mContext, chat_time));
+        
+        if (chatItem.hasNewMsg == MarrySocialDBHelper.HAS_NEW_MSG) {
+            holder.chat_new.setVisibility(View.VISIBLE);
+        } else {
+            holder.chat_new.setVisibility(View.INVISIBLE);
+        }
 
         mHeadPicBitmapLoader.loadImageBitmap(holder.chat_person_pic,
                 chatItem.toUid);
@@ -107,6 +116,7 @@ public class ChatMsgListAdapter extends BaseAdapter {
         TextView chat_person_name;
         TextView chat_description;
         TextView chat_time;
+        ImageView chat_new;
     }
 
     private void startToChat(String chatId) {

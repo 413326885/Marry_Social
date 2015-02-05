@@ -4,13 +4,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.dhn.marrysocial.R;
+import com.dhn.marrysocial.broadcast.receive.AuthCodeBroadcastReceiver;
+import com.dhn.marrysocial.broadcast.receive.NewTipsBroadcastReceiver;
 import com.dhn.marrysocial.common.CommonDataStructure;
+import com.dhn.marrysocial.utils.AuthCodeUtils;
 import com.dhn.marrysocial.utils.MD5SecretUtils;
 import com.dhn.marrysocial.utils.Utils;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
@@ -31,6 +35,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
     private static final int POOL_SIZE = 10;
     private static final int REGISTER_SUCCESS = 100;
     private static final int NETWORK_INVALID = 101;
+    private static final int START_TO_SEND_AUTH_CODE = 102;
 
     private EditText mPhoneNumEditText;
     private EditText mPasswordEditText;
@@ -45,6 +50,8 @@ public class RegisterActivity extends Activity implements OnClickListener {
     private CountTimer mCountTimer;
     private ExecutorService mExecutorService;
     private ProgressDialog mUploadProgressDialog;
+    private AuthCodeBroadcastReceiver mBroadcastReceiver;
+    private SharedPreferences mPrefs;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -52,11 +59,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
             switch (msg.what) {
             case REGISTER_SUCCESS: {
                 mUploadProgressDialog.dismiss();
-                SharedPreferences prefs = RegisterActivity.this
-                        .getSharedPreferences(
-                                CommonDataStructure.PREFS_LAIQIAN_DEFAULT,
-                                MODE_PRIVATE);
-                Editor editor = prefs.edit();
+                Editor editor = mPrefs.edit();
                 editor.putString(CommonDataStructure.UID, mUid);
                 editor.putString(CommonDataStructure.PHONE, mPhoneNum);
                 editor.putInt(CommonDataStructure.LOGINSTATUS,
@@ -69,6 +72,17 @@ public class RegisterActivity extends Activity implements OnClickListener {
                 Toast.makeText(RegisterActivity.this,
                         R.string.network_not_available, Toast.LENGTH_SHORT)
                         .show();
+                break;
+            }
+            case START_TO_SEND_AUTH_CODE: {
+                String macAddr = Utils.getMacAddress(RegisterActivity.this);
+                String authCode = AuthCodeUtils.randAuthCode(6);
+                Editor editor = mPrefs.edit();
+                editor.putString(CommonDataStructure.AUTH_CODE, authCode);
+                editor.commit();
+                mPhoneNum = mPhoneNumEditText.getText().toString();
+                mExecutorService.execute(new SendAuthCode(mPhoneNum, macAddr,
+                        authCode));
                 break;
             }
             default:
@@ -93,11 +107,16 @@ public class RegisterActivity extends Activity implements OnClickListener {
         mCountTimer = new CountTimer(60000, 1000);
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
                 .availableProcessors() * POOL_SIZE);
+        mPrefs = getSharedPreferences(
+                CommonDataStructure.PREFS_LAIQIAN_DEFAULT, MODE_PRIVATE);
 
         mGetVerifyCodeBtn.setOnClickListener(this);
         mRegisterBtn.setOnClickListener(this);
         mLoginBtn.setOnClickListener(this);
 
+        mBroadcastReceiver = new AuthCodeBroadcastReceiver();
+        mBroadcastReceiver.setOnReceivedMessageListener(mBroadcastListener);
+        registerReceiver(mBroadcastReceiver, getIntentFilter());
     }
 
     @Override
@@ -112,11 +131,14 @@ public class RegisterActivity extends Activity implements OnClickListener {
 
             if (!isPhoneNumValid()) {
                 mPhoneNumEditText.requestFocus();
-                break;
+                return;
             }
             if (!isPasswordValid()) {
                 mPasswordEditText.requestFocus();
-                break;
+                return;
+            }
+            if (!isAuthCodeValid()) {
+                return;
             }
             mUploadProgressDialog = ProgressDialog.show(this, "用户注册",
                     "正在注册，请稍后...", false, true);
@@ -133,6 +155,12 @@ public class RegisterActivity extends Activity implements OnClickListener {
             break;
         }
         case R.id.get_verify_code: {
+
+            if (!Utils.isActiveNetWorkAvailable(this)) {
+                mHandler.sendEmptyMessage(NETWORK_INVALID);
+                return;
+            }
+
             if (!isPhoneNumValid()) {
                 mPhoneNumEditText.requestFocus();
                 break;
@@ -141,7 +169,9 @@ public class RegisterActivity extends Activity implements OnClickListener {
                 mPasswordEditText.requestFocus();
                 break;
             }
+
             mCountTimer.start();
+            mHandler.sendEmptyMessage(START_TO_SEND_AUTH_CODE);
             break;
         }
         default:
@@ -165,6 +195,20 @@ public class RegisterActivity extends Activity implements OnClickListener {
         return true;
     }
 
+    private boolean isAuthCodeValid() {
+        String authCode = mPrefs.getString(CommonDataStructure.AUTH_CODE, "");
+        String confirmCode = mVerifyCodeEditText.getText().toString();
+        if (authCode == null || authCode.length() == 0 || confirmCode == null || confirmCode.length() == 0) {
+            Toast.makeText(this, "验证码不能为空", 500).show();
+            return false;
+        }
+        if (!confirmCode.equalsIgnoreCase(authCode)) {
+            Toast.makeText(this, "验证码已经失效", 500).show();
+            return false;
+        }
+        return true;
+    }
+
     class CountTimer extends CountDownTimer {
 
         public CountTimer(long millisInFuture, long countDownInterval) {
@@ -180,7 +224,8 @@ public class RegisterActivity extends Activity implements OnClickListener {
         @Override
         public void onTick(long millisUntilFinished) {
             mGetVerifyCodeBtn.setClickable(false);
-            mGetVerifyCodeBtn.setText(millisUntilFinished / 1000 + "s");
+            mGetVerifyCodeBtn.setText("重获验证码 (" + millisUntilFinished / 1000
+                    + "s" + ")");
         }
     }
 
@@ -216,5 +261,48 @@ public class RegisterActivity extends Activity implements OnClickListener {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mBroadcastReceiver);
+    }
+
+    class SendAuthCode implements Runnable {
+
+        private String phoneNum;
+        private String authCode;
+        private String macAddr;
+
+        public SendAuthCode(String phoneNum, String macAddr, String authCode) {
+            this.phoneNum = phoneNum;
+            this.macAddr = macAddr;
+            this.authCode = authCode;
+        }
+
+        @Override
+        public void run() {
+            Boolean result = Utils.sendAuthCode(
+                    CommonDataStructure.URL_SEND_AUTHCODE, phoneNum, macAddr,
+                    authCode);
+            // if (result) {
+            // }
+        }
+    }
+
+    private AuthCodeBroadcastReceiver.MessageListener mBroadcastListener = new AuthCodeBroadcastReceiver.MessageListener() {
+
+        @Override
+        public void onMsgReceived(String message) {
+            mVerifyCodeEditText.setText(message);
+        }
+
+    };
+
+    private IntentFilter getIntentFilter() {
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(AuthCodeBroadcastReceiver.SMS_RECEIVED_ACTION);
+        return intentFilter;
     }
 }

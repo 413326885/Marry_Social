@@ -25,6 +25,8 @@
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
     <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
 
     <application
         android:name=".MarrySocialApplication"
@@ -101,6 +103,17 @@
             android:grantUriPermissions="true"
             android:permission="com.dhn.marrysocial.provider.DATASETPROVIDER"
             android:syncable="false" />
+
+        <receiver android:name="com.dhn.marrysocial.broadcast.receive.NewTipsBroadcastReceiver" >
+        </receiver>
+        <receiver android:name="com.dhn.marrysocial.broadcast.receive.AuthCodeBroadcastReceiver" >
+        </receiver>
+        <!--
+                 <intent-filter>
+                <action android:name="com.dhn.marrysocial.broadcast.action" />
+            </intent-filter>
+        -->
+
     </application>
 
 </manifest>

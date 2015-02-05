@@ -72,7 +72,7 @@ public class DownloadCommentsIntentService extends IntentService {
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
+    protected void onHandleIntent(Intent data) {
         if (!Utils.isActiveNetWorkAvailable(this)) {
             Toast.makeText(this, R.string.network_not_available,
                     Toast.LENGTH_SHORT).show();
@@ -84,6 +84,15 @@ public class DownloadCommentsIntentService extends IntentService {
         if (loginStatus != CommonDataStructure.LOGIN_STATUS_LOGIN) {
             return;
         }
+
+        Editor editor = mPrefs.edit();
+        editor.putInt(CommonDataStructure.COMMENTS_COUNT, 0);
+        editor.commit();
+
+        Intent intent = new Intent(CommonDataStructure.KEY_BROADCAST_ACTION);
+        intent.putExtra(CommonDataStructure.KEY_BROADCAST_CMDID,
+                CommonDataStructure.KEY_NEW_COMMENTS);
+        this.sendBroadcast(intent);
 
         mExecutorService.execute(new DownloadComments());
     }

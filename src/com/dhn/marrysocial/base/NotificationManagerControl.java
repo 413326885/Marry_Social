@@ -22,6 +22,7 @@ public class NotificationManagerControl {
     private NotificationManager mNotificationManager;
     private Bitmap mLargeIcon;
 
+    private static final int COMMENTS_NOTIFICATION_ID = -100;
     private static NotificationManagerControl mNotificationManagerControl = null;
 
     private NotificationManagerControl(Context context) {
@@ -75,8 +76,7 @@ public class NotificationManagerControl {
         mNotificationManager.notify(notification_id, notification);
     }
 
-    public void showCommentsNotification(String commentContent, int msgCount,
-            String commentId) {
+    public void showCommentsNotification(int msgCount) {
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(mContext);
         // Adds the back stack
@@ -91,10 +91,10 @@ public class NotificationManagerControl {
 
         Notification notification = new NotificationCompat.Builder(mContext)
                 .setLargeIcon(mLargeIcon).setSmallIcon(R.drawable.ic_launcher)
-                .setTicker(commentContent).setContentTitle("收到了一条新的动态")
-                .setContentText(commentContent).setNumber(msgCount)
+                .setTicker("您有了新的动态").setContentTitle("新动态")
+                .setContentText("您有了新的动态").setNumber(msgCount)
                 .setContentIntent(resultPendingIntent).setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_ALL).build();
-        mNotificationManager.notify(Integer.valueOf(commentId), notification);
+        mNotificationManager.notify(COMMENTS_NOTIFICATION_ID, notification);
     }
 }

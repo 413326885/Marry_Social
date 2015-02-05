@@ -25,6 +25,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -132,6 +133,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
 
     private DataSetChangeObserver mChangeObserver;
     private DataSetChangeObserver mHeaderPicChangeObserver;
+    private SharedPreferences mPrefs;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -281,11 +283,11 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
                         mHeaderPicChangeObserver);
         Log.e(TAG, "nannan oncreate()..");
 
-        SharedPreferences prefs = getActivity().getSharedPreferences(
+        mPrefs = getActivity().getSharedPreferences(
                 CommonDataStructure.PREFS_LAIQIAN_DEFAULT,
                 getActivity().MODE_PRIVATE);
-        mUid = prefs.getString(CommonDataStructure.UID, "");
-        mAuthorName = prefs.getString(CommonDataStructure.AUTHOR_NAME, "");
+        mUid = mPrefs.getString(CommonDataStructure.UID, "");
+        mAuthorName = mPrefs.getString(CommonDataStructure.AUTHOR_NAME, "");
         loadContactsFromDB();
 
     }

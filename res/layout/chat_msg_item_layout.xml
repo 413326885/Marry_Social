@@ -18,24 +18,41 @@
         app:corner_radius="50dp"
         app:oval="false" />
 
-    <TextView
-        android:id="@+id/chat_msg_time"
+    <RelativeLayout
+        android:id="@+id/chat_msg_time_new"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginRight="14dp"
-        android:layout_marginTop="6dp"
-        android:alpha="0.3"
-        android:text="10月8日"
-        android:textSize="10dp" />
+        android:layout_centerVertical="true" 
+        android:layout_marginRight="16dp">
+
+        <TextView
+            android:id="@+id/chat_msg_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:alpha="0.3"
+            android:text="10月8日"
+            android:textSize="10dp" />
+
+        <ImageView
+            android:id="@+id/chat_msg_new"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/chat_msg_time"
+            android:layout_centerHorizontal="true"
+            android:visibility="invisible"
+            android:paddingTop="10dp"
+            android:paddingBottom="4dp"
+            android:src="@drawable/icon_new" />
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@id/chat_msg_time"
-        android:layout_toRightOf="@id/chat_person_pic"
         android:layout_centerVertical="true"
+        android:layout_toLeftOf="@id/chat_msg_time_new"
+        android:layout_toRightOf="@id/chat_person_pic"
         android:orientation="vertical" >
 
         <TextView

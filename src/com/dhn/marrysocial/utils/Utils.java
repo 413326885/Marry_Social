@@ -2872,6 +2872,88 @@ public class Utils {
         return result;
     }
 
+    public static boolean sendAuthCode(String RequestURL, String phoneNum,
+            String macAddr, String authCode) {
+
+        Log.e(TAG, "nannan sendAuthCode ");
+        boolean resultCode = false;
+
+        URL postUrl = null;
+        DataOutputStream outputStream = null;
+        HttpURLConnection connection = null;
+        OutputStreamWriter outputWriter = null;
+        BufferedReader inputReader = null;
+
+        try {
+            postUrl = new URL(RequestURL);
+            if (postUrl == null)
+                return resultCode;
+
+            connection = (HttpURLConnection) postUrl.openConnection();
+            if (connection == null)
+                return resultCode;
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestMethod("POST");
+            connection.setUseCaches(false);
+            connection.setInstanceFollowRedirects(true);
+            connection.setRequestProperty("Content-Type",
+                    "application/x-www-form-urlencoded");
+
+            connection.connect();
+
+            outputStream = new DataOutputStream(connection.getOutputStream());
+            JSONObject authCodeContent = new JSONObject();
+            authCodeContent.put(CommonDataStructure.PHONE, phoneNum);
+            authCodeContent.put(CommonDataStructure.MAC, macAddr);
+            authCodeContent.put(CommonDataStructure.AUTH_CODE, authCode);
+
+            String content = "jsondata="
+                    + URLEncoder.encode(authCodeContent.toString(), "UTF-8");
+            Log.e(TAG, "nannan authCodeContent = " + authCodeContent.toString());
+            Log.e(TAG, "nannan content = " + content);
+            if (content == null)
+                return resultCode;
+
+            outputStream.writeBytes(content);
+            outputStream.flush();
+            outputStream.close();
+
+            inputReader = new BufferedReader(new InputStreamReader(
+                    connection.getInputStream()));
+            StringBuffer resp = new StringBuffer();
+            String line = null;
+            while ((line = inputReader.readLine()) != null) {
+                resp.append(line);
+            }
+            // String line = inputReader.readLine();
+            // inputReader.close();
+
+            Log.e(TAG, "nannan resp = " + resp.toString());
+            JSONObject response = new JSONObject(resp.toString());
+            String code = response.getString("code");
+            if (!"200".equalsIgnoreCase(code)) {
+                return resultCode;
+            }
+
+            resultCode = "true".equalsIgnoreCase(response.getString("data"));
+
+            inputReader.close();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+        return resultCode;
+    }
+
     public static boolean isAppRunningForeground(Context context) {
         ActivityManager am = (ActivityManager) context
                 .getSystemService(Context.ACTIVITY_SERVICE);
