@@ -148,6 +148,7 @@ public class LoginActivity extends Activity implements OnClickListener {
             break;
         }
         case R.id.forget_password: {
+            redirectToForgetPasswordActivity();
             break;
         }
         case R.id.return_back: {
@@ -216,6 +217,11 @@ public class LoginActivity extends Activity implements OnClickListener {
 
     private void redirectToFillUserInfoActivity() {
         Intent intent = new Intent(this, FillUserInfoActivity.class);
+        startActivity(intent);
+    }
+
+    private void redirectToForgetPasswordActivity() {
+        Intent intent = new Intent(this, ChangePasswordActivity.class);
         startActivity(intent);
     }
 }

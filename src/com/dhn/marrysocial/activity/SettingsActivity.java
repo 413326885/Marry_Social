@@ -105,7 +105,7 @@ public class SettingsActivity extends Activity implements OnClickListener {
                                 MODE_PRIVATE);
                         Editor editor = prefs.edit();
                         editor.putInt(CommonDataStructure.LOGINSTATUS,
-                                CommonDataStructure.LONIN_STATUS_LOGOUT);
+                                CommonDataStructure.LOGIN_STATUS_NO_USER);
                         editor.commit();
                         DataCleanManager.cleanApplicationData(context,
                                 CommonDataStructure.DOWNLOAD_PICS_DIR_URL,

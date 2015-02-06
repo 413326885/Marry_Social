@@ -193,6 +193,10 @@ public class CommonDataStructure {
             + "nRXUXNBV2g2ekE9IiwidmFsdWUiOiJhTjNtbzBJeTZyUHRrd203ZDVyZXg3OEdFaFhnb2l0elpBcnMzS1JyaVM0PSI"
             + "sIm1hYyI6IjQ3YzI5YTE2NDdlOWI0NTQ4ODQwOWIwMDY1MjlhZjY5NjBjMDM2MjQxMTFmNmRiZmU3MTcyOTE4NjhiYTgyNTcifQ==";
 
+    public static final String CMD_CHANGE_PASSWORD = "eyJpdiI6IjRLNktkRUErVzBmWk96dWRjd0xJK2ZPelNXaXVhZDV"
+            + "aOXRDRjF2OXB5RGM9IiwidmFsdWUiOiJFKzBtd0VxTUR3SVhcL1Z6RDJjNVUwYjFaY2lEdWc4XC82M2RiSDlYMWZLW"
+            + "Vk9IiwibWFjIjoiNGQ3NmQ5MDVjOTVjZDZhYTAzYWFkZjJlMzQ5NTc2Y2U0NWI0NmI5ZWNmYzgyZWU4NGVjYzI3NTRkODdmY2U0MiJ9";
+
     public static final String URL_UPLOAD_COMMON = "http://www.pkjiao.com/verify/post/";
 
     public static final String URL_TOKEN_CHECK = URL_UPLOAD_COMMON
@@ -254,6 +258,8 @@ public class CommonDataStructure {
             + CMD_INDIRECT_SERVER_UPDATE;
     public static final String URL_SEND_AUTHCODE = URL_UPLOAD_COMMON
             + CMD_SEND_AUTHCODE;
+    public static final String URL_CHANGE_PASSWORD = URL_UPLOAD_COMMON
+            + CMD_CHANGE_PASSWORD;
 
     public static final Uri COMMENTURL = Uri.parse("content://"
             + DBContentChangeProvider.AUTHORITY + "/"

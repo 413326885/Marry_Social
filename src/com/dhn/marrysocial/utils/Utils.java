@@ -2954,6 +2954,89 @@ public class Utils {
         return resultCode;
     }
 
+    public static boolean changePassword(String RequestURL, String phoneNum,
+            String password, String macAddr) {
+
+        Log.e(TAG, "nannan changePassword ");
+        boolean resultCode = false;
+
+        URL postUrl = null;
+        DataOutputStream outputStream = null;
+        HttpURLConnection connection = null;
+        OutputStreamWriter outputWriter = null;
+        BufferedReader inputReader = null;
+
+        try {
+            postUrl = new URL(RequestURL);
+            if (postUrl == null)
+                return resultCode;
+
+            connection = (HttpURLConnection) postUrl.openConnection();
+            if (connection == null)
+                return resultCode;
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestMethod("POST");
+            connection.setUseCaches(false);
+            connection.setInstanceFollowRedirects(true);
+            connection.setRequestProperty("Content-Type",
+                    "application/x-www-form-urlencoded");
+
+            connection.connect();
+
+            outputStream = new DataOutputStream(connection.getOutputStream());
+            JSONObject changePasswordContent = new JSONObject();
+            changePasswordContent.put(CommonDataStructure.PHONE, phoneNum);
+            changePasswordContent.put(CommonDataStructure.PASSWORD, password);
+            changePasswordContent.put(CommonDataStructure.MAC, macAddr);
+
+            String content = "jsondata="
+                    + URLEncoder.encode(changePasswordContent.toString(),
+                            "UTF-8");
+            Log.e(TAG,
+                    "nannan changePasswordContent = "
+                            + changePasswordContent.toString());
+            Log.e(TAG, "nannan content = " + content);
+            if (content == null)
+                return resultCode;
+
+            outputStream.writeBytes(content);
+            outputStream.flush();
+            outputStream.close();
+
+            inputReader = new BufferedReader(new InputStreamReader(
+                    connection.getInputStream()));
+            StringBuffer resp = new StringBuffer();
+            String line = null;
+            while ((line = inputReader.readLine()) != null) {
+                resp.append(line);
+            }
+
+            Log.e(TAG, "nannan resp = " + resp.toString());
+            JSONObject response = new JSONObject(resp.toString());
+            String code = response.getString("code");
+            if (!"200".equalsIgnoreCase(code)) {
+                return resultCode;
+            }
+
+            resultCode = true;
+
+            inputReader.close();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+        return resultCode;
+    }
+
     public static boolean isAppRunningForeground(Context context) {
         ActivityManager am = (ActivityManager) context
                 .getSystemService(Context.ACTIVITY_SERVICE);

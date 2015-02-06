@@ -78,6 +78,8 @@
         </activity>
         <activity android:name=".activity.ProductDescActivity" >
         </activity>
+        <activity android:name=".activity.ChangePasswordActivity" >
+        </activity>
         <activity android:name=".test.MainActivity" >
         </activity>
 

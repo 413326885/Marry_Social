@@ -338,6 +338,7 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
 
     private void redirectToMainActivity() {
         Intent intent = new Intent(this, MarrySocialMainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
     }
