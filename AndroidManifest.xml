@@ -97,6 +97,10 @@
         </service>
         <service android:name=".services.DeleteCommentsAndBravosAndReplysIntentServices" >
         </service>
+        <service android:name=".services.DownloadReplysIntentServices" >
+        </service>
+        <service android:name=".services.DownloadBravosIntentServices" >
+        </service>
 
         <provider
             android:name="com.dhn.marrysocial.provider.DBContentChangeProvider"

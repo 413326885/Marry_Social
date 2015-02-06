@@ -161,7 +161,12 @@ public class DownloadIndirectFriendsIntentServices extends IntentService {
         values.put(MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX,
                 contact.getHeaderBkgIndex());
 
-        mDBHelper.insert(MarrySocialDBHelper.DATABASE_CONTACTS_TABLE, values);
+        try {
+            mDBHelper.insert(MarrySocialDBHelper.DATABASE_CONTACTS_TABLE,
+                    values);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean isContactExistInContactsDB(String uId) {
@@ -199,9 +204,13 @@ public class DownloadIndirectFriendsIntentServices extends IntentService {
                 thumbUrl);
         insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 MarrySocialDBHelper.UPLOAD_TO_CLOUD_SUCCESS);
-
-        long rowId = mDBHelper.insert(
-                MarrySocialDBHelper.DATABASE_HEAD_PICS_TABLE, insertValues);
+        long rowId = 0;
+        try {
+            rowId = mDBHelper.insert(
+                    MarrySocialDBHelper.DATABASE_HEAD_PICS_TABLE, insertValues);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return (int) (rowId);
     }
 
@@ -219,9 +228,13 @@ public class DownloadIndirectFriendsIntentServices extends IntentService {
         insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 MarrySocialDBHelper.UPLOAD_TO_CLOUD_SUCCESS);
 
-        String whereClause = MarrySocialDBHelper.KEY_UID + " = " + uid;
-        mDBHelper.update(MarrySocialDBHelper.DATABASE_HEAD_PICS_TABLE,
-                insertValues, whereClause, null);
+        try {
+            String whereClause = MarrySocialDBHelper.KEY_UID + " = " + uid;
+            mDBHelper.update(MarrySocialDBHelper.DATABASE_HEAD_PICS_TABLE,
+                    insertValues, whereClause, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean isUidExistInHeadPicDB(String uid) {

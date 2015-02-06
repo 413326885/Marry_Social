@@ -1422,7 +1422,7 @@ public class Utils {
     public static ArrayList<NoticesItem> downloadNoticesList(String RequestURL,
             String uId, String timeStamp, int noticeType) {
 
-        Log.e(TAG, "nannan downloadNoticesList");
+        Log.e(TAG, "nannan downloadNoticesList noticeType = " + noticeType);
         URL postUrl = null;
         HttpURLConnection connection = null;
         DataOutputStream output = null;
@@ -1458,6 +1458,108 @@ public class Utils {
             String content = null;
             content = "jsondata="
                     + URLEncoder.encode(noticeContent.toString(), "UTF-8");
+
+            if (content == null)
+                return null;
+
+            output.writeBytes(content);
+            output.flush();
+            output.close();
+
+            BufferedReader reader = null;
+            reader = new BufferedReader(new InputStreamReader(
+                    connection.getInputStream()));
+            StringBuffer resp = new StringBuffer();
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                resp.append(line);
+            }
+
+             Log.e(TAG, "nannan downloadNoticesList resp  = " + resp);
+            JSONObject response = new JSONObject(resp.toString());
+            String code = response.getString("code");
+            if (!"200".equalsIgnoreCase(code)) {
+                return null;
+            }
+
+            JSONArray respData = response.getJSONArray("data");
+            for (int index = 0; index < respData.length(); index++) {
+                JSONObject notice = respData.getJSONObject(index);
+                String noticeId = notice.getString("lid");
+                String uid = notice.getString("uid");
+                String fromUid = notice.getString("fromuid");
+                String timeLine = notice.getString("timeline");
+                int type = Integer.valueOf(notice.getString("noticetype"));
+                String commentId = notice.getString("tid");
+                int isReceived = Integer.valueOf(notice.getString("recived"));
+
+                NoticesItem item = new NoticesItem();
+                item.setNoticeId(noticeId);
+                item.setUid(uid);
+                item.setFromUid(fromUid);
+                item.setTimeLine(timeLine);
+                item.setNoticeType(type);
+                item.setCommentId(commentId);
+                item.setIsReceived(isReceived);
+                noticeItems.add(item);
+            }
+
+            reader.close();
+
+            return noticeItems;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+
+        return null;
+    }
+
+    public static ArrayList<NoticesItem> downloadBravosList(String RequestURL,
+            String uId, String commentIds) {
+
+        Log.e(TAG, "nannan downloadBravosList");
+        URL postUrl = null;
+        HttpURLConnection connection = null;
+        DataOutputStream output = null;
+        ArrayList<NoticesItem> noticeItems = new ArrayList<NoticesItem>();
+
+        try {
+            postUrl = new URL(RequestURL);
+            if (postUrl == null)
+                return null;
+
+            connection = (HttpURLConnection) postUrl.openConnection();
+            if (connection == null)
+                return null;
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestMethod("POST");
+            connection.setUseCaches(false);
+            connection.setInstanceFollowRedirects(true);
+            connection.setRequestProperty("Content-Type",
+                    "application/x-www-form-urlencoded");
+            connection.connect();
+
+            OutputStream stream = connection.getOutputStream();
+            output = new DataOutputStream(stream);
+
+            JSONObject bravoContent = new JSONObject();
+            bravoContent.put(CommonDataStructure.UID, uId);
+            bravoContent.put(CommonDataStructure.COMMENT_ID, commentIds);
+
+            Log.e(TAG, "nannan noticeContent  = " + bravoContent.toString());
+            String content = null;
+            content = "jsondata="
+                    + URLEncoder.encode(bravoContent.toString(), "UTF-8");
 
             if (content == null)
                 return null;
@@ -2994,9 +3096,8 @@ public class Utils {
             String content = "jsondata="
                     + URLEncoder.encode(changePasswordContent.toString(),
                             "UTF-8");
-            Log.e(TAG,
-                    "nannan changePasswordContent = "
-                            + changePasswordContent.toString());
+            Log.e(TAG, "nannan changePasswordContent = "
+                    + changePasswordContent.toString());
             Log.e(TAG, "nannan content = " + content);
             if (content == null)
                 return resultCode;

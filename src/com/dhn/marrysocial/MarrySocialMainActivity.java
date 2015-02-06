@@ -85,7 +85,7 @@ public class MarrySocialMainActivity extends FragmentActivity implements
         mBroadcastReceiver = new NewTipsBroadcastReceiver();
         mBroadcastReceiver.setBroadcastListener(mBroadcastListener);
 
-        if (mPrefs.getInt(CommonDataStructure.COMMENTS_COUNT, 0) == 0) {
+        if (mPrefs.getInt(CommonDataStructure.NOTIFICATION_COMMENTS_COUNT, 0) == 0) {
             mNewCommentsTips.setVisibility(View.INVISIBLE);
         } else {
             mNewCommentsTips.setVisibility(View.VISIBLE);
@@ -261,7 +261,7 @@ public class MarrySocialMainActivity extends FragmentActivity implements
 
         @Override
         public void onReceivedNewComments() {
-            if (mPrefs.getInt(CommonDataStructure.COMMENTS_COUNT, 0) == 0) {
+            if (mPrefs.getInt(CommonDataStructure.NOTIFICATION_COMMENTS_COUNT, 0) == 0) {
                 mNewCommentsTips.setVisibility(View.INVISIBLE);
             } else {
                 mNewCommentsTips.setVisibility(View.VISIBLE);

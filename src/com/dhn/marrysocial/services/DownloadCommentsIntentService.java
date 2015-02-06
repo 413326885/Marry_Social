@@ -73,9 +73,8 @@ public class DownloadCommentsIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent data) {
+
         if (!Utils.isActiveNetWorkAvailable(this)) {
-            Toast.makeText(this, R.string.network_not_available,
-                    Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -86,39 +85,50 @@ public class DownloadCommentsIntentService extends IntentService {
         }
 
         Editor editor = mPrefs.edit();
-        editor.putInt(CommonDataStructure.COMMENTS_COUNT, 0);
+        editor.putInt(CommonDataStructure.NOTIFICATION_COMMENTS_COUNT, 0);
         editor.commit();
+
+        String tid = data.getStringExtra(CommonDataStructure.COMMENT_ID);
 
         Intent intent = new Intent(CommonDataStructure.KEY_BROADCAST_ACTION);
         intent.putExtra(CommonDataStructure.KEY_BROADCAST_CMDID,
                 CommonDataStructure.KEY_NEW_COMMENTS);
         this.sendBroadcast(intent);
 
-        mExecutorService.execute(new DownloadComments());
+        mExecutorService.execute(new DownloadComments(tid));
     }
 
     class DownloadComments implements Runnable {
 
+        private String tid;
+
+        public DownloadComments(String tid) {
+            this.tid = tid;
+        }
+
         @Override
         public void run() {
 
+            ArrayList<String> commentIds = new ArrayList<String> ();
             String indirectLists = loadIndirectsFromDB();
             Long addedTime = 0l;
 
             ArrayList<CommentsItem> commentItems = Utils.downloadCommentsList(
                     CommonDataStructure.URL_TOPIC_COMMENT_LIST, mUid,
-                    indirectLists, "", "", "");
+                    indirectLists, tid, CommonDataStructure.DEFAULT_COUNT, "");
             if (commentItems == null || commentItems.size() == 0) {
                 return;
             }
 
             for (CommentsItem comment : commentItems) {
+
                 if (Long.valueOf(comment.getAddTime()) > addedTime) {
                     addedTime = Long.valueOf(comment.getAddTime());
                 }
                 if (!isCommentIdExistInCommentsDB(comment.getCommentId())) {
                     insertCommentsToDB(comment);
                 }
+
                 ArrayList<ImagesItem> imageLists = comment.getImages();
                 if (imageLists != null && imageLists.size() != 0) {
                     for (ImagesItem image : imageLists) {
@@ -127,10 +137,16 @@ public class DownloadCommentsIntentService extends IntentService {
                         }
                     }
                 }
+
+                commentIds.add(comment.getCommentId());
             }
+
             Editor editor = mPrefs.edit();
             editor.putLong(MarrySocialDBHelper.KEY_ADDED_TIME, addedTime);
             editor.commit();
+
+            startToDownloadBravos(commentIds);
+            startToDownloadReply(commentIds, indirectLists);
         }
     }
 
@@ -155,24 +171,24 @@ public class DownloadCommentsIntentService extends IntentService {
         resolver.insert(CommonDataStructure.COMMENTURL, values);
     }
 
-    private void insertReplysToReplyDB(ReplysItem reply) {
-        ContentValues insertValues = new ContentValues();
-        insertValues.put(MarrySocialDBHelper.KEY_COMMENT_ID,
-                reply.getCommentId());
-        insertValues.put(MarrySocialDBHelper.KEY_UID, reply.getUid());
-        insertValues.put(MarrySocialDBHelper.KEY_AUTHOR_NICKNAME,
-                reply.getNickname());
-        insertValues.put(MarrySocialDBHelper.KEY_REPLY_CONTENTS,
-                reply.getReplyContents());
-        insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
-                reply.getReplyTime());
-        insertValues.put(MarrySocialDBHelper.KEY_REPLY_ID, reply.getReplyId());
-        insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
-                MarrySocialDBHelper.DOWNLOAD_FROM_CLOUD_SUCCESS);
-
-        ContentResolver resolver = this.getContentResolver();
-        resolver.insert(CommonDataStructure.REPLYURL, insertValues);
-    }
+//    private void insertReplysToReplyDB(ReplysItem reply) {
+//        ContentValues insertValues = new ContentValues();
+//        insertValues.put(MarrySocialDBHelper.KEY_COMMENT_ID,
+//                reply.getCommentId());
+//        insertValues.put(MarrySocialDBHelper.KEY_UID, reply.getUid());
+//        insertValues.put(MarrySocialDBHelper.KEY_AUTHOR_NICKNAME,
+//                reply.getNickname());
+//        insertValues.put(MarrySocialDBHelper.KEY_REPLY_CONTENTS,
+//                reply.getReplyContents());
+//        insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
+//                reply.getReplyTime());
+//        insertValues.put(MarrySocialDBHelper.KEY_REPLY_ID, reply.getReplyId());
+//        insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
+//                MarrySocialDBHelper.DOWNLOAD_FROM_CLOUD_SUCCESS);
+//
+//        ContentResolver resolver = this.getContentResolver();
+//        resolver.insert(CommonDataStructure.REPLYURL, insertValues);
+//    }
 
     private void insertImagesToImageDB(ImagesItem image) {
         ContentValues insertValues = new ContentValues();
@@ -297,5 +313,22 @@ public class DownloadCommentsIntentService extends IntentService {
             }
         }
         return result.toString();
+    }
+
+    private void startToDownloadBravos(ArrayList<String> commentIds) {
+
+        Intent serviceIntent = new Intent(getApplicationContext(),
+                DownloadBravosIntentServices.class);
+        serviceIntent.putStringArrayListExtra(CommonDataStructure.COMMENT_ID_LIST, commentIds);
+        startService(serviceIntent);
+    }
+
+    private void startToDownloadReply(ArrayList<String> commentIds, String indirectIds) {
+
+        Intent serviceIntent = new Intent(getApplicationContext(),
+                DownloadReplysIntentServices.class);
+        serviceIntent.putStringArrayListExtra(CommonDataStructure.COMMENT_ID_LIST, commentIds);
+        serviceIntent.putExtra(CommonDataStructure.INDIRECT_ID_LIST, indirectIds);
+        startService(serviceIntent);
     }
 }

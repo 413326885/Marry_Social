@@ -30,8 +30,10 @@ public class CommonDataStructure {
     public static final String HOBBY = "hobby";
     public static final String INTRODUCE = "intro";
     public static final String LOGINSTATUS = "login_status";
-    public static final String COMMENTS_COUNT = "comments_count";
+    public static final String NOTIFICATION_COMMENTS_COUNT = "notification_comments_count";
     public static final String AUTH_CODE = "code";
+    public static final String COMMENT_ID_LIST = "comment_id_list";
+    public static final String INDIRECT_ID_LIST = "indirect_id_list";
 
     public static final String IMAGE_CACHE_DIR = ".com.dhn.marrysocial";
     public static final String DOWNLOAD_PICS_DIR = "downloadPics";
@@ -197,6 +199,14 @@ public class CommonDataStructure {
             + "aOXRDRjF2OXB5RGM9IiwidmFsdWUiOiJFKzBtd0VxTUR3SVhcL1Z6RDJjNVUwYjFaY2lEdWc4XC82M2RiSDlYMWZLW"
             + "Vk9IiwibWFjIjoiNGQ3NmQ5MDVjOTVjZDZhYTAzYWFkZjJlMzQ5NTc2Y2U0NWI0NmI5ZWNmYzgyZWU4NGVjYzI3NTRkODdmY2U0MiJ9";
 
+    public static final String CMD_DOWNLOAD_BRAVOS = "eyJpdiI6IlFhUlM3Sm1zOG9oUVFTSmRPbFlZWVd6djNxaWhERlB"
+            + "RbjhHYUlpM2pEXC9RPSIsInZhbHVlIjoic3FyaEdxNWhhTEVyOW10Y2p1SmtGeDlGOWhaeEhRYUlEZXZUTEErakNyW"
+            + "T0iLCJtYWMiOiI1NDcyN2ZhZmYwY2NjMzViNjVkZmY4NWE4YmJhMWJkYjkwYmYxOWFlNjg5NGE2YjExNTViYjk4ZDYwNDdiNDI2In0=";
+
+    public static final String CMD_NOTICE_LIST = "eyJpdiI6IjN2NU9IU01NZEdZK2l0bnFKdlFMek1UYkFteGZPRFJBWHZ"
+            + "MZFwvVDJ4UEkwPSIsInZhbHVlIjoiXC9DM2s5b0M3K2drQ2x4TWU3KzY3NUpkRlUwYklWdW4xNHdVUmhuT1hvQkk9I"
+            + "iwibWFjIjoiMDRkNzIwZTQ5MWY5OGQ1YzEwYWZiMGY4NjhkMThiZWVmYTJhNWRmYzA4MTRiMTVhOWNmMzM4NzVmMTJhNjMwNSJ9";
+
     public static final String URL_UPLOAD_COMMON = "http://www.pkjiao.com/verify/post/";
 
     public static final String URL_TOKEN_CHECK = URL_UPLOAD_COMMON
@@ -260,6 +270,10 @@ public class CommonDataStructure {
             + CMD_SEND_AUTHCODE;
     public static final String URL_CHANGE_PASSWORD = URL_UPLOAD_COMMON
             + CMD_CHANGE_PASSWORD;
+    public static final String URL_DOWNLOAD_BRAVOS = URL_UPLOAD_COMMON
+            + CMD_DOWNLOAD_BRAVOS;
+    public static final String URL_NOTICE_LIST = URL_UPLOAD_COMMON
+            + CMD_NOTICE_LIST;
 
     public static final Uri COMMENTURL = Uri.parse("content://"
             + DBContentChangeProvider.AUTHORITY + "/"
@@ -318,6 +332,8 @@ public class CommonDataStructure {
     public static final int INVALID_NUM = -1;
     public static final String INVALID_STR = "-1";
 
+    public static final String DEFAULT_COUNT = "10";
+
     // public static final String INDIRECTIDS = "4";
 
     public static final String KEY_SECRET_CODE = "marrysocial";
@@ -327,6 +343,9 @@ public class CommonDataStructure {
     public static final int LONIN_STATUS_FILLED_INFO = 2;
     public static final int LOGIN_STATUS_LOGIN = 3;
     public static final int LONIN_STATUS_LOGOUT = 4;
+
+    public static final int NOTICE_TYPE_BRAVO = 3;
+    public static final int NOTICE_TYPE_DIS_BRAVO = 4;
     // public static final Uri REPLYURL = Uri.parse("content://"
     // + DataSetProvider.AUTHORITY + "/"
     // + MarrySocialDBHelper.DATABASE_COMMENTS_TABLE);

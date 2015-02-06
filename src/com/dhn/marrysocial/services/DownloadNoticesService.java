@@ -17,6 +17,7 @@ import com.dhn.marrysocial.utils.Utils;
 import android.app.Service;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -39,7 +40,7 @@ public class DownloadNoticesService extends Service {
     private static final int TIME_TO_DOWNLOAD_MYSELF_REPLYS = 106;
 
     private static final int POOL_SIZE = 10;
-    private static final int TIME_SCHEDULE = 1200;
+    private static final int TIME_SCHEDULE = 20000;
 
     private static final String[] COMMENTS_PROJECTION = {
             MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_BUCKET_ID,
@@ -60,6 +61,7 @@ public class DownloadNoticesService extends Service {
 
     private String mUid;
     private String mAuthorName;
+    private Context mContext;
     private SharedPreferences mPrefs;
     private MarrySocialDBHelper mDBHelper;
     private ExecutorService mExecutorService;
@@ -131,6 +133,7 @@ public class DownloadNoticesService extends Service {
         };
         mTimer.schedule(mTimerTask, TIME_SCHEDULE, TIME_SCHEDULE);
 
+        mContext = getApplicationContext();
         mPrefs = this.getSharedPreferences(
                 CommonDataStructure.PREFS_LAIQIAN_DEFAULT, this.MODE_PRIVATE);
         mUid = mPrefs.getString(CommonDataStructure.UID, "");
@@ -160,25 +163,35 @@ public class DownloadNoticesService extends Service {
         @Override
         public void run() {
             ArrayList<NoticesItem> noticeItems = Utils.downloadNoticesList(
-                    CommonDataStructure.URL_INDIRECT_NOTICE_LIST, mUid, "",
+                    CommonDataStructure.URL_NOTICE_LIST, mUid, "",
                     CommonDataStructure.NOTICE_BRAVO);
             if (noticeItems == null || noticeItems.size() == 0) {
                 return;
             }
             for (NoticesItem notice : noticeItems) {
-                String nikename = queryNikenameFromContactsDB(notice
-                        .getFromUid());
-                if (nikename == null || nikename.length() == 0) {
-                    nikename = "房东是傻逼";
-                }
-                if (!isBravoIdExistInBravosDB(notice.getFromUid(),
-                        notice.getCommentId())) {
-                    insertBravoToBravosDB(notice, nikename);
-                    if ((notice.getUid()).equalsIgnoreCase(notice.getFromUid())) {
-                        updateCommentsBravoStatus(notice.getCommentId(),
-                                MarrySocialDBHelper.BRAVO_CONFIRM);
+                if (notice.getNoticeType() == CommonDataStructure.NOTICE_TYPE_BRAVO) {
+                    String nikename = queryNikenameFromContactsDB(notice
+                            .getFromUid());
+                    if (nikename == null || nikename.length() == 0) {
+                        nikename = "房东是傻逼";
+                    }
+                    if (!isBravoIdExistInBravosDB(notice.getFromUid(),
+                            notice.getCommentId())) {
+                        insertBravoToBravosDB(notice, nikename);
+                        if ((notice.getUid()).equalsIgnoreCase(notice
+                                .getFromUid())) {
+                            updateCommentsBravoStatus(notice.getCommentId(),
+                                    MarrySocialDBHelper.BRAVO_CONFIRM);
+                        }
+                    }
+                } else {
+                    if (isBravoIdExistInBravosDB(notice.getFromUid(),
+                            notice.getCommentId())) {
+                        deleteBravoFromBravosDB(notice.getFromUid(),
+                                notice.getCommentId());
                     }
                 }
+
             }
         }
 
@@ -214,7 +227,7 @@ public class DownloadNoticesService extends Service {
         public void run() {
             String indirectLists = loadIndirectsFromDB();
             ArrayList<NoticesItem> noticeItems = Utils.downloadNoticesList(
-                    CommonDataStructure.URL_INDIRECT_NOTICE_LIST, mUid, "",
+                    CommonDataStructure.URL_NOTICE_LIST, mUid, "",
                     CommonDataStructure.NOTICE_REPLY);
             if (noticeItems == null || noticeItems.size() == 0) {
                 return;
@@ -274,18 +287,29 @@ public class DownloadNoticesService extends Service {
         @Override
         public void run() {
             ArrayList<NoticesItem> noticeItems = Utils.downloadNoticesList(
-                    CommonDataStructure.URL_INDIRECT_NOTICE_LIST, mUid, "",
+                    CommonDataStructure.URL_NOTICE_LIST, mUid, "",
                     CommonDataStructure.NOTICE_COMMENT);
             if (noticeItems == null || noticeItems.size() == 0) {
                 return;
             }
+
             int comments_count = mPrefs.getInt(
-                    CommonDataStructure.COMMENTS_COUNT, 0);
+                    CommonDataStructure.NOTIFICATION_COMMENTS_COUNT, 0);
             comments_count += noticeItems.size();
             Editor editor = mPrefs.edit();
-            editor.putInt(CommonDataStructure.COMMENTS_COUNT, comments_count);
+            editor.putInt(CommonDataStructure.NOTIFICATION_COMMENTS_COUNT,
+                    comments_count);
             editor.commit();
-            mNotificationManager.showCommentsNotification(comments_count);
+
+            Intent intent = new Intent(CommonDataStructure.KEY_BROADCAST_ACTION);
+            intent.putExtra(CommonDataStructure.KEY_BROADCAST_CMDID,
+                    CommonDataStructure.KEY_NEW_COMMENTS);
+            mContext.sendBroadcast(intent);
+
+            if (!Utils.isAppRunningForeground(mContext)) {
+                mNotificationManager.showCommentsNotification(comments_count);
+            }
+
         }
 
     }
@@ -452,5 +476,14 @@ public class DownloadNoticesService extends Service {
             }
         }
         return result.toString();
+    }
+
+    private void deleteBravoFromBravosDB(String uId, String commentId) {
+
+        String whereclause = MarrySocialDBHelper.KEY_UID + " = " + uId
+                + " AND " + MarrySocialDBHelper.KEY_COMMENT_ID + " = "
+                + commentId;
+        ContentResolver resolver = getApplicationContext().getContentResolver();
+        resolver.delete(CommonDataStructure.BRAVOURL, whereclause, null);
     }
 }

@@ -375,7 +375,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
         mListViewAdapter.setCommentDataSource(mCommentEntrys);
         mListViewAdapter.notifyDataSetChanged();
         mEditComment.requestFocus();
-        downloadUserComments();
+        startToDownloadUserComments();
         Log.e(TAG, "nannan onResume()..");
     }
 
@@ -472,9 +472,10 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
         getActivity().startService(serviceIntent);
     }
 
-    private void downloadUserComments() {
+    private void startToDownloadUserComments() {
         Intent serviceIntent = new Intent(getActivity(),
                 DownloadCommentsIntentService.class);
+        serviceIntent.putExtra(CommonDataStructure.COMMENT_ID, "-1");
         getActivity().startService(serviceIntent);
     }
 
@@ -702,7 +703,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
 
         @Override
         public Object pullToRefresh() {
-            downloadUserComments();
+            startToDownloadUserComments();
             return null;
         }
 
