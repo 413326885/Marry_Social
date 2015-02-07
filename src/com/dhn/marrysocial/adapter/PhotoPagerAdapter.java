@@ -8,6 +8,7 @@ import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
@@ -15,7 +16,15 @@ public class PhotoPagerAdapter extends PagerAdapter {
 
     private Context mContext;
     private ArrayList<ImageView> mPhotoViews;
+    private PhotoClickListener mPhotoClickListener;
 
+    public interface PhotoClickListener {
+        public void onPhotoClicked();
+    }
+
+    public void setPhotoClickListener(PhotoClickListener listener) {
+        mPhotoClickListener = listener;
+    }
 
     public PhotoPagerAdapter(Context context, ArrayList<ImageView> photos) {
         mContext = context;
@@ -29,13 +38,21 @@ public class PhotoPagerAdapter extends PagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        ((ViewPager) container).addView(mPhotoViews.get(position));
+        View view = mPhotoViews.get(position);
+        view.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                mPhotoClickListener.onPhotoClicked();
+            }
+        });
+        ((ViewPager) container).addView(view);
         return mPhotoViews.get(position);
     }
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-        ((ViewPager) container).removeView((View) object); 
+        ((ViewPager) container).removeView((View) object);
     }
 
     @Override

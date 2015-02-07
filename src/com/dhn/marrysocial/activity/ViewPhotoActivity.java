@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.dhn.marrysocial.R;
 import com.dhn.marrysocial.adapter.PhotoPagerAdapter;
+import com.dhn.marrysocial.adapter.PhotoPagerAdapter.PhotoClickListener;
 import com.dhn.marrysocial.base.CommentsItem;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
 import com.dhn.marrysocial.utils.Utils;
@@ -17,6 +18,8 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.ImageView;
 
@@ -32,7 +35,8 @@ public class ViewPhotoActivity extends Activity {
             MarrySocialDBHelper.KEY_PHOTO_POS };
 
     private ViewPager mViewPager;
-//    private ArrayList<DragImageView> mPhotoViews = new ArrayList<DragImageView>();
+    // private ArrayList<DragImageView> mPhotoViews = new
+    // ArrayList<DragImageView>();
     private ArrayList<ImageView> mPhotoViews = new ArrayList<ImageView>();
     private ArrayList<SmallPhotoItem> mSmallPhotoItems = new ArrayList<SmallPhotoItem>();
     private MarrySocialDBHelper mDBHelper;
@@ -63,10 +67,20 @@ public class ViewPhotoActivity extends Activity {
 
     private void initViewPager() {
         mViewPager = (ViewPager) findViewById(R.id.photo_view_pager);
-        mViewPager.setAdapter(new PhotoPagerAdapter(this, mPhotoViews));
+        PhotoPagerAdapter photoAdapter = new PhotoPagerAdapter(this,
+                mPhotoViews);
+        photoAdapter.setPhotoClickListener(mPhotoClickListener);
+        mViewPager.setAdapter(photoAdapter);
+        // mViewPager.setOnClickListener(new OnClickListener() {
+        //
+        // @Override
+        // public void onClick(View arg0) {
+        // Log.e(TAG, "ViewPhotoActivity.this.finish()");
+        // ViewPhotoActivity.this.finish();
+        // }
+        // });
 
-        LinePageIndicator underLineIndicator = (LinePageIndicator) 
-                findViewById(R.id.photo_view_indicator);
+        LinePageIndicator underLineIndicator = (LinePageIndicator) findViewById(R.id.photo_view_indicator);
         underLineIndicator.setViewPager(mViewPager, mOrgPosition);
     }
 
@@ -76,18 +90,19 @@ public class ViewPhotoActivity extends Activity {
         String whereClause = null;
 
         if (Integer.valueOf(mCommentId) == -1) {
-            whereClause = MarrySocialDBHelper.KEY_UID + " = " + mUId
-                    + " AND " + MarrySocialDBHelper.KEY_BUCKET_ID + " = " + mBucketId;
+            whereClause = MarrySocialDBHelper.KEY_UID + " = " + mUId + " AND "
+                    + MarrySocialDBHelper.KEY_BUCKET_ID + " = " + mBucketId;
         } else {
-            whereClause = MarrySocialDBHelper.KEY_UID + " = " + mUId
-                    + " AND " + MarrySocialDBHelper.KEY_COMMENT_ID + " = " + mCommentId;
+            whereClause = MarrySocialDBHelper.KEY_UID + " = " + mUId + " AND "
+                    + MarrySocialDBHelper.KEY_COMMENT_ID + " = " + mCommentId;
         }
 
         try {
 
             String orderBy = MarrySocialDBHelper.KEY_PHOTO_POS + " ASC";
             cursor = mDBHelper.query(MarrySocialDBHelper.DATABASE_IMAGES_TABLE,
-                    IMAGES_PROJECTION, whereClause, null, null, null, orderBy, null);
+                    IMAGES_PROJECTION, whereClause, null, null, null, orderBy,
+                    null);
             if (cursor == null) {
                 Log.e(TAG, "nannan loadCommentsItemFromDB()..  cursor == null");
                 return;
@@ -114,7 +129,7 @@ public class ViewPhotoActivity extends Activity {
         for (SmallPhotoItem item : mSmallPhotoItems) {
             Bitmap bmp = Utils.decodeThumbnail(item.photoLocalPath, null,
                     Utils.mThumbPhotoWidth);
-//            DragImageView dragImageView = new DragImageView(this);
+            // DragImageView dragImageView = new DragImageView(this);
             ImageView dragImageView = new ImageView(this);
             dragImageView.setImageBitmap(bmp);
             mPhotoViews.add(dragImageView);
@@ -127,4 +142,12 @@ public class ViewPhotoActivity extends Activity {
         String photoRemoteOrgPath;
         String photoRemoteThumbPath;
     }
+
+    private PhotoClickListener mPhotoClickListener = new PhotoClickListener() {
+
+        @Override
+        public void onPhotoClicked() {
+            ViewPhotoActivity.this.finish();
+        }
+    };
 }
