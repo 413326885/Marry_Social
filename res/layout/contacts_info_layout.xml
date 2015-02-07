@@ -35,8 +35,8 @@
                 android:gravity="center_vertical"
                 android:paddingRight="12dp"
                 android:text="楠楠"
-                android:textSize="16dp"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:textSize="16dp" />
         </RelativeLayout>
     </RelativeLayout>
 
@@ -60,24 +60,60 @@
         android:scrollbarStyle="outsideOverlay" >
     </ListView>
 
-    <RelativeLayout
+<!--     <RelativeLayout
         android:id="@+id/contacts_info_foot_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_margin="20dp" >
-
+        android:padding="20dp" >
+ -->
         <Button
             android:id="@+id/contacts_info_chat_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
             android:layout_centerInParent="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp"
             android:background="@drawable/contacts_info_btn_selector"
             android:clickable="true"
             android:padding="5dp"
             android:text="开始聊天"
             android:textColor="@color/gray"
             android:textSize="16dp" />
+<!--     </RelativeLayout> -->
+
+    <RelativeLayout
+        android:id="@+id/contacts_info_reply_foot"
+        android:layout_width="match_parent"
+        android:layout_height="95px"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/base_action_bar_bg"
+        android:visibility="gone" >
+
+        <ImageView
+            android:id="@+id/contacts_info_reply_send"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/gray_bkg_selector"
+            android:clickable="true"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:src="@drawable/ic_send_button_selected" />
+
+        <EditText
+            android:id="@+id/contacts_info_reply_contents"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@id/contacts_info_reply_send"
+            android:background="@drawable/gray_bkg_selector"
+            android:hint="让世界聆听你的心跳..."
+            android:paddingBottom="2dp"
+            android:paddingLeft="16dp"
+            android:paddingTop="2dp" />
     </RelativeLayout>
 
 </RelativeLayout>

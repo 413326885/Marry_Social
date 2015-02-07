@@ -209,6 +209,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
 
             case SEND_REPLY_FINISH: {
                 mReplyContents.setText(null);
+                showEditBar();
                 hideReplyFootBar();
                 Utils.hideSoftInputMethod(mReplyFoot);
                 break;
@@ -417,6 +418,8 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
         super.onDestroy();
         this.getActivity().getContentResolver()
                 .unregisterContentObserver(mChangeObserver);
+        this.getActivity().getContentResolver()
+                .unregisterContentObserver(mHeaderPicChangeObserver);
     }
 
     @Override
@@ -464,7 +467,8 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
         }
     }
 
-    private void uploadReplysToCloud(int uploadType, String comment_id, String bucket_id) {
+    private void uploadReplysToCloud(int uploadType, String comment_id,
+            String bucket_id) {
         Intent serviceIntent = new Intent(getActivity(),
                 UploadCommentsAndBravosAndReplysIntentService.class);
         serviceIntent.putExtra(CommonDataStructure.KEY_UPLOAD_TYPE, uploadType);
@@ -688,11 +692,13 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
         insertValues.put(MarrySocialDBHelper.KEY_COMMENT_ID,
                 reply.getCommentId());
         insertValues.put(MarrySocialDBHelper.KEY_UID, mUid);
-        insertValues.put(MarrySocialDBHelper.KEY_BUCKET_ID, reply.getBucketId());
+        insertValues
+                .put(MarrySocialDBHelper.KEY_BUCKET_ID, reply.getBucketId());
         insertValues.put(MarrySocialDBHelper.KEY_AUTHOR_NICKNAME, mAuthorName);
         insertValues.put(MarrySocialDBHelper.KEY_REPLY_CONTENTS,
                 reply.getReplyContents());
-        insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME, reply.getReplyTime());
+        insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
+                reply.getReplyTime());
         insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD);
 

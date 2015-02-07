@@ -11,12 +11,15 @@ import java.util.concurrent.Executors;
 
 import com.dhn.marrysocial.R;
 import com.dhn.marrysocial.adapter.DynamicInfoListAdapter;
+import com.dhn.marrysocial.adapter.DynamicInfoListAdapter.onReplyBtnClickedListener;
 import com.dhn.marrysocial.base.CommentsItem;
 import com.dhn.marrysocial.base.ContactsInfo;
+import com.dhn.marrysocial.base.ReplysItem;
 import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.common.CommonDataStructure.HeaderBackgroundEntry;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
 import com.dhn.marrysocial.roundedimageview.RoundedImageView;
+import com.dhn.marrysocial.services.UploadCommentsAndBravosAndReplysIntentService;
 import com.dhn.marrysocial.utils.ImageUtils;
 import com.dhn.marrysocial.utils.Utils;
 
@@ -39,19 +42,27 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextClock;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ContactsInfoActivity extends Activity implements OnClickListener {
 
@@ -70,6 +81,20 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
     private static final int UPLOAD_FINISH = 101;
     private static final int RELOAD_DATA_SOURCE = 102;
     private static final int DOWNLOAD_HEADER_BKG_FINISH = 103;
+    private final static int START_TO_LOAD_BRAVO_REPLY = 104;
+    private final static int UPDATE_DYNAMIC_INFO = 105;
+    private final static int NETWORK_INVALID = 106;
+    private final static int SEND_REPLY_FINISH = 107;
+    private final static int SHOW_SOFT_INPUT_METHOD = 108;
+    private final static int SELECT_SPECIFIED_LIST_ITEM = 109;
+    private final static int TOUCH_FING_UP = 110;
+    private final static int TOUCH_FING_DOWN = 111;
+    private final static int REFRESH_HEADER_PIC = 112;
+    private final static int UPLOAD_COMMENT = 113;
+
+    private float mTouchDownY = 0.0f;
+    private float mTouchMoveY = 0.0f;
+    private boolean mIsFingUp = false;
 
     private static final String[] CONTACTS_PROJECTION = {
             MarrySocialDBHelper.KEY_UID, MarrySocialDBHelper.KEY_PHONE_NUM,
@@ -110,14 +135,25 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
             MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH,
             MarrySocialDBHelper.KEY_CURRENT_STATUS };
 
+    private final String[] BRAVOS_PROJECTION = { MarrySocialDBHelper.KEY_ID,
+            MarrySocialDBHelper.KEY_UID,
+            MarrySocialDBHelper.KEY_AUTHOR_NICKNAME };
+
+    private final String[] REPLYS_PROJECTION = { MarrySocialDBHelper.KEY_UID,
+            MarrySocialDBHelper.KEY_AUTHOR_NICKNAME,
+            MarrySocialDBHelper.KEY_REPLY_CONTENTS,
+            MarrySocialDBHelper.KEY_ADDED_TIME };
     private String mUserInfoUid;
     private ContactsInfo mUserInfo;
 
     private String mAuthorUid;
+    private String mAuthorName;
 
     private ListView mListView;
     private DynamicInfoListAdapter mListViewAdapter;
     private ArrayList<CommentsItem> mCommentEntrys = new ArrayList<CommentsItem>();
+    private HashMap<String, String> mBravoEntrys = new HashMap<String, String>();
+    private HashMap<String, ArrayList<ReplysItem>> mReplyEntrys = new HashMap<String, ArrayList<ReplysItem>>();
     private HashMap<String, ContactsInfo> mUserInfoEntrys = new HashMap<String, ContactsInfo>();
 
     private RelativeLayout mReturnBtn;
@@ -132,6 +168,14 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
     private ImageView mUserHobby;
     private Button mChatButton;
 
+    private RelativeLayout mReplyFoot;
+    private ImageView mReplySendBtn;
+    private EditText mReplyContents;
+    private int mReplyCommentsPosition;
+
+    private TranslateAnimation mHideChatBtnTransAnimation;
+    private TranslateAnimation mShowChatBtnTransAnimation;
+
     private MarrySocialDBHelper mDBHelper;
     private ExecutorService mExecutorService;
 
@@ -140,6 +184,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
     private String mCropPhotoName;
 
     private DataSetChangeObserver mChangeObserver;
+    private DataSetChangeObserver mHeaderPicChangeObserver;
     private ProgressDialog mUploadProgressDialog;
 
     private View mContactsInfoHeader;
@@ -152,6 +197,19 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         @Override
         public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
+            case TOUCH_FING_UP: {
+                hideChatBtn();
+                hideReplyFootBar();
+                Utils.hideSoftInputMethod(mReplyFoot);
+                break;
+            }
+
+            case TOUCH_FING_DOWN: {
+                showChatBtn();
+                hideReplyFootBar();
+                Utils.hideSoftInputMethod(mReplyFoot);
+                break;
+            }
             case START_TO_UPLOAD: {
                 mUploadProgressDialog = ProgressDialog.show(
                         ContactsInfoActivity.this, "更改头像", "正在上传头像，请稍后...",
@@ -165,7 +223,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
                 mUploadProgressDialog.dismiss();
                 break;
             }
-            case RELOAD_DATA_SOURCE: {
+            case REFRESH_HEADER_PIC: {
                 mListViewAdapter.clearHeadPicsCache();
                 mListViewAdapter.notifyDataSetChanged();
                 break;
@@ -179,6 +237,48 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
                 mHeaderLayout.setBackground(ImageUtils
                         .bitmapToDrawable(cropHeader));
             }
+            case START_TO_LOAD_BRAVO_REPLY: {
+                if (mCommentEntrys != null && mCommentEntrys.size() != 0) {
+                    for (CommentsItem comment : mCommentEntrys) {
+                        mExecutorService.execute(new LoadBravoAndReplyContents(
+                                comment.getCommentId()));
+                    }
+                }
+                break;
+            }
+            case UPDATE_DYNAMIC_INFO: {
+                mListViewAdapter.notifyDataSetChanged();
+                break;
+            }
+            case NETWORK_INVALID: {
+                Toast.makeText(ContactsInfoActivity.this,
+                        R.string.network_not_available, Toast.LENGTH_SHORT)
+                        .show();
+                break;
+            }
+            case SEND_REPLY_FINISH: {
+                mReplyContents.setText(null);
+                showChatBtn();
+                hideReplyFootBar();
+                Utils.hideSoftInputMethod(mReplyFoot);
+                break;
+            }
+            case SHOW_SOFT_INPUT_METHOD: {
+                Utils.showSoftInputMethod(mReplyContents);
+                break;
+            }
+            case SELECT_SPECIFIED_LIST_ITEM: {
+                mListView.setSelection(msg.arg1);
+                break;
+            }
+            case UPLOAD_COMMENT: {
+                // uploadCommentsOrBravosOrReplys(CommonDataStructure.KEY_COMMENTS);
+                mCommentEntrys.clear();
+                mCommentEntrys.addAll(loadUserCommentsFromDB(mUserInfoUid));
+                mListViewAdapter.notifyDataSetChanged();
+                Log.e(TAG, "nannan UPLOAD_COMMENT..");
+                break;
+            }
             default:
                 break;
             }
@@ -190,6 +290,24 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.contacts_info_layout);
+
+        mShowChatBtnTransAnimation = new TranslateAnimation(
+                Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
+                0.0f, Animation.RELATIVE_TO_SELF, 2.0f,
+                Animation.RELATIVE_TO_SELF, 0.0f);
+        mShowChatBtnTransAnimation
+                .setInterpolator(new AccelerateDecelerateInterpolator());
+        mShowChatBtnTransAnimation.setDuration(500);
+        mShowChatBtnTransAnimation.setFillAfter(true);
+
+        mHideChatBtnTransAnimation = new TranslateAnimation(
+                Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
+                0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
+                Animation.RELATIVE_TO_SELF, 2.0f);
+        mHideChatBtnTransAnimation
+                .setInterpolator(new AccelerateDecelerateInterpolator());
+        mHideChatBtnTransAnimation.setDuration(500);
+        mHideChatBtnTransAnimation.setFillAfter(true);
 
         mDBHelper = MarrySocialDBHelper.newInstance(this);
 
@@ -204,6 +322,11 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         mReturnBtn = (RelativeLayout) findViewById(R.id.contacts_info_return);
         mUserName = (TextView) findViewById(R.id.contacts_info_person_name);
         mChatButton = (Button) findViewById(R.id.contacts_info_chat_btn);
+
+        mReplyFoot = (RelativeLayout) findViewById(R.id.contacts_info_reply_foot);
+        mReplySendBtn = (ImageView) findViewById(R.id.contacts_info_reply_send);
+        mReplyContents = (EditText) findViewById(R.id.contacts_info_reply_contents);
+        mReplySendBtn.setOnClickListener(mReplySendBtnClickedListener);
 
         mContactsInfoHeader = (LayoutInflater.from(this).inflate(
                 R.layout.contacts_info_header_layout, null, false));
@@ -228,21 +351,67 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         mListView.addHeaderView(mContactsInfoHeader);
         mListViewAdapter = new DynamicInfoListAdapter(this);
         mListViewAdapter.setCommentDataSource(mCommentEntrys);
+        mListViewAdapter.setBravoDataSource(mBravoEntrys);
+        mListViewAdapter.setReplyDataSource(mReplyEntrys);
         mListViewAdapter.setUserInfoDataSource(mUserInfoEntrys);
+        mListViewAdapter.setReplyBtnClickedListener(mReplyBtnClickedListener);
         mListViewAdapter.setEnterInContactsInfoActivity(true);
         mListView.setAdapter(mListViewAdapter);
+
+        mListView.setOnTouchListener(new OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    mTouchDownY = event.getY();
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    mTouchMoveY = event.getY() - mTouchDownY;
+                    if (Math.abs(mTouchMoveY) < 50) {
+                        break;
+                    }
+                    if (mTouchMoveY < 0) {
+                        if (!mIsFingUp) {
+                            mIsFingUp = true;
+                            mHandler.sendEmptyMessageDelayed(TOUCH_FING_UP, 50);
+                        }
+                    } else {
+                        if (mIsFingUp) {
+                            mIsFingUp = false;
+                            mHandler.sendEmptyMessageDelayed(TOUCH_FING_DOWN,
+                                    50);
+                        }
+                    }
+                    break;
+                case MotionEvent.ACTION_UP:
+                    break;
+                default:
+                    break;
+                }
+                return false;
+            }
+        });
 
         SharedPreferences prefs = this.getSharedPreferences(
                 CommonDataStructure.PREFS_LAIQIAN_DEFAULT, MODE_PRIVATE);
         mAuthorUid = prefs.getString(CommonDataStructure.UID, "");
+        mAuthorName = prefs.getString(CommonDataStructure.AUTHOR_NAME, "");
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
                 .availableProcessors() * POOL_SIZE);
 
         initOriginData();
 
-        mChangeObserver = new DataSetChangeObserver(mHandler);
+        mChangeObserver = new DataSetChangeObserver(mHandler, UPLOAD_COMMENT);
+        mHeaderPicChangeObserver = new DataSetChangeObserver(mHandler,
+                REFRESH_HEADER_PIC);
+        getContentResolver()
+                .registerContentObserver(CommonDataStructure.HEADPICSURL, true,
+                        mHeaderPicChangeObserver);
         getContentResolver().registerContentObserver(
-                CommonDataStructure.HEADPICSURL, true, mChangeObserver);
+                CommonDataStructure.BRAVOURL, true, mChangeObserver);
+        getContentResolver().registerContentObserver(
+                CommonDataStructure.REPLYURL, true, mChangeObserver);
     }
 
     @Override
@@ -281,6 +450,8 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
     public void onDestroy() {
         super.onDestroy();
         getContentResolver().unregisterContentObserver(mChangeObserver);
+        getContentResolver()
+                .unregisterContentObserver(mHeaderPicChangeObserver);
     }
 
     @Override
@@ -328,15 +499,14 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         mFriendsDesc.setText(mUserInfo.getIntroduce());
 
         if (mUserInfoUid.equalsIgnoreCase(mAuthorUid)) {
-            mChatButton.setVisibility(View.GONE);
+            hideChatBtn();
         } else {
-//            String friendsDesc = String.format(
-//                    this.getString(R.string.chat_msg_friends_more),
-//                    mUserInfo.getFirstDirectFriend(),
-//                    mUserInfo.getDirectFriendsCount());
-//            mFriendsDesc.setText(friendsDesc);
-            mChatButton.setVisibility(View.VISIBLE);
-            mChatButton.setOnClickListener(this);
+            // String friendsDesc = String.format(
+            // this.getString(R.string.chat_msg_friends_more),
+            // mUserInfo.getFirstDirectFriend(),
+            // mUserInfo.getDirectFriendsCount());
+            // mFriendsDesc.setText(friendsDesc);
+            showChatBtn();
         }
 
         if (mUserInfo.getGender() == ContactsInfo.GENDER.FEMALE.ordinal()) {
@@ -414,8 +584,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
 
     private void loadContactsFromDB() {
 
-        MarrySocialDBHelper dbHelper = MarrySocialDBHelper
-                .newInstance(this);
+        MarrySocialDBHelper dbHelper = MarrySocialDBHelper.newInstance(this);
         Cursor cursor = dbHelper.query(
                 MarrySocialDBHelper.DATABASE_CONTACTS_TABLE,
                 CONTACTS_PROJECTION, null, null, null, null, null, null);
@@ -514,6 +683,8 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
             }
         }
 
+        mHandler.sendEmptyMessage(START_TO_LOAD_BRAVO_REPLY);
+
         return commentEntrys;
     }
 
@@ -582,7 +753,8 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
                         true);
                 mHeaderLayout.setBackground(ImageUtils
                         .bitmapToDrawable(cropHeader));
-                mExecutorService.execute(new UploadHeadBackground(mAuthorUid, headerBkgIndex));
+                mExecutorService.execute(new UploadHeadBackground(mAuthorUid,
+                        headerBkgIndex));
                 break;
             }
 
@@ -753,8 +925,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         @Override
         public void run() {
             Utils.uploadHeaderBackground(
-                    CommonDataStructure.URL_PROFILE_BACKGROUND, uid,
-                    photonum);
+                    CommonDataStructure.URL_PROFILE_BACKGROUND, uid, photonum);
         }
 
     }
@@ -892,16 +1063,29 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
     private class DataSetChangeObserver extends ContentObserver {
 
         private Handler handler;
+        private int status;
 
-        public DataSetChangeObserver(Handler handler) {
+        public DataSetChangeObserver(Handler handler, int status) {
             super(handler);
             this.handler = handler;
+            this.status = status;
         }
 
         @Override
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
-            handler.sendEmptyMessage(RELOAD_DATA_SOURCE);
+            switch (status) {
+            case REFRESH_HEADER_PIC: {
+                handler.sendEmptyMessage(REFRESH_HEADER_PIC);
+                break;
+            }
+            case UPLOAD_COMMENT: {
+                handler.sendEmptyMessage(UPLOAD_COMMENT);
+                break;
+            }
+            default:
+                break;
+            }
             Log.e(TAG, "nannan onChange()..");
         }
     }
@@ -956,5 +1140,192 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         mDBHelper
                 .insert(MarrySocialDBHelper.DATABASE_HEAD_BACKGROUND_PICS_TABLE,
                         values);
+    }
+
+    class LoadBravoAndReplyContents implements Runnable {
+
+        private String comment_id;
+
+        public LoadBravoAndReplyContents(String comment_id) {
+            this.comment_id = comment_id;
+        }
+
+        @Override
+        public void run() {
+            loadContactsFromDB();
+            loadBravosFromDB(comment_id);
+            loadReplysFromDB(comment_id);
+            mHandler.sendEmptyMessage(UPDATE_DYNAMIC_INFO);
+        }
+    }
+
+    private void loadBravosFromDB(String comment_id) {
+
+        StringBuffer author_names = new StringBuffer();
+        Cursor cursor = null;
+
+        try {
+            String whereclause = MarrySocialDBHelper.KEY_COMMENT_ID + " = "
+                    + comment_id + " AND "
+                    + MarrySocialDBHelper.KEY_CURRENT_STATUS + " != "
+                    + MarrySocialDBHelper.NEED_DELETE_FROM_CLOUD;
+            String orderBy = MarrySocialDBHelper.KEY_ID + " ASC";
+            cursor = mDBHelper.query(MarrySocialDBHelper.DATABASE_BRAVOS_TABLE,
+                    BRAVOS_PROJECTION, whereclause, null, null, null, orderBy,
+                    null);
+            if (cursor == null) {
+                Log.e(TAG, "nannan loadBravosFromDB()..  cursor == null");
+                return;
+            }
+            while (cursor.moveToNext()) {
+                author_names.append(cursor.getString(2)).append("  ");
+            }
+            if (author_names.length() != 0) {
+                mBravoEntrys.put(comment_id, author_names.toString());
+            } else {
+                mBravoEntrys.put(comment_id, "");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+    private void loadReplysFromDB(String comment_id) {
+
+        ArrayList<ReplysItem> replys = new ArrayList<ReplysItem>();
+        Cursor cursor = null;
+
+        try {
+            String whereclause = MarrySocialDBHelper.KEY_COMMENT_ID + " = "
+                    + comment_id;
+            String orderBy = MarrySocialDBHelper.KEY_ADDED_TIME + " ASC";
+            cursor = mDBHelper.query(MarrySocialDBHelper.DATABASE_REPLYS_TABLE,
+                    REPLYS_PROJECTION, whereclause, null, null, null, orderBy,
+                    null);
+            if (cursor == null) {
+                Log.e(TAG, "nannan loadReplysFromDB()..  cursor == null");
+                return;
+            }
+            while (cursor.moveToNext()) {
+                ReplysItem item = new ReplysItem();
+                item.setCommentId(comment_id);
+                item.setNickname(cursor.getString(1));
+                item.setReplyContents(cursor.getString(2));
+                item.setUid(cursor.getString(0));
+                replys.add(item);
+            }
+            if (replys.size() != 0) {
+                mReplyEntrys.put(comment_id, replys);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+    private onReplyBtnClickedListener mReplyBtnClickedListener = new onReplyBtnClickedListener() {
+
+        @Override
+        public void onReplyBtnClicked(int position) {
+            mReplyCommentsPosition = position;
+            hideChatBtn();
+            showReplyFootBar();
+            mHandler.sendEmptyMessageDelayed(SHOW_SOFT_INPUT_METHOD, 50);
+            Message msg = mHandler.obtainMessage();
+            msg.what = SELECT_SPECIFIED_LIST_ITEM;
+            msg.arg1 = position + 1;
+            mHandler.sendMessage(msg);
+        }
+    };
+
+    private View.OnClickListener mReplySendBtnClickedListener = new View.OnClickListener() {
+
+        @Override
+        public void onClick(View v) {
+            if (!Utils.isActiveNetWorkAvailable(ContactsInfoActivity.this)) {
+                mHandler.sendEmptyMessage(NETWORK_INVALID);
+                return;
+            }
+            CommentsItem comment = (CommentsItem) (mListViewAdapter
+                    .getItem(mReplyCommentsPosition));
+            long time = System.currentTimeMillis() / 1000;
+            String replyTime = Long.toString(time);
+            String bucketId = String.valueOf(replyTime.hashCode());
+            ReplysItem reply = new ReplysItem();
+            reply.setCommentId(comment.getCommentId());
+            reply.setReplyContents(mReplyContents.getText().toString());
+            reply.setReplyTime(replyTime);
+            reply.setBucketId(bucketId);
+            insertReplysToReplyDB(reply);
+            uploadReplysToCloud(CommonDataStructure.KEY_REPLYS,
+                    comment.getCommentId(), bucketId);
+            mHandler.sendEmptyMessage(SEND_REPLY_FINISH);
+            mHandler.sendEmptyMessage(UPDATE_DYNAMIC_INFO);
+        }
+    };
+
+    private void insertReplysToReplyDB(ReplysItem reply) {
+
+        ContentValues insertValues = new ContentValues();
+        insertValues.put(MarrySocialDBHelper.KEY_COMMENT_ID,
+                reply.getCommentId());
+        insertValues.put(MarrySocialDBHelper.KEY_UID, mAuthorUid);
+        insertValues
+                .put(MarrySocialDBHelper.KEY_BUCKET_ID, reply.getBucketId());
+        insertValues.put(MarrySocialDBHelper.KEY_AUTHOR_NICKNAME, mAuthorName);
+        insertValues.put(MarrySocialDBHelper.KEY_REPLY_CONTENTS,
+                reply.getReplyContents());
+        insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
+                reply.getReplyTime());
+        insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
+                MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD);
+
+        ContentResolver resolver = this.getContentResolver();
+        resolver.insert(CommonDataStructure.REPLYURL, insertValues);
+    }
+
+    private void uploadReplysToCloud(int uploadType, String comment_id,
+            String bucket_id) {
+        Intent serviceIntent = new Intent(this,
+                UploadCommentsAndBravosAndReplysIntentService.class);
+        serviceIntent.putExtra(CommonDataStructure.KEY_UPLOAD_TYPE, uploadType);
+        serviceIntent.putExtra(MarrySocialDBHelper.KEY_COMMENT_ID, comment_id);
+        serviceIntent.putExtra(MarrySocialDBHelper.KEY_BUCKET_ID, bucket_id);
+        startService(serviceIntent);
+    }
+
+    private void hideReplyFootBar() {
+        mReplyFoot.setVisibility(View.GONE);
+    }
+
+    private void showReplyFootBar() {
+        mReplyFoot.setVisibility(View.VISIBLE);
+        mReplyFoot.requestFocus();
+    }
+
+    private void hideChatBtn() {
+        mChatButton.clearAnimation();
+        mChatButton.startAnimation(mHideChatBtnTransAnimation);
+        mChatButton.setVisibility(View.INVISIBLE);
+        mChatButton.setClickable(false);
+    }
+
+    private void showChatBtn() {
+
+        if (!mUserInfoUid.equalsIgnoreCase(mAuthorUid)) {
+            mChatButton.clearAnimation();
+            mChatButton.startAnimation(mShowChatBtnTransAnimation);
+            mChatButton.setVisibility(View.VISIBLE);
+            mChatButton.setClickable(true);
+            mChatButton.requestFocus();
+        }
+
     }
 }
