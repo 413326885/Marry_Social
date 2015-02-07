@@ -33,6 +33,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dhn.marrysocial.R;
+import com.dhn.marrysocial.activity.ContactsInfoActivity;
 import com.dhn.marrysocial.activity.EditCommentsActivity;
 import com.dhn.marrysocial.activity.ReplyListsActivity;
 import com.dhn.marrysocial.activity.ViewPhotoActivity;
@@ -71,6 +72,7 @@ public class DynamicInfoListAdapter extends BaseAdapter {
     private AsyncImageViewBitmapLoader mAsyncBitmapLoader;
     private AsyncHeadPicBitmapLoader mHeadPicBitmapLoader;
 
+    private boolean mIsInContactsInfoActivity = false;
     private ArrayList<CommentsItem> mCommentsData = new ArrayList<CommentsItem>();
     private HashMap<String, String> mBravoEntrys = new HashMap<String, String>();
     private HashMap<String, ArrayList<ReplysItem>> mReplyEntrys = new HashMap<String, ArrayList<ReplysItem>>();
@@ -137,6 +139,10 @@ public class DynamicInfoListAdapter extends BaseAdapter {
 
     public void setUserInfoDataSource(HashMap<String, ContactsInfo> source) {
         mUserInfoEntrys = source;
+    }
+
+    public void setEnterInContactsInfoActivity(boolean status) {
+        mIsInContactsInfoActivity = status;
     }
 
     public void clearHeadPicsCache() {
@@ -228,14 +234,37 @@ public class DynamicInfoListAdapter extends BaseAdapter {
         });
         holder.mAddedTime.setText(mCommentsData.get(position).getAddTime());
         holder.mContents.setText(mCommentsData.get(position).getContents());
-        if (mUid.equalsIgnoreCase(mCommentsData.get(position).getUid())) {
+
+        if (mIsInContactsInfoActivity || mUid.equalsIgnoreCase(mCommentsData.get(position).getUid())) {
             holder.mDynamicInfoFriends.setVisibility(View.INVISIBLE);
+
+            holder.mHeadPic.setClickable(false);
+            holder.mNickName.setClickable(false);
         } else {
             holder.mDynamicInfoFriends.setVisibility(View.VISIBLE);
             holder.mDynamicInfoFriends.setText(String.format(mContext
                     .getResources().getString(R.string.contacts_detail),
                     mUserInfoEntrys.get(mCommentsData.get(position).getUid())
                             .getFirstDirectFriend()));
+
+            holder.mHeadPic.setClickable(true);
+            holder.mNickName.setClickable(true);
+            holder.mHeadPic.setOnClickListener(new OnClickListener() {
+
+                @Override
+                public void onClick(View view) {
+                    startToViewContactsInfo(mCommentsData.get(position)
+                            .getUid());
+                }
+            });
+            holder.mNickName.setOnClickListener(new OnClickListener() {
+
+                @Override
+                public void onClick(View arg0) {
+                    startToViewContactsInfo(mCommentsData.get(position)
+                            .getUid());
+                }
+            });
         }
 
         mHeadPicBitmapLoader.loadImageBitmap(holder.mHeadPic, mCommentsData
@@ -733,6 +762,12 @@ public class DynamicInfoListAdapter extends BaseAdapter {
         String commentId = mCommentsData.get(position).getCommentId();
         Intent intent = new Intent(mContext, ReplyListsActivity.class);
         intent.putExtra(MarrySocialDBHelper.KEY_COMMENT_ID, commentId);
+        mContext.startActivity(intent);
+    }
+
+    private void startToViewContactsInfo(String uid) {
+        Intent intent = new Intent(mContext, ContactsInfoActivity.class);
+        intent.putExtra(MarrySocialDBHelper.KEY_UID, uid);
         mContext.startActivity(intent);
     }
 

@@ -310,6 +310,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
         mListViewAdapter.setReplyDataSource(mReplyEntrys);
         mListViewAdapter.setUserInfoDataSource(mUserInfoEntrys);
         mListViewAdapter.setReplyBtnClickedListener(mReplyBtnClickedListener);
+        mListViewAdapter.setEnterInContactsInfoActivity(false);
         mListView.setAdapter(mListViewAdapter);
         mListView.setEmptyView(emptyView);
         mListView.setOnPullDownRefreshListener(mPullDownRefreshListener);

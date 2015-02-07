@@ -4,14 +4,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.dhn.marrysocial.R;
+import com.dhn.marrysocial.activity.ContactsInfoActivity;
 import com.dhn.marrysocial.base.AsyncHeadPicBitmapLoader;
 import com.dhn.marrysocial.base.ChatMsgItem;
+import com.dhn.marrysocial.database.MarrySocialDBHelper;
 import com.dhn.marrysocial.utils.Utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -73,7 +77,7 @@ public class ChatMsgViewAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ChatMsgItem msgItem = mData.get(position);
+        final ChatMsgItem msgItem = mData.get(position);
 
         if (msgItem == null) {
             return convertView;
@@ -107,6 +111,13 @@ public class ChatMsgViewAdapter extends BaseAdapter {
             holder.chat_person_pic.setImageBitmap(mHeadPics.get(msgItem
                     .getFromUid()));
         }
+        holder.chat_person_pic.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                startToViewContactsInfo(msgItem.getFromUid());
+            }
+        });
 
         String time = msgItem.getAddedTime();
         String chat_time = time.substring(0, time.length() - 6);
@@ -121,5 +132,11 @@ public class ChatMsgViewAdapter extends BaseAdapter {
         ImageView chat_person_pic;
         TextView chat_msg_send_time;
         TextView chat_msg_content;
+    }
+    
+    private void startToViewContactsInfo(String uid) {
+        Intent intent = new Intent(mContext, ContactsInfoActivity.class);
+        intent.putExtra(MarrySocialDBHelper.KEY_UID, uid);
+        mContext.startActivity(intent);
     }
 }

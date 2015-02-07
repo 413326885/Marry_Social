@@ -229,6 +229,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         mListViewAdapter = new DynamicInfoListAdapter(this);
         mListViewAdapter.setCommentDataSource(mCommentEntrys);
         mListViewAdapter.setUserInfoDataSource(mUserInfoEntrys);
+        mListViewAdapter.setEnterInContactsInfoActivity(true);
         mListView.setAdapter(mListViewAdapter);
 
         SharedPreferences prefs = this.getSharedPreferences(
