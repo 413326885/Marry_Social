@@ -322,6 +322,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         mReturnBtn = (RelativeLayout) findViewById(R.id.contacts_info_return);
         mUserName = (TextView) findViewById(R.id.contacts_info_person_name);
         mChatButton = (Button) findViewById(R.id.contacts_info_chat_btn);
+        mChatButton.setOnClickListener(this);
 
         mReplyFoot = (RelativeLayout) findViewById(R.id.contacts_info_reply_foot);
         mReplySendBtn = (ImageView) findViewById(R.id.contacts_info_reply_send);
