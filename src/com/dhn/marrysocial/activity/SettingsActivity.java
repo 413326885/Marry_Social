@@ -69,6 +69,7 @@ public class SettingsActivity extends Activity implements OnClickListener {
             break;
         }
         case R.id.change_password: {
+            startToChangePassword();
             break;
         }
         case R.id.logout: {
@@ -78,6 +79,12 @@ public class SettingsActivity extends Activity implements OnClickListener {
         default:
             break;
         }
+    }
+
+    private void startToChangePassword() {
+        Intent intent = new Intent(this, ChangePasswordActivity.class);
+        intent.putExtra(CommonDataStructure.PASSWORD, "修改密码");
+        startActivity(intent);
     }
 
     private void startToViewAboutUs() {

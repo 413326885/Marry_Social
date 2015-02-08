@@ -43,6 +43,9 @@ public class CommonDataStructure {
     public static final String HEAD_PICS_ORG_PATH = "http://static.pkjiao.com/avatar/";
     public static final String HEAD_PICS_THUMB_PATH = "http://static.pkjiao.com/102x102/avatar/";
 
+    public static final String ABOUT_US_PATH = "http://www.pkjiao.com/aboutus";
+    public static final String PRODUCT_DESC_PATH = "http://www.pkjiao.com/feature";
+
     public static final String DOWNLOAD_PICS_DIR_URL = Environment
             .getExternalStorageDirectory().getAbsolutePath()
             + File.separator

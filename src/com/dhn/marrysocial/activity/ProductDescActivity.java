@@ -12,6 +12,7 @@ import android.webkit.WebViewClient;
 import android.widget.RelativeLayout;
 
 import com.dhn.marrysocial.R;
+import com.dhn.marrysocial.common.CommonDataStructure;
 
 public class ProductDescActivity extends Activity implements OnClickListener {
 
@@ -36,7 +37,7 @@ public class ProductDescActivity extends Activity implements OnClickListener {
         webSettings.setBuiltInZoomControls(true);
         webSettings.setDisplayZoomControls(false);
         // 加载需要显示的网页
-        mWebViewBtn.loadUrl("http://123.57.136.5");
+        mWebViewBtn.loadUrl(CommonDataStructure.PRODUCT_DESC_PATH);
         // mWebViewBtn.loadUrl("http://wangjiwei.baijia.baidu.com/article/43422");
         // 设置Web视图
         mWebViewBtn.setWebViewClient(new MyWebViewClient());

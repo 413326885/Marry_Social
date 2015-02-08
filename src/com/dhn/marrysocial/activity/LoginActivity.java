@@ -222,6 +222,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 
     private void redirectToForgetPasswordActivity() {
         Intent intent = new Intent(this, ChangePasswordActivity.class);
+        intent.putExtra(CommonDataStructure.PASSWORD, "忘记密码");
         startActivity(intent);
     }
 }

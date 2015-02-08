@@ -11,6 +11,7 @@ import com.dhn.marrysocial.utils.MD5SecretUtils;
 import com.dhn.marrysocial.utils.Utils;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -101,6 +102,9 @@ public class ChangePasswordActivity extends Activity implements OnClickListener 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.change_password_layout);
 
+        Intent intent = getIntent();
+        String actionBarTitle = intent.getStringExtra(CommonDataStructure.PASSWORD);
+
         mReturnBtn = (RelativeLayout) findViewById(R.id.change_password_return);
         mChangePasswordTitle = (TextView) findViewById(R.id.change_password_title);
         mPhoneNumEditText = (EditText) findViewById(R.id.change_password_phone_num);
@@ -111,6 +115,7 @@ public class ChangePasswordActivity extends Activity implements OnClickListener 
         mReturnBtn.setOnClickListener(this);
         mGetVerifyCodeBtn.setOnClickListener(this);
         mConfrimBtn.setOnClickListener(this);
+        mChangePasswordTitle.setText(actionBarTitle);
 
         mCountTimer = new CountTimer(60000, 1000);
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()

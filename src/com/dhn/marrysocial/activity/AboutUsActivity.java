@@ -1,6 +1,7 @@
 package com.dhn.marrysocial.activity;
 
 import com.dhn.marrysocial.R;
+import com.dhn.marrysocial.common.CommonDataStructure;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -36,7 +37,7 @@ public class AboutUsActivity extends Activity implements OnClickListener {
         webSettings.setDisplayZoomControls(false);
         // 加载需要显示的网页
         // mWebViewBtn.loadUrl("http://123.57.136.5");
-        mWebViewBtn.loadUrl("http://www.pkjiao.com");
+        mWebViewBtn.loadUrl(CommonDataStructure.ABOUT_US_PATH);
         // 设置Web视图
         mWebViewBtn.setWebViewClient(new MyWebViewClient());
     }
