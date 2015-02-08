@@ -188,8 +188,8 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
     private ProgressDialog mUploadProgressDialog;
 
     private View mContactsInfoHeader;
-    private int mContactsInfoHeaderWidth;
-    private int mContactsInfoHeaderHeight;
+    // private int mContactsInfoHeaderWidth;
+    // private int mContactsInfoHeaderHeight;
     private String mHeadBkgPath;
 
     private Handler mHandler = new Handler() {
@@ -231,11 +231,13 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
             case DOWNLOAD_HEADER_BKG_FINISH: {
                 Bitmap thumbHeader = Utils.decodeThumbnail(mHeadBkgPath, null,
                         Utils.mThumbPhotoWidth);
-                Bitmap cropHeader = Utils.cropImages(thumbHeader,
-                        mContactsInfoHeaderWidth, mContactsInfoHeaderHeight,
-                        true);
+                // Bitmap cropHeader = Utils.cropImages(thumbHeader,
+                // mContactsInfoHeaderWidth, mContactsInfoHeaderHeight,
+                // true);
+                // mHeaderLayoutBkg.setBackground(ImageUtils
+                // .bitmapToDrawable(cropHeader));
                 mHeaderLayoutBkg.setBackground(ImageUtils
-                        .bitmapToDrawable(cropHeader));
+                        .bitmapToDrawable(thumbHeader));
             }
             case START_TO_LOAD_BRAVO_REPLY: {
                 if (mCommentEntrys != null && mCommentEntrys.size() != 0) {
@@ -424,28 +426,30 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         mListViewAdapter.notifyDataSetChanged();
     }
 
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-
-        mUserInfo = mUserInfoEntrys.get(mUserInfoUid);
-
-        mContactsInfoHeaderHeight = mContactsInfoHeader.getMeasuredHeight();
-        mContactsInfoHeaderWidth = mContactsInfoHeader.getMeasuredWidth();
-
-        if ("0".equalsIgnoreCase(mUserInfo.getHeaderBkgIndex())) {
-            Bitmap thumbHeader = BitmapFactory.decodeResource(getResources(),
-                    R.drawable.person_default_bkg);
-            Bitmap cropHeader = Utils.cropImages(thumbHeader,
-                    mContactsInfoHeaderWidth, mContactsInfoHeaderHeight, true);
-            mHeaderLayoutBkg
-                    .setBackground(ImageUtils.bitmapToDrawable(cropHeader));
-        } else {
-            mExecutorService.execute(new DownloadHeadBackground(mUserInfo
-                    .getUid(), mUserInfo.getHeaderBkgIndex()));
-        }
-
-    }
+//    @Override
+//    public void onWindowFocusChanged(boolean hasFocus) {
+//        super.onWindowFocusChanged(hasFocus);
+//
+//        mUserInfo = mUserInfoEntrys.get(mUserInfoUid);
+//
+//        // mContactsInfoHeaderHeight = mContactsInfoHeader.getMeasuredHeight();
+//        // mContactsInfoHeaderWidth = mContactsInfoHeader.getMeasuredWidth();
+//
+//        if ("0".equalsIgnoreCase(mUserInfo.getHeaderBkgIndex())) {
+//            // Bitmap thumbHeader = BitmapFactory.decodeResource(getResources(),
+//            // R.drawable.person_default_bkg);
+//            // Bitmap cropHeader = Utils.cropImages(thumbHeader,
+//            // mContactsInfoHeaderWidth, mContactsInfoHeaderHeight, true);
+//            // mHeaderLayoutBkg
+//            // .setBackground(ImageUtils.bitmapToDrawable(cropHeader));
+//            mHeaderLayoutBkg
+//                    .setBackgroundResource(R.drawable.person_default_bkg);
+//        } else {
+//            mExecutorService.execute(new DownloadHeadBackground(mUserInfo
+//                    .getUid(), mUserInfo.getHeaderBkgIndex()));
+//        }
+//
+//    }
 
     @Override
     public void onDestroy() {
@@ -551,6 +555,14 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
             mUserHobby.setImageResource(R.drawable.ic_female_selected);
         } else {
             mUserHobby.setImageResource(R.drawable.ic_male_selected);
+        }
+
+        if ("0".equalsIgnoreCase(mUserInfo.getHeaderBkgIndex())) {
+            mHeaderLayoutBkg
+                    .setBackgroundResource(R.drawable.person_default_bkg);
+        } else {
+            mExecutorService.execute(new DownloadHeadBackground(mUserInfo
+                    .getUid(), mUserInfo.getHeaderBkgIndex()));
         }
 
     }
@@ -750,11 +762,13 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
                 updateHeaderBkgIndexToContactsDB(mAuthorUid, headerBkgIndex);
                 Bitmap thumbHeader = Utils.decodeThumbnail(localPath, null,
                         Utils.mThumbPhotoWidth);
-                Bitmap cropHeader = Utils.cropImages(thumbHeader,
-                        mContactsInfoHeaderWidth, mContactsInfoHeaderHeight,
-                        true);
+                // Bitmap cropHeader = Utils.cropImages(thumbHeader,
+                // mContactsInfoHeaderWidth, mContactsInfoHeaderHeight,
+                // true);
+                // mHeaderLayoutBkg.setBackground(ImageUtils
+                // .bitmapToDrawable(cropHeader));
                 mHeaderLayoutBkg.setBackground(ImageUtils
-                        .bitmapToDrawable(cropHeader));
+                        .bitmapToDrawable(thumbHeader));
                 mExecutorService.execute(new UploadHeadBackground(mAuthorUid,
                         headerBkgIndex));
                 break;
