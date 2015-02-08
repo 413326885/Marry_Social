@@ -10,7 +10,8 @@
     <RelativeLayout
         android:id="@+id/dynamic_info_head"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp" >
 
         <com.dhn.marrysocial.roundedimageview.RoundedImageView
             android:id="@+id/dynamic_info_person_pic"
