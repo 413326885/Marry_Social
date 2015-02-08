@@ -157,8 +157,8 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
     private HashMap<String, ContactsInfo> mUserInfoEntrys = new HashMap<String, ContactsInfo>();
 
     private RelativeLayout mReturnBtn;
-    private RelativeLayout mHeaderLayout;
-    private LinearLayout mHeaderLayout01;
+    private RelativeLayout mHeaderLayoutBkg;
+    private LinearLayout mHeaderLayoutDetail;
     private TextView mUserName;
     private TextView mFriendName;
     private RoundedImageView mUserPic;
@@ -234,7 +234,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
                 Bitmap cropHeader = Utils.cropImages(thumbHeader,
                         mContactsInfoHeaderWidth, mContactsInfoHeaderHeight,
                         true);
-                mHeaderLayout.setBackground(ImageUtils
+                mHeaderLayoutBkg.setBackground(ImageUtils
                         .bitmapToDrawable(cropHeader));
             }
             case START_TO_LOAD_BRAVO_REPLY: {
@@ -331,12 +331,12 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
 
         mContactsInfoHeader = (LayoutInflater.from(this).inflate(
                 R.layout.contacts_info_header_layout, null, false));
-        mHeaderLayout = (RelativeLayout) mContactsInfoHeader
-                .findViewById(R.id.contacts_info_head);
-        mHeaderLayout01 = (LinearLayout) mContactsInfoHeader
-                .findViewById(R.id.contacts_info_head_01);
+        mHeaderLayoutBkg = (RelativeLayout) mContactsInfoHeader
+                .findViewById(R.id.contacts_info_head_bkg);
+        mHeaderLayoutDetail = (LinearLayout) mContactsInfoHeader
+                .findViewById(R.id.contacts_info_head_detail);
         mUserPic = (RoundedImageView) mContactsInfoHeader
-                .findViewById(R.id.chat_msg_person_pic);
+                .findViewById(R.id.contacts_info_person_pic);
         mFriendName = (TextView) mContactsInfoHeader
                 .findViewById(R.id.contacts_info_friend_name);
         mFriendsDesc = (TextView) mContactsInfoHeader
@@ -438,7 +438,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
                     R.drawable.person_default_bkg);
             Bitmap cropHeader = Utils.cropImages(thumbHeader,
                     mContactsInfoHeaderWidth, mContactsInfoHeaderHeight, true);
-            mHeaderLayout
+            mHeaderLayoutBkg
                     .setBackground(ImageUtils.bitmapToDrawable(cropHeader));
         } else {
             mExecutorService.execute(new DownloadHeadBackground(mUserInfo
@@ -462,13 +462,13 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
             this.finish();
             break;
         }
-        case R.id.contacts_info_head_01: {
+        case R.id.contacts_info_head_bkg: {
             if (mUserInfoUid.equalsIgnoreCase(mAuthorUid)) {
                 showBackgroundPicsPicker(this);
             }
             break;
         }
-        case R.id.chat_msg_person_pic: {
+        case R.id.contacts_info_person_pic: {
             if (mUserInfoUid.equalsIgnoreCase(mAuthorUid)) {
                 showHeaderPicsPicker(this, true);
             }
@@ -488,7 +488,8 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
     }
 
     private void initOriginData() {
-        mHeaderLayout01.setOnClickListener(this);
+        mHeaderLayoutBkg.setOnClickListener(this);
+        mHeaderLayoutDetail.setOnClickListener(this);
         mReturnBtn.setOnClickListener(this);
         mUserPic.setOnClickListener(this);
         if (mUserHeadPic != null) {
@@ -500,7 +501,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         mFriendsDesc.setText(mUserInfo.getIntroduce());
 
         if (mUserInfoUid.equalsIgnoreCase(mAuthorUid)) {
-            hideChatBtn();
+            mChatButton.setVisibility(View.INVISIBLE);
         } else {
             // String friendsDesc = String.format(
             // this.getString(R.string.chat_msg_friends_more),
@@ -752,7 +753,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
                 Bitmap cropHeader = Utils.cropImages(thumbHeader,
                         mContactsInfoHeaderWidth, mContactsInfoHeaderHeight,
                         true);
-                mHeaderLayout.setBackground(ImageUtils
+                mHeaderLayoutBkg.setBackground(ImageUtils
                         .bitmapToDrawable(cropHeader));
                 mExecutorService.execute(new UploadHeadBackground(mAuthorUid,
                         headerBkgIndex));
@@ -1312,10 +1313,12 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
     }
 
     private void hideChatBtn() {
-        mChatButton.clearAnimation();
-        mChatButton.startAnimation(mHideChatBtnTransAnimation);
-        mChatButton.setVisibility(View.INVISIBLE);
-        mChatButton.setClickable(false);
+        if (!mUserInfoUid.equalsIgnoreCase(mAuthorUid)) {
+            mChatButton.clearAnimation();
+            mChatButton.startAnimation(mHideChatBtnTransAnimation);
+            mChatButton.setVisibility(View.INVISIBLE);
+            mChatButton.setClickable(false);
+        }
     }
 
     private void showChatBtn() {
