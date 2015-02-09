@@ -160,6 +160,12 @@ public class DeleteCommentsAndBravosAndReplysIntentServices extends
                 + " AND " + MarrySocialDBHelper.KEY_COMMENT_ID + " = "
                 + comment_id;
         ContentResolver resolver = this.getContentResolver();
-        resolver.delete(CommonDataStructure.BRAVOURL, whereClause, null);
+
+        try {
+            resolver.delete(CommonDataStructure.BRAVOURL, whereClause, null);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 }

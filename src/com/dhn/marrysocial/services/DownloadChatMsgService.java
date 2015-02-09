@@ -180,8 +180,14 @@ public class DownloadChatMsgService extends Service {
         insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 chat.getCurrentStatus());
 
-        ContentResolver resolver = getApplicationContext().getContentResolver();
-        resolver.insert(CommonDataStructure.CHATURL, insertValues);
+        try {
+            ContentResolver resolver = getApplicationContext()
+                    .getContentResolver();
+            resolver.insert(CommonDataStructure.CHATURL, insertValues);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 
     public boolean isChatIdExistInBriefChatDB(String chatId) {
@@ -219,8 +225,14 @@ public class DownloadChatMsgService extends Service {
         insertValues.put(MarrySocialDBHelper.KEY_HAS_NEW_MSG,
                 MarrySocialDBHelper.HAS_NEW_MSG);
 
-        ContentResolver resolver = getApplicationContext().getContentResolver();
-        resolver.insert(CommonDataStructure.BRIEFCHATURL, insertValues);
+        try {
+            ContentResolver resolver = getApplicationContext()
+                    .getContentResolver();
+            resolver.insert(CommonDataStructure.BRIEFCHATURL, insertValues);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 
     private void updateBriefChatMsgToBriefChatDB(ChatMsgItem chat,
@@ -238,9 +250,16 @@ public class DownloadChatMsgService extends Service {
 
         String whereclause = MarrySocialDBHelper.KEY_CHAT_ID + " = " + '"'
                 + chat.getChatId() + '"';
-        ContentResolver resolver = getApplicationContext().getContentResolver();
-        resolver.update(CommonDataStructure.BRIEFCHATURL, updateValues,
-                whereclause, null);
+
+        try {
+            ContentResolver resolver = getApplicationContext()
+                    .getContentResolver();
+            resolver.update(CommonDataStructure.BRIEFCHATURL, updateValues,
+                    whereclause, null);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 
     private String queryNikenameFromContactsDB(String uId) {

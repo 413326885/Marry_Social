@@ -161,7 +161,8 @@ public class ReplyListsActivity extends Activity implements OnClickListener {
                 reply.setBucketId(bucketId);
                 reply.setReplyTime(replyTime);
                 insertReplysToReplyDB(reply);
-                uploadReplysToCloud(CommonDataStructure.KEY_REPLYS, mCommentId, bucketId);
+                uploadReplysToCloud(CommonDataStructure.KEY_REPLYS, mCommentId,
+                        bucketId);
                 mHandler.sendEmptyMessage(UPLOAD_REPLY);
             }
             break;
@@ -213,17 +214,24 @@ public class ReplyListsActivity extends Activity implements OnClickListener {
         insertValues.put(MarrySocialDBHelper.KEY_AUTHOR_NICKNAME, mAuthorName);
         insertValues.put(MarrySocialDBHelper.KEY_REPLY_CONTENTS,
                 reply.getReplyContents());
-        insertValues.put(MarrySocialDBHelper.KEY_BUCKET_ID, reply.getBucketId());
+        insertValues
+                .put(MarrySocialDBHelper.KEY_BUCKET_ID, reply.getBucketId());
         insertValues.put(MarrySocialDBHelper.KEY_ADDED_TIME,
                 reply.getReplyTime());
         insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD);
 
-        ContentResolver resolver = this.getContentResolver();
-        resolver.insert(CommonDataStructure.REPLYURL, insertValues);
+        try {
+            ContentResolver resolver = this.getContentResolver();
+            resolver.insert(CommonDataStructure.REPLYURL, insertValues);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 
-    private void uploadReplysToCloud(int uploadType, String comment_id, String bucket_id) {
+    private void uploadReplysToCloud(int uploadType, String comment_id,
+            String bucket_id) {
         Intent serviceIntent = new Intent(this,
                 UploadCommentsAndBravosAndReplysIntentService.class);
         serviceIntent.putExtra(CommonDataStructure.KEY_UPLOAD_TYPE, uploadType);

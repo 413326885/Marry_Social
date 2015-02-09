@@ -4,11 +4,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
+    <ListView
+        android:id="@+id/contacts_info_listview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:cacheColorHint="#0000"
+        android:listSelector="@android:color/transparent"
+        android:scrollbarStyle="outsideOverlay" >
+    </ListView>
+
     <RelativeLayout
         android:id="@+id/contacts_info_head_bar"
         android:layout_width="match_parent"
         android:layout_height="95px"
-        android:background="#991abc9c" >
+        android:background="@color/gray_background_color" >
 
         <RelativeLayout
             android:id="@+id/contacts_info_return"
@@ -35,7 +44,7 @@
                 android:gravity="center_vertical"
                 android:paddingRight="12dp"
                 android:text="楠楠"
-                android:textColor="@color/white"
+                android:textColor="#991abc9c"
                 android:textSize="16dp" />
         </RelativeLayout>
     </RelativeLayout>
@@ -50,39 +59,32 @@
     </ImageView>
     -->
 
-    <ListView
-        android:id="@+id/contacts_info_listview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/contacts_info_head_bar"
-        android:cacheColorHint="#0000"
-        android:listSelector="@android:color/transparent"
-        android:scrollbarStyle="outsideOverlay" >
-    </ListView>
 
-<!--     <RelativeLayout
+    <!--
+         <RelativeLayout
         android:id="@+id/contacts_info_foot_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:padding="20dp" >
- -->
-        <Button
-            android:id="@+id/contacts_info_chat_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerInParent="true"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginBottom="20dp"
-            android:background="@drawable/contacts_info_btn_selector"
-            android:clickable="true"
-            android:padding="5dp"
-            android:text="开始聊天"
-            android:textColor="@color/gray"
-            android:textSize="16dp" />
-<!--     </RelativeLayout> -->
+    -->
+
+    <Button
+        android:id="@+id/contacts_info_chat_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/contacts_info_btn_selector"
+        android:clickable="true"
+        android:padding="5dp"
+        android:text="开始聊天"
+        android:textColor="@color/gray"
+        android:textSize="16dp" />
+    <!-- </RelativeLayout> -->
 
     <RelativeLayout
         android:id="@+id/contacts_info_reply_foot"

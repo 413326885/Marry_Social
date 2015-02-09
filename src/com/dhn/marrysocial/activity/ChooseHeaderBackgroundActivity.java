@@ -171,16 +171,16 @@ public class ChooseHeaderBackgroundActivity extends Activity implements
 
     }
 
-//    private void generateDBData() {
-//        int index = 1;
-//        for (String remote : CommonDataStructure.HEADER_BKG_PATH) {
-//            String name = index + ".jpg";
-//            if (!isHeaderBkgPathExistInHeaderBkgDB(remote)) {
-//                insertHeaderBkgPathToHeaderBkgDB(name, remote, index);
-//            }
-//            index++;
-//        }
-//    }
+    // private void generateDBData() {
+    // int index = 1;
+    // for (String remote : CommonDataStructure.HEADER_BKG_PATH) {
+    // String name = index + ".jpg";
+    // if (!isHeaderBkgPathExistInHeaderBkgDB(remote)) {
+    // insertHeaderBkgPathToHeaderBkgDB(name, remote, index);
+    // }
+    // index++;
+    // }
+    // }
 
     private void insertHeaderBkgPathToHeaderBkgDB(String photoname,
             String remotepath, int picindex) {
@@ -191,9 +191,15 @@ public class ChooseHeaderBackgroundActivity extends Activity implements
                 MarrySocialDBHelper.NEED_DOWNLOAD_FROM_CLOUD);
         values.put(MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX,
                 String.valueOf(picindex));
-        mDBHelper
-                .insert(MarrySocialDBHelper.DATABASE_HEAD_BACKGROUND_PICS_TABLE,
-                        values);
+
+        try {
+            mDBHelper.insert(
+                    MarrySocialDBHelper.DATABASE_HEAD_BACKGROUND_PICS_TABLE,
+                    values);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 
     private void updateHeaderBkgPathToHeaderBkgDB(String localpath,
@@ -206,9 +212,14 @@ public class ChooseHeaderBackgroundActivity extends Activity implements
         String whereClause = MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH
                 + " = " + '"' + remotepath + '"';
 
-        mDBHelper.update(
-                MarrySocialDBHelper.DATABASE_HEAD_BACKGROUND_PICS_TABLE,
-                values, whereClause, null);
+        try {
+            mDBHelper.update(
+                    MarrySocialDBHelper.DATABASE_HEAD_BACKGROUND_PICS_TABLE,
+                    values, whereClause, null);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
         // ContentResolver resolver = getContentResolver();
         // resolver.update(CommonDataStructure.HEADBACKGROUNDURL, values,
         // whereClause, null);

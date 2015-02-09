@@ -223,9 +223,16 @@ public class UploadCommentsAndBravosAndReplysIntentService extends
         values.put(MarrySocialDBHelper.KEY_COMMENT_ID, tid);
         values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 MarrySocialDBHelper.UPLOAD_TO_CLOUD_SUCCESS);
+
         ContentResolver resolver = this.getContentResolver();
-        resolver.update(CommonDataStructure.COMMENTURL, values, whereClause,
-                null);
+
+        try {
+            resolver.update(CommonDataStructure.COMMENTURL, values,
+                    whereClause, null);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
         // mDBHelper.update(MarrySocialDBHelper.DATABASE_COMMENTS_TABLE, values,
         // whereClause, null);
     }
@@ -237,8 +244,14 @@ public class UploadCommentsAndBravosAndReplysIntentService extends
                 + bucket_id;
         ContentValues values = new ContentValues();
         values.put(MarrySocialDBHelper.KEY_COMMENT_ID, tid);
-        mDBHelper.update(MarrySocialDBHelper.DATABASE_IMAGES_TABLE, values,
-                whereClause, null);
+
+        try {
+            mDBHelper.update(MarrySocialDBHelper.DATABASE_IMAGES_TABLE, values,
+                    whereClause, null);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 
     private void updateDBStatusOfImages(String uid, String bucket_id,
@@ -262,8 +275,13 @@ public class UploadCommentsAndBravosAndReplysIntentService extends
                     MarrySocialDBHelper.UPLOAD_TO_CLOUD_FAIL);
         }
 
-        mDBHelper.update(MarrySocialDBHelper.DATABASE_IMAGES_TABLE, values,
-                whereClause, null);
+        try {
+            mDBHelper.update(MarrySocialDBHelper.DATABASE_IMAGES_TABLE, values,
+                    whereClause, null);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 
     class UploadComments implements Runnable {
@@ -443,8 +461,14 @@ public class UploadCommentsAndBravosAndReplysIntentService extends
                 + comment_id;
         ContentValues values = new ContentValues();
         values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS, updateStatus);
-        mDBHelper.update(MarrySocialDBHelper.DATABASE_BRAVOS_TABLE, values,
-                whereClause, null);
+
+        try {
+            mDBHelper.update(MarrySocialDBHelper.DATABASE_BRAVOS_TABLE, values,
+                    whereClause, null);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 
     private void updateReplyStatusOfReplys(String uid, String comment_id,
@@ -456,8 +480,14 @@ public class UploadCommentsAndBravosAndReplysIntentService extends
         ContentValues values = new ContentValues();
         values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS, updataStatus);
         values.put(MarrySocialDBHelper.KEY_REPLY_ID, reply_id);
-        mDBHelper.update(MarrySocialDBHelper.DATABASE_REPLYS_TABLE, values,
-                whereClause, null);
+
+        try {
+            mDBHelper.update(MarrySocialDBHelper.DATABASE_REPLYS_TABLE, values,
+                    whereClause, null);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 
     static class CommentsEntry {

@@ -702,8 +702,13 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
         insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD);
 
-        ContentResolver resolver = getActivity().getContentResolver();
-        resolver.insert(CommonDataStructure.REPLYURL, insertValues);
+        try {
+            ContentResolver resolver = getActivity().getContentResolver();
+            resolver.insert(CommonDataStructure.REPLYURL, insertValues);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 
     PullDownRefreshListener mPullDownRefreshListener = new PullDownRefreshListener() {

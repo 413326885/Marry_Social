@@ -112,7 +112,7 @@ public class AsyncImageViewBitmapLoader {
                 Log.e(TAG, "nannan getBitmap()..  cursor == null");
                 return null;
             }
-            
+
             String photoLocalPath = "";
             String photoRemoteOrgPath = "";
             String photoRemoteThumbPath = "";
@@ -284,7 +284,13 @@ public class AsyncImageViewBitmapLoader {
         ContentValues values = new ContentValues();
         values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS, updateStatus);
         values.put(MarrySocialDBHelper.KEY_PHOTO_LOCAL_PATH, localPath);
-        mDBHelper.update(MarrySocialDBHelper.DATABASE_IMAGES_TABLE, values,
-                whereClause, null);
+
+        try {
+            mDBHelper.update(MarrySocialDBHelper.DATABASE_IMAGES_TABLE, values,
+                    whereClause, null);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 }

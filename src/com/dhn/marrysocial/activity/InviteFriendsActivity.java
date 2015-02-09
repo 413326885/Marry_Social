@@ -262,8 +262,12 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
         insertValues
                 .put(MarrySocialDBHelper.KEY_DIRECT_UID, contact.direct_uid);
 
-        mDBHelper.insert(MarrySocialDBHelper.DATABASE_DIRECT_TABLE,
-                insertValues);
+        try {
+            mDBHelper.insert(MarrySocialDBHelper.DATABASE_DIRECT_TABLE,
+                    insertValues);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void updateDirectIdToDirectDB(
@@ -278,8 +282,13 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
 
         String whereClause = MarrySocialDBHelper.KEY_PHONE_NUM + " = " + '"'
                 + contact.contact_phone_number + '"';
-        mDBHelper.update(MarrySocialDBHelper.DATABASE_DIRECT_TABLE, values,
-                whereClause, null);
+        try {
+            mDBHelper.update(MarrySocialDBHelper.DATABASE_DIRECT_TABLE, values,
+                    whereClause, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     public boolean isPhoneNumExistInDirectDB(String phone) {

@@ -167,8 +167,13 @@ public class DownloadCommentsIntentService extends IntentService {
         values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 MarrySocialDBHelper.DOWNLOAD_FROM_CLOUD_SUCCESS);
 
-        ContentResolver resolver = this.getContentResolver();
-        resolver.insert(CommonDataStructure.COMMENTURL, values);
+        try {
+            ContentResolver resolver = this.getContentResolver();
+            resolver.insert(CommonDataStructure.COMMENTURL, values);
+        } catch(Exception exp){
+            exp.printStackTrace();
+        }
+
     }
 
 //    private void insertReplysToReplyDB(ReplysItem reply) {
@@ -213,8 +218,13 @@ public class DownloadCommentsIntentService extends IntentService {
         insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 MarrySocialDBHelper.NEED_DOWNLOAD_FROM_CLOUD);
 
-        mDBHelper.insert(MarrySocialDBHelper.DATABASE_IMAGES_TABLE,
-                insertValues);
+        try {
+            mDBHelper.insert(MarrySocialDBHelper.DATABASE_IMAGES_TABLE,
+                    insertValues);
+        } catch(Exception exp){
+            exp.printStackTrace();
+        }
+
     }
 
     public boolean isCommentIdExistInCommentsDB(String commentId) {

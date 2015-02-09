@@ -153,9 +153,9 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
         public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
             case START_TO_UPLOAD_USER_HEADER: {
-//                mUploadUserHeaderProgressDialog = ProgressDialog.show(
-//                        FillUserInfoActivity.this, "上传头像", "正在上传头像，请稍后...",
-//                        false, true);
+                // mUploadUserHeaderProgressDialog = ProgressDialog.show(
+                // FillUserInfoActivity.this, "上传头像", "正在上传头像，请稍后...",
+                // false, true);
                 mExecutorService.execute(new UploadHeadPics(mUid));
                 break;
             }
@@ -165,7 +165,7 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
                 // mUserHeadPic = mCropPhoto;
                 // mHeaderImageView.setImageBitmap(mUserHeadPic);
                 // mHeaderText.setVisibility(View.GONE);
-//                mUploadUserHeaderProgressDialog.dismiss();
+                // mUploadUserHeaderProgressDialog.dismiss();
                 break;
             }
             case START_TO_UPLOAD_USER_INFO: {
@@ -353,8 +353,13 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
         insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 MarrySocialDBHelper.UPLOAD_TO_CLOUD_SUCCESS);
 
-        ContentResolver resolver = getContentResolver();
-        resolver.insert(CommonDataStructure.HEADPICSURL, insertValues);
+        try {
+            ContentResolver resolver = getContentResolver();
+            resolver.insert(CommonDataStructure.HEADPICSURL, insertValues);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 
     private void updateHeadPicToHeadPicsDB(
@@ -372,8 +377,14 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
 
         String whereClause = MarrySocialDBHelper.KEY_UID + " = " + headPic.uid;
         ContentResolver resolver = getContentResolver();
-        resolver.update(CommonDataStructure.HEADPICSURL, insertValues,
-                whereClause, null);
+
+        try {
+            resolver.update(CommonDataStructure.HEADPICSURL, insertValues,
+                    whereClause, null);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 
     private void showHeaderPicsPicker(Context context, boolean isCrop) {

@@ -50,7 +50,7 @@ public class ReadContactsIntentService extends IntentService {
 
     private String mUid;
     private MarrySocialDBHelper mDBHelper;
-    
+
     public ReadContactsIntentService() {
         super(TAG);
     }
@@ -82,9 +82,8 @@ public class ReadContactsIntentService extends IntentService {
         }
 
         ArrayList<CommonDataStructure.ContactEntry> resultEntry = Utils
-                .uploadUserContacts(
-                        CommonDataStructure.URL_UPLOAD_CONTACTS, mUid,
-                        contacts);
+                .uploadUserContacts(CommonDataStructure.URL_UPLOAD_CONTACTS,
+                        mUid, contacts);
         if (resultEntry == null || resultEntry.size() == 0) {
             return;
         }
@@ -175,8 +174,13 @@ public class ReadContactsIntentService extends IntentService {
         insertValues
                 .put(MarrySocialDBHelper.KEY_DIRECT_UID, contact.direct_uid);
 
-        mDBHelper.insert(MarrySocialDBHelper.DATABASE_DIRECT_TABLE,
-                insertValues);
+        try {
+            mDBHelper.insert(MarrySocialDBHelper.DATABASE_DIRECT_TABLE,
+                    insertValues);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 
     private void updateDirectIdToDirectDB(
@@ -191,8 +195,14 @@ public class ReadContactsIntentService extends IntentService {
 
         String whereClause = MarrySocialDBHelper.KEY_PHONE_NUM + " = " + '"'
                 + contact.contact_phone_number + '"';
-        mDBHelper.update(MarrySocialDBHelper.DATABASE_DIRECT_TABLE, values,
-                whereClause, null);
+
+        try {
+            mDBHelper.update(MarrySocialDBHelper.DATABASE_DIRECT_TABLE, values,
+                    whereClause, null);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 
     public boolean isPhoneNumExistInDirectDB(String phone) {

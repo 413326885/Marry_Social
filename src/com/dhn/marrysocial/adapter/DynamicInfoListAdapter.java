@@ -235,7 +235,8 @@ public class DynamicInfoListAdapter extends BaseAdapter {
         holder.mAddedTime.setText(mCommentsData.get(position).getAddTime());
         holder.mContents.setText(mCommentsData.get(position).getContents());
 
-        if (mIsInContactsInfoActivity || mUid.equalsIgnoreCase(mCommentsData.get(position).getUid())) {
+        if (mIsInContactsInfoActivity
+                || mUid.equalsIgnoreCase(mCommentsData.get(position).getUid())) {
             holder.mDynamicInfoFriends.setVisibility(View.INVISIBLE);
 
             holder.mHeadPic.setClickable(false);
@@ -675,8 +676,14 @@ public class DynamicInfoListAdapter extends BaseAdapter {
         values.put(MarrySocialDBHelper.KEY_BRAVO_STATUS,
                 isChecked ? MarrySocialDBHelper.BRAVO_CONFIRM
                         : MarrySocialDBHelper.BRAVO_CANCEL);
-        mDBHelper.update(MarrySocialDBHelper.DATABASE_COMMENTS_TABLE, values,
-                whereClause, null);
+
+        try {
+            mDBHelper.update(MarrySocialDBHelper.DATABASE_COMMENTS_TABLE,
+                    values, whereClause, null);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 
     private void insertBravoStatusToBravosDB(CommentsItem comment) {
@@ -694,8 +701,13 @@ public class DynamicInfoListAdapter extends BaseAdapter {
             insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                     MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD);
 
-            ContentResolver resolver = mContext.getContentResolver();
-            resolver.insert(CommonDataStructure.BRAVOURL, insertValues);
+            try {
+                ContentResolver resolver = mContext.getContentResolver();
+                resolver.insert(CommonDataStructure.BRAVOURL, insertValues);
+            } catch (Exception exp) {
+                exp.printStackTrace();
+            }
+
         } else {
             String whereClause = null;
             // if (Integer.valueOf(comment.getCommentId()) == -1) {
@@ -711,8 +723,14 @@ public class DynamicInfoListAdapter extends BaseAdapter {
             ContentValues values = new ContentValues();
             values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                     MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD);
-            resolver.update(CommonDataStructure.BRAVOURL, values, whereClause,
-                    null);
+
+            try {
+                resolver.update(CommonDataStructure.BRAVOURL, values,
+                        whereClause, null);
+            } catch (Exception exp) {
+                exp.printStackTrace();
+            }
+
         }
 
     }
@@ -733,7 +751,14 @@ public class DynamicInfoListAdapter extends BaseAdapter {
         ContentValues values = new ContentValues();
         values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 MarrySocialDBHelper.NEED_DELETE_FROM_CLOUD);
-        resolver.update(CommonDataStructure.BRAVOURL, values, whereClause, null);
+
+        try {
+            resolver.update(CommonDataStructure.BRAVOURL, values, whereClause,
+                    null);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
         // }
     }
 

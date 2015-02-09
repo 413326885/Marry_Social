@@ -457,8 +457,7 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
 
         ContentValues values = new ContentValues();
         values.put(MarrySocialDBHelper.KEY_UID, mUid);
-        values.put(MarrySocialDBHelper.KEY_BUCKET_ID,
-                mBucketId);
+        values.put(MarrySocialDBHelper.KEY_BUCKET_ID, mBucketId);
         values.put(MarrySocialDBHelper.KEY_COMMENT_ID,
                 CommonDataStructure.INVALID_STR);
         values.put(MarrySocialDBHelper.KEY_ADDED_TIME, mCurrentEditTime);
@@ -473,8 +472,12 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
         values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD);
 
-        ContentResolver resolver = this.getContentResolver();
-        resolver.insert(CommonDataStructure.COMMENTURL, values);
+        try {
+            ContentResolver resolver = this.getContentResolver();
+            resolver.insert(CommonDataStructure.COMMENTURL, values);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
 
         // MarrySocialDBHelper dbHelper = MarrySocialDBHelper.newInstance(this);
         // long result = dbHelper.insert(
@@ -489,8 +492,7 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
             int length = paths.length - 1;
             ContentValues values = new ContentValues();
             values.put(MarrySocialDBHelper.KEY_UID, mUid);
-            values.put(MarrySocialDBHelper.KEY_BUCKET_ID,
-                    mBucketId);
+            values.put(MarrySocialDBHelper.KEY_BUCKET_ID, mBucketId);
             values.put(MarrySocialDBHelper.KEY_COMMENT_ID,
                     CommonDataStructure.INVALID_STR);
             values.put(MarrySocialDBHelper.KEY_ADDED_TIME, mCurrentEditTime);
@@ -500,10 +502,15 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
             values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                     MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD);
 
-            MarrySocialDBHelper dbHelper = MarrySocialDBHelper
-                    .newInstance(this);
-            long result = dbHelper.insert(
-                    MarrySocialDBHelper.DATABASE_IMAGES_TABLE, values);
+            try {
+                MarrySocialDBHelper dbHelper = MarrySocialDBHelper
+                        .newInstance(this);
+                long result = dbHelper.insert(
+                        MarrySocialDBHelper.DATABASE_IMAGES_TABLE, values);
+            } catch (Exception exp) {
+                exp.printStackTrace();
+            }
+
         }
     }
 

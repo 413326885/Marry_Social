@@ -426,30 +426,30 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         mListViewAdapter.notifyDataSetChanged();
     }
 
-//    @Override
-//    public void onWindowFocusChanged(boolean hasFocus) {
-//        super.onWindowFocusChanged(hasFocus);
-//
-//        mUserInfo = mUserInfoEntrys.get(mUserInfoUid);
-//
-//        // mContactsInfoHeaderHeight = mContactsInfoHeader.getMeasuredHeight();
-//        // mContactsInfoHeaderWidth = mContactsInfoHeader.getMeasuredWidth();
-//
-//        if ("0".equalsIgnoreCase(mUserInfo.getHeaderBkgIndex())) {
-//            // Bitmap thumbHeader = BitmapFactory.decodeResource(getResources(),
-//            // R.drawable.person_default_bkg);
-//            // Bitmap cropHeader = Utils.cropImages(thumbHeader,
-//            // mContactsInfoHeaderWidth, mContactsInfoHeaderHeight, true);
-//            // mHeaderLayoutBkg
-//            // .setBackground(ImageUtils.bitmapToDrawable(cropHeader));
-//            mHeaderLayoutBkg
-//                    .setBackgroundResource(R.drawable.person_default_bkg);
-//        } else {
-//            mExecutorService.execute(new DownloadHeadBackground(mUserInfo
-//                    .getUid(), mUserInfo.getHeaderBkgIndex()));
-//        }
-//
-//    }
+    // @Override
+    // public void onWindowFocusChanged(boolean hasFocus) {
+    // super.onWindowFocusChanged(hasFocus);
+    //
+    // mUserInfo = mUserInfoEntrys.get(mUserInfoUid);
+    //
+    // // mContactsInfoHeaderHeight = mContactsInfoHeader.getMeasuredHeight();
+    // // mContactsInfoHeaderWidth = mContactsInfoHeader.getMeasuredWidth();
+    //
+    // if ("0".equalsIgnoreCase(mUserInfo.getHeaderBkgIndex())) {
+    // // Bitmap thumbHeader = BitmapFactory.decodeResource(getResources(),
+    // // R.drawable.person_default_bkg);
+    // // Bitmap cropHeader = Utils.cropImages(thumbHeader,
+    // // mContactsInfoHeaderWidth, mContactsInfoHeaderHeight, true);
+    // // mHeaderLayoutBkg
+    // // .setBackground(ImageUtils.bitmapToDrawable(cropHeader));
+    // mHeaderLayoutBkg
+    // .setBackgroundResource(R.drawable.person_default_bkg);
+    // } else {
+    // mExecutorService.execute(new DownloadHeadBackground(mUserInfo
+    // .getUid(), mUserInfo.getHeaderBkgIndex()));
+    // }
+    //
+    // }
 
     @Override
     public void onDestroy() {
@@ -786,9 +786,14 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         values.put(MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX,
                 headerebkgindex);
 
-        String whereClause = MarrySocialDBHelper.KEY_UID + " = " + uid;
-        mDBHelper.update(MarrySocialDBHelper.DATABASE_CONTACTS_TABLE, values,
-                whereClause, null);
+        try {
+            String whereClause = MarrySocialDBHelper.KEY_UID + " = " + uid;
+            mDBHelper.update(MarrySocialDBHelper.DATABASE_CONTACTS_TABLE,
+                    values, whereClause, null);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 
     private void showBackgroundPicsPicker(Context context) {
@@ -984,9 +989,15 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
 
         String whereClause = MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH
                 + " = " + '"' + remotepath + '"';
-        ContentResolver resolver = getContentResolver();
-        resolver.update(CommonDataStructure.HEADBACKGROUNDURL, values,
-                whereClause, null);
+
+        try {
+            ContentResolver resolver = getContentResolver();
+            resolver.update(CommonDataStructure.HEADBACKGROUNDURL, values,
+                    whereClause, null);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 
     private void insertHeadPicToHeadPicsDB(
@@ -1002,8 +1013,13 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 MarrySocialDBHelper.UPLOAD_TO_CLOUD_SUCCESS);
 
-        ContentResolver resolver = getContentResolver();
-        resolver.insert(CommonDataStructure.HEADPICSURL, insertValues);
+        try {
+            ContentResolver resolver = getContentResolver();
+            resolver.insert(CommonDataStructure.HEADPICSURL, insertValues);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 
     private void updateHeadPicToHeadPicsDB(
@@ -1020,9 +1036,15 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
                 MarrySocialDBHelper.UPLOAD_TO_CLOUD_SUCCESS);
 
         String whereClause = MarrySocialDBHelper.KEY_UID + " = " + headPic.uid;
-        ContentResolver resolver = getContentResolver();
-        resolver.update(CommonDataStructure.HEADPICSURL, insertValues,
-                whereClause, null);
+
+        try {
+            ContentResolver resolver = getContentResolver();
+            resolver.update(CommonDataStructure.HEADPICSURL, insertValues,
+                    whereClause, null);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 
     public HeaderBackgroundEntry queryHeaderBkgEntryFromDB(String headerBkgIndex) {
@@ -1153,9 +1175,15 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
                 MarrySocialDBHelper.NEED_DOWNLOAD_FROM_CLOUD);
         values.put(MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX,
                 String.valueOf(picindex));
-        mDBHelper
-                .insert(MarrySocialDBHelper.DATABASE_HEAD_BACKGROUND_PICS_TABLE,
-                        values);
+
+        try {
+            mDBHelper.insert(
+                    MarrySocialDBHelper.DATABASE_HEAD_BACKGROUND_PICS_TABLE,
+                    values);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 
     class LoadBravoAndReplyContents implements Runnable {
@@ -1303,8 +1331,13 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 MarrySocialDBHelper.NEED_UPLOAD_TO_CLOUD);
 
-        ContentResolver resolver = this.getContentResolver();
-        resolver.insert(CommonDataStructure.REPLYURL, insertValues);
+        try {
+            ContentResolver resolver = this.getContentResolver();
+            resolver.insert(CommonDataStructure.REPLYURL, insertValues);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 
     private void uploadReplysToCloud(int uploadType, String comment_id,

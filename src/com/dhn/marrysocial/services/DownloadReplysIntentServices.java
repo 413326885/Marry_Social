@@ -140,7 +140,13 @@ public class DownloadReplysIntentServices extends IntentService {
         insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 MarrySocialDBHelper.DOWNLOAD_FROM_CLOUD_SUCCESS);
 
-        ContentResolver resolver = getApplicationContext().getContentResolver();
-        resolver.insert(CommonDataStructure.REPLYURL, insertValues);
+        try {
+            ContentResolver resolver = getApplicationContext()
+                    .getContentResolver();
+            resolver.insert(CommonDataStructure.REPLYURL, insertValues);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 }

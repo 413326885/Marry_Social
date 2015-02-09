@@ -347,8 +347,13 @@ public class DownloadNoticesService extends Service {
         insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 MarrySocialDBHelper.DOWNLOAD_FROM_CLOUD_SUCCESS);
 
-        ContentResolver resolver = getApplicationContext().getContentResolver();
-        resolver.insert(CommonDataStructure.REPLYURL, insertValues);
+        try{
+            ContentResolver resolver = getApplicationContext().getContentResolver();
+            resolver.insert(CommonDataStructure.REPLYURL, insertValues);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 
     private void insertBravoToBravosDB(NoticesItem notice, String nikename) {
@@ -362,8 +367,13 @@ public class DownloadNoticesService extends Service {
         insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 MarrySocialDBHelper.DOWNLOAD_FROM_CLOUD_SUCCESS);
 
-        ContentResolver resolver = getApplicationContext().getContentResolver();
-        resolver.insert(CommonDataStructure.BRAVOURL, insertValues);
+        try{
+            ContentResolver resolver = getApplicationContext().getContentResolver();
+            resolver.insert(CommonDataStructure.BRAVOURL, insertValues);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 
     public boolean isBravoIdExistInBravosDB(String uId, String commentId) {
@@ -440,8 +450,14 @@ public class DownloadNoticesService extends Service {
 
         String whereClause = MarrySocialDBHelper.KEY_COMMENT_ID + " = "
                 + comment_id;
-        mDBHelper.update(MarrySocialDBHelper.DATABASE_COMMENTS_TABLE,
-                insertValues, whereClause, null);
+        
+        try{
+            mDBHelper.update(MarrySocialDBHelper.DATABASE_COMMENTS_TABLE,
+                    insertValues, whereClause, null);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 
     private String loadIndirectsFromDB() {
@@ -483,7 +499,13 @@ public class DownloadNoticesService extends Service {
         String whereclause = MarrySocialDBHelper.KEY_UID + " = " + uId
                 + " AND " + MarrySocialDBHelper.KEY_COMMENT_ID + " = "
                 + commentId;
-        ContentResolver resolver = getApplicationContext().getContentResolver();
-        resolver.delete(CommonDataStructure.BRAVOURL, whereclause, null);
+        
+        try{
+            ContentResolver resolver = getApplicationContext().getContentResolver();
+            resolver.delete(CommonDataStructure.BRAVOURL, whereclause, null);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 }

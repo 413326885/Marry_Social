@@ -314,8 +314,14 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
         insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 chat.getCurrentStatus());
 
-        long rowId = mDBHelper.insert(MarrySocialDBHelper.DATABASE_CHATS_TABLE,
-                insertValues);
+        long rowId = 0;
+        try {
+            rowId = mDBHelper.insert(MarrySocialDBHelper.DATABASE_CHATS_TABLE,
+                    insertValues);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
         return (int) (rowId);
     }
 
@@ -442,8 +448,14 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
         String whereClause = MarrySocialDBHelper.KEY_CHAT_ID + " = " + '"'
                 + task.msg.getChatId() + '"' + " AND "
                 + MarrySocialDBHelper.KEY_ID + " = " + task.msg.getDBId();
-        mDBHelper.update(MarrySocialDBHelper.DATABASE_CHATS_TABLE, values,
-                whereClause, null);
+
+        try {
+            mDBHelper.update(MarrySocialDBHelper.DATABASE_CHATS_TABLE, values,
+                    whereClause, null);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 
     private void addChatMsgToQueue(ChatMsgItem msg) {
@@ -489,8 +501,13 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
         insertValues.put(MarrySocialDBHelper.KEY_HAS_NEW_MSG,
                 MarrySocialDBHelper.HAS_NO_MSG);
 
-        mDBHelper.insert(MarrySocialDBHelper.DATABASE_BRIEF_CHAT_TABLE,
-                insertValues);
+        try {
+            mDBHelper.insert(MarrySocialDBHelper.DATABASE_BRIEF_CHAT_TABLE,
+                    insertValues);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 
     private void updateLatestBriefChatMsgToBriefChatDB(BriefChatItem chat) {
@@ -504,8 +521,14 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
 
         String whereClause = MarrySocialDBHelper.KEY_CHAT_ID + " = " + '"'
                 + chat.chatId + '"';
-        mDBHelper.update(MarrySocialDBHelper.DATABASE_BRIEF_CHAT_TABLE, values,
-                whereClause, null);
+
+        try {
+            mDBHelper.update(MarrySocialDBHelper.DATABASE_BRIEF_CHAT_TABLE,
+                    values, whereClause, null);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 
     private String queryNikenameFromContactsDB(String uId) {
@@ -604,8 +627,14 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
         String whereClause = MarrySocialDBHelper.KEY_CHAT_ID + " = " + '"'
                 + mChatId + '"' + " AND " + MarrySocialDBHelper.KEY_READ_STATUS
                 + " = " + MarrySocialDBHelper.MSG_NOT_READ;
-        mDBHelper.update(MarrySocialDBHelper.DATABASE_CHATS_TABLE, values,
-                whereClause, null);
+
+        try {
+            mDBHelper.update(MarrySocialDBHelper.DATABASE_CHATS_TABLE, values,
+                    whereClause, null);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 
     private void updateHasNewMsgStatusToBriefChatsDB(String mChatId) {
@@ -616,7 +645,13 @@ public class ChatMsgActivity extends Activity implements OnClickListener {
         String whereClause = MarrySocialDBHelper.KEY_CHAT_ID + " = " + '"'
                 + mChatId + '"' + " AND " + MarrySocialDBHelper.KEY_HAS_NEW_MSG
                 + " = " + MarrySocialDBHelper.HAS_NEW_MSG;
-        mDBHelper.update(MarrySocialDBHelper.DATABASE_BRIEF_CHAT_TABLE, values,
-                whereClause, null);
+
+        try {
+            mDBHelper.update(MarrySocialDBHelper.DATABASE_BRIEF_CHAT_TABLE,
+                    values, whereClause, null);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+
     }
 }
