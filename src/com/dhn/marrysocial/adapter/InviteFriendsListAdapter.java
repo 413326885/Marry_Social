@@ -70,22 +70,24 @@ public class InviteFriendsListAdapter extends BaseAdapter {
         }
 
         holder.invite_friend_name.setText(contact.contact_name);
-        if (contact.direct_uid == null || "0".equalsIgnoreCase(contact.direct_uid)) {
+        if (contact.direct_uid == null
+                || "0".equalsIgnoreCase(contact.direct_uid)) {
             holder.invite_friend_registed.setVisibility(View.GONE);
         } else {
             holder.invite_friend_registed.setVisibility(View.VISIBLE);
         }
-//        if ("0".equalsIgnoreCase(contact.direct_uid)) {
-//            holder.invite_friend_registed.setVisibility(View.GONE);
-//        } else {
-//            holder.invite_friend_registed.setVisibility(View.VISIBLE);
-//        }
+        // if ("0".equalsIgnoreCase(contact.direct_uid)) {
+        // holder.invite_friend_registed.setVisibility(View.GONE);
+        // } else {
+        // holder.invite_friend_registed.setVisibility(View.VISIBLE);
+        // }
         holder.invite_friends_btn
                 .setOnClickListener(new View.OnClickListener() {
 
                     @Override
                     public void onClick(View v) {
-                        startToInviteFriendViaSMS(mContext, contact.contact_phone_number);
+                        startToInviteFriendViaSMS(mContext,
+                                contact.contact_phone_number);
                     }
                 });
 
@@ -99,7 +101,7 @@ public class InviteFriendsListAdapter extends BaseAdapter {
     }
 
     private void startToInviteFriendViaSMS(Context context, String phone) {
-        String body = "你是一个愚蠢的小萝卜，哈哈哈哈。。。。";
+        String body = " friends+： 体验不一样的社交，快来认识你好朋友的朋友，陌生却又熟悉，生活变得更加有趣，即刻点击下载 www.pkjiao.com/apk   （仅支持安卓用户）";
         Intent sendIntent = new Intent(Intent.ACTION_SENDTO);
         sendIntent.setData(Uri.parse("smsto:" + phone));
         sendIntent.putExtra("sms_body", body);

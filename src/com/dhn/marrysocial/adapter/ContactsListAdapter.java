@@ -92,7 +92,7 @@ public class ContactsListAdapter extends BaseAdapter {
         holder.person_name.setText(mData.get(position).getNickName());
         mHeadPicBitmapLoader.loadImageBitmap(holder.person_pic, mData.get(position).getUid());
         holder.person_description.setText(String.format(mContext.getResources()
-                .getString(R.string.contacts_detail), mData.get(position).getFirstDirectFriend()));
+                .getString(R.string.contacts_detail_more), mData.get(position).getFirstDirectFriend()));
         holder.person_description_more.setChecked(false);
 
         final ViewHolder holder_temp = holder;
@@ -112,7 +112,7 @@ public class ContactsListAdapter extends BaseAdapter {
                         } else {
                             holder_temp.person_description.setText(String
                                     .format(mContext.getResources().getString(
-                                            R.string.contacts_detail),
+                                            R.string.contacts_detail_more),
                                             description));
                         }
 

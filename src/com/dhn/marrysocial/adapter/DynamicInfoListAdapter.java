@@ -244,7 +244,7 @@ public class DynamicInfoListAdapter extends BaseAdapter {
         } else {
             holder.mDynamicInfoFriends.setVisibility(View.VISIBLE);
             holder.mDynamicInfoFriends.setText(String.format(mContext
-                    .getResources().getString(R.string.contacts_detail),
+                    .getResources().getString(R.string.contacts_detail_more),
                     mUserInfoEntrys.get(mCommentsData.get(position).getUid())
                             .getFirstDirectFriend()));
 

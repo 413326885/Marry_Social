@@ -15,7 +15,7 @@
     <string name="app_list_footer_more">更多</string>
     <string name="app_list_footer_loading">正在加载</string>
     <string name="network_not_available">网络连接不可用</string>
-    <string name="contacts_detail">来自 %s... 等的通讯录</string>
+<!--     <string name="contacts_detail">来自 %s... 等的通讯录</string> -->
     <string name="contacts_detail_more">来自 %s 的通讯录</string>
     <string name="add_pics_limit">您最多可以添加 9 张照片</string>
 
