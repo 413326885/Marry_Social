@@ -28,33 +28,47 @@ public class MarrySocialApplication extends Application {
     // }
 
     private void initDataDir() {
-        try{
+        try {
             if (Environment.getExternalStorageState().equals(
                     Environment.MEDIA_MOUNTED)) {
-                File sdCardDir = Environment.getExternalStorageDirectory();
-                File downloadPicCacheDir = new File(sdCardDir.getAbsolutePath()
-                        + File.separator + CommonDataStructure.IMAGE_CACHE_DIR
-                        + File.separator
-                        + CommonDataStructure.DOWNLOAD_PICS_DIR);
+
+                File downloadPicCacheDir = new File(
+                        CommonDataStructure.DOWNLOAD_PICS_DIR_URL);
                 if (!downloadPicCacheDir.exists()) {
                     downloadPicCacheDir.mkdirs();
-                    File nomedia = new File(downloadPicCacheDir, ".nomedia");
-                    nomedia.createNewFile();
                 }
-                File headPicCacheDir = new File(sdCardDir.getAbsolutePath()
-                        + File.separator + CommonDataStructure.IMAGE_CACHE_DIR
-                        + File.separator
-                        + CommonDataStructure.HEAD_PICS_DIR);
+                File nomedia_download_pic = new File(downloadPicCacheDir,
+                        ".nomedia");
+                if (!nomedia_download_pic.exists()) {
+                    nomedia_download_pic.createNewFile();
+                }
+
+                File headPicCacheDir = new File(
+                        CommonDataStructure.HEAD_PICS_DIR_URL);
                 if (!headPicCacheDir.exists()) {
                     headPicCacheDir.mkdirs();
-                    File nomedia = new File(headPicCacheDir, ".nomedia");
-                    nomedia.createNewFile();
                 }
+                File nomedia_head_pic = new File(headPicCacheDir, ".nomedia");
+                if (!nomedia_head_pic.exists()) {
+                    nomedia_head_pic.createNewFile();
+                }
+
+                File backgroudnPicCacheDir = new File(
+                        CommonDataStructure.BACKGROUND_PICS_DIR_URL);
+                if (!backgroudnPicCacheDir.exists()) {
+                    backgroudnPicCacheDir.mkdirs();
+                }
+                File nomedia_background_pic = new File(backgroudnPicCacheDir,
+                        ".nomedia");
+                if (!nomedia_background_pic.exists()) {
+                    nomedia_background_pic.createNewFile();
+                }
+
                 return;
             }
-        } catch(Exception exp) {
+        } catch (Exception exp) {
             exp.printStackTrace();
         }
-        Toast.makeText(this, "没有有效的可用内存空间", 1000);
+        Toast.makeText(this, "没有有效的可用内存空间", 1000).show();
     }
 }
