@@ -35,10 +35,10 @@ public class WelcomeActivity extends Activity {
                 CommonDataStructure.PREFS_LAIQIAN_DEFAULT, MODE_PRIVATE);
         boolean isFirstStartUp = prefs.getBoolean(
                 CommonDataStructure.IS_FIRST_STARTUP, true);
-        if (!isFirstStartUp) {
-            redirectToCorrespondActivity();
-            return;
-        }
+//        if (!isFirstStartUp) {
+//            redirectToCorrespondActivity();
+//            return;
+//        }
         // uploadUserContacts();
         // downloadUserContacts();
 

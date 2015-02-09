@@ -26,6 +26,7 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class RegisterActivity extends Activity implements OnClickListener {
@@ -42,7 +43,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
     private EditText mVerifyCodeEditText;
     private Button mGetVerifyCodeBtn;
     private Button mRegisterBtn;
-    private Button mLoginBtn;
+    private TextView mLoginBtn;
 
     private String mUid;
     private String mPhoneNum;
@@ -102,7 +103,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
         mVerifyCodeEditText = (EditText) findViewById(R.id.input_verify_code);
         mGetVerifyCodeBtn = (Button) findViewById(R.id.get_verify_code);
         mRegisterBtn = (Button) findViewById(R.id.register_btn);
-        mLoginBtn = (Button) findViewById(R.id.login_btn);
+        mLoginBtn = (TextView) findViewById(R.id.login_btn);
 
         mCountTimer = new CountTimer(60000, 1000);
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()

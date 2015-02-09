@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="#1abc9c" >
 
     <ImageView
         android:id="@+id/register_logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/ic_edit_unselected" />
+        android:layout_marginTop="40dp"
+        android:src="@drawable/ic_actionbar_logo" />
 
     <TextView
         android:id="@+id/register_description"
@@ -19,7 +21,8 @@
         android:layout_marginBottom="5dp"
         android:layout_marginTop="5dp"
         android:padding="4dp"
-        android:text="基于好友通讯录的交友应用"
+        android:text="认识好朋友的朋友"
+        android:textColor="@color/white"
         android:textSize="20dp" />
 
     <EditText
@@ -29,7 +32,8 @@
         android:layout_below="@id/register_description"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="25dp"
+        android:background="@drawable/register_login_edit_selector"
         android:hint="手机号码"
         android:inputType="phone"
         android:minWidth="200dp"
@@ -43,6 +47,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="5dp"
         android:layout_marginTop="5dp"
+        android:background="@drawable/register_login_edit_selector"
         android:hint="输入密码"
         android:minWidth="200dp"
         android:textSize="14dp" />
@@ -60,6 +65,7 @@
             android:id="@+id/input_verify_code"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@drawable/register_login_edit_selector"
             android:hint="输入验证码"
             android:minWidth="80dp"
             android:textSize="14dp" />
@@ -68,14 +74,14 @@
             android:id="@+id/get_verify_code"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
             android:layout_marginLeft="20dp"
             android:layout_toRightOf="@id/input_verify_code"
-            android:layout_centerInParent="true"
-            android:background="@drawable/contacts_info_btn_selector"
+            android:background="@drawable/register_login_button_selector"
             android:clickable="true"
             android:padding="5dp"
             android:text="获取验证码"
-            android:textColor="@color/gray"
+            android:textColor="@color/white"
             android:textSize="16dp" />
     </RelativeLayout>
 
@@ -87,39 +93,29 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="5dp"
         android:layout_marginTop="10dp"
-        android:background="@drawable/contacts_info_btn_selector"
+        android:background="@drawable/register_login_button_selector"
         android:clickable="true"
         android:padding="5dp"
         android:text="开启我的新社交"
-        android:textColor="@color/gray"
+        android:textColor="@color/white"
         android:textSize="16dp" />
 
     <RelativeLayout
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/register_btn"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="40dp" >
+        android:layout_marginBottom="40dp"
+        android:gravity="center_horizontal" >
 
         <TextView
-            android:id="@+id/has_account"
+            android:id="@+id/login_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="已有账号"
-            android:textSize="18dp" />
-
-        <Button
-            android:id="@+id/login_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_toRightOf="@id/has_account"
-            android:background="@drawable/contacts_info_btn_selector"
             android:clickable="true"
-            android:padding="5dp"
+            android:gravity="center_horizontal"
             android:text="登录"
-            android:textColor="@color/gray"
+            android:textColor="@color/white"
             android:textSize="16dp" />
     </RelativeLayout>
 

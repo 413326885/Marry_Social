@@ -152,7 +152,7 @@ public class LoginActivity extends Activity implements OnClickListener {
             break;
         }
         case R.id.return_back: {
-            this.finish();
+            redirectToRegisterActivity();
             break;
         }
         default:
@@ -224,5 +224,11 @@ public class LoginActivity extends Activity implements OnClickListener {
         Intent intent = new Intent(this, ChangePasswordActivity.class);
         intent.putExtra(CommonDataStructure.PASSWORD, "忘记密码");
         startActivity(intent);
+    }
+
+    private void redirectToRegisterActivity() {
+        Intent intent = new Intent(this, RegisterActivity.class);
+        startActivity(intent);
+        this.finish();
     }
 }
