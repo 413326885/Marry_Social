@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">"有友"</string>
+    <string name="app_name">"friends+"</string>
     <string name="tab_community">"社区"</string>
     <string name="tab_trade">"交易"</string>
     <string name="tab_exerise">"活动"</string>

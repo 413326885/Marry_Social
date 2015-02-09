@@ -31,14 +31,14 @@
 
         <com.dhn.marrysocial.roundedimageview.RoundedImageView
             android:id="@+id/chat_msg_person_pic"
-            android:layout_width="102px"
-            android:layout_height="102px"
+            android:layout_width="51dp"
+            android:layout_height="51dp"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
             android:scaleType="centerCrop"
             android:src="@drawable/head"
             app:border_width="0dp"
-            app:corner_radius="50dp"
+            app:corner_radius="51dp"
             app:oval="false" />
 
         <TextView

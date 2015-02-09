@@ -7,7 +7,7 @@
     <RelativeLayout
         android:id="@+id/reply_list_head"
         android:layout_width="match_parent"
-        android:layout_height="115px"
+        android:layout_height="58dp"
         android:layout_alignParentTop="true" >
 
         <RelativeLayout

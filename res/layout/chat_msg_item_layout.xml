@@ -8,14 +8,14 @@
 
     <com.dhn.marrysocial.roundedimageview.RoundedImageView
         android:id="@+id/chat_person_pic"
-        android:layout_width="102px"
-        android:layout_height="102px"
+        android:layout_width="51dp"
+        android:layout_height="51dp"
         android:layout_centerVertical="true"
         android:layout_margin="10dp"
         android:scaleType="centerCrop"
         android:src="@drawable/person_default_small_pic"
         app:border_width="0dp"
-        app:corner_radius="50dp"
+        app:corner_radius="51dp"
         app:oval="false" />
 
     <RelativeLayout

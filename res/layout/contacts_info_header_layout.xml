@@ -23,13 +23,13 @@
 
         <com.dhn.marrysocial.roundedimageview.RoundedImageView
             android:id="@+id/contacts_info_person_pic"
-            android:layout_width="250px"
-            android:layout_height="250px"
+            android:layout_width="125dp"
+            android:layout_height="125dp"
             android:layout_marginLeft="10dp"
             android:scaleType="centerCrop"
             android:src="@drawable/head"
             app:border_width="0dp"
-            app:corner_radius="130dp"
+            app:corner_radius="125dp"
             app:oval="false" />
 
         <TextView

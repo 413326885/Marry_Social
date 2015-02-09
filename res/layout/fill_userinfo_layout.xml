@@ -4,24 +4,30 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <ImageView
-        android:id="@+id/userinfo_logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/ic_edit_unselected" />
+    <RelativeLayout
+        android:id="@+id/userinfo_logo_headbar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="#1abc9c" >
+
+        <ImageView
+            android:id="@+id/userinfo_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_actionbar_logo" />
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/userinfo_description"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/userinfo_logo"
+        android:layout_below="@id/userinfo_logo_headbar"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp"
-        android:padding="4dp"
-        android:text="为了帮您找到尽可能多的朋友的好友，请认真填写如下信息"
-        android:textSize="20dp" />
+        android:layout_marginTop="20dp"
+        android:text="为了帮您找到尽可能多的朋友的好友，请认真填写如下信息（信息暂不支持修改）"
+        android:textSize="16dp" />
 
     <RelativeLayout
         android:id="@+id/userinfo_header_name_group"
@@ -39,14 +45,14 @@
 
             <com.dhn.marrysocial.roundedimageview.RoundedImageView
                 android:id="@+id/userinfo_header"
-                android:layout_width="185px"
-                android:layout_height="185px"
+                android:layout_width="93dp"
+                android:layout_height="93dp"
                 android:layout_centerVertical="true"
                 android:layout_toRightOf="@id/edit_info_comment_arrow"
                 android:scaleType="centerCrop"
                 android:src="@drawable/head"
                 app:border_width="0dp"
-                app:corner_radius="90dp"
+                app:corner_radius="93dp"
                 app:oval="false" />
 
             <TextView
@@ -114,8 +120,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:button="@null"
                     android:background="@drawable/gender_male_selector"
+                    android:button="@null"
                     android:checked="true" >
                 </RadioButton>
             </LinearLayout>
@@ -131,8 +137,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:button="@null"
                     android:background="@drawable/gender_female_selector"
+                    android:button="@null"
                     android:checked="false" >
                 </RadioButton>
             </LinearLayout>
@@ -166,8 +172,8 @@
                 android:id="@+id/userinfo_astro_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_aries_baiyang_green"
-                android:layout_gravity="center" >
+                android:layout_gravity="center"
+                android:src="@drawable/ic_aries_baiyang_green" >
             </ImageView>
         </LinearLayout>
     </RelativeLayout>
@@ -205,8 +211,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:button="@null"
                     android:background="@drawable/gender_male_selector"
+                    android:button="@null"
                     android:checked="true" >
                 </RadioButton>
             </LinearLayout>
@@ -222,8 +228,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:button="@null"
                     android:background="@drawable/gender_female_selector"
+                    android:button="@null"
                     android:checked="false" >
                 </RadioButton>
             </LinearLayout>

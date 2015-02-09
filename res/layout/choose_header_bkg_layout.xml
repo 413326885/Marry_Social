@@ -7,7 +7,7 @@
     <RelativeLayout
         android:id="@+id/choose_background_head_bar"
         android:layout_width="match_parent"
-        android:layout_height="85px" >
+        android:layout_height="48dp" >
 
         <RelativeLayout
             android:id="@+id/choose_background_return"

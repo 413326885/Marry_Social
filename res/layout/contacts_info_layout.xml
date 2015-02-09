@@ -16,7 +16,7 @@
     <RelativeLayout
         android:id="@+id/contacts_info_head_bar"
         android:layout_width="match_parent"
-        android:layout_height="95px"
+        android:layout_height="48dp"
         android:background="@color/gray_background_color" >
 
         <RelativeLayout

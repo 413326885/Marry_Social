@@ -7,8 +7,8 @@
     <RelativeLayout
         android:id="@+id/chat_msg_head"
         android:layout_width="match_parent"
-        android:layout_height="95px"
-        android:background="#991abc9c" >
+        android:layout_height="48dp"
+        android:background="#1abc9c" >
 
         <RelativeLayout
             android:id="@+id/chat_msg_return"

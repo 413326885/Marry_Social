@@ -6,8 +6,8 @@
     <RelativeLayout
         android:id="@+id/actionbar_layout"
         android:layout_width="match_parent"
-        android:layout_height="95px"
-        android:background="#991abc9c" >
+        android:layout_height="48dp"
+        android:background="#1abc9c" >
 
         <ImageView
             android:id="@+id/actionbar_logo"
