@@ -236,8 +236,14 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
                 // true);
                 // mHeaderLayoutBkg.setBackground(ImageUtils
                 // .bitmapToDrawable(cropHeader));
-                mHeaderLayoutBkg.setBackground(ImageUtils
-                        .bitmapToDrawable(thumbHeader));
+                if (thumbHeader != null) {
+                    mHeaderLayoutBkg.setBackground(ImageUtils
+                            .bitmapToDrawable(thumbHeader));
+                } else {
+                    mHeaderLayoutBkg
+                    .setBackgroundResource(R.drawable.person_default_bkg);
+                }
+
             }
             case START_TO_LOAD_BRAVO_REPLY: {
                 if (mCommentEntrys != null && mCommentEntrys.size() != 0) {

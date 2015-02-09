@@ -364,7 +364,13 @@ public class CommonDataStructure {
             "http://static.pkjiao.com/sysbackground/1.jpg",
             "http://static.pkjiao.com/sysbackground/2.jpg",
             "http://static.pkjiao.com/sysbackground/3.jpg",
-            "http://static.pkjiao.com/sysbackground/4.jpg" };
+            "http://static.pkjiao.com/sysbackground/4.jpg",
+            "http://static.pkjiao.com/sysbackground/5.jpg",
+            "http://static.pkjiao.com/sysbackground/6.jpg",
+            "http://static.pkjiao.com/sysbackground/7.jpg",
+            "http://static.pkjiao.com/sysbackground/8.jpg",
+            "http://static.pkjiao.com/sysbackground/9.jpg",
+            "http://static.pkjiao.com/sysbackground/10.jpg" };
 
     public static class UploadImageResultEntry {
         public boolean result;
