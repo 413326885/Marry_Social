@@ -20,6 +20,8 @@ import com.dhn.marrysocial.MarrySocialMainActivity;
 import com.dhn.marrysocial.R;
 import com.dhn.marrysocial.base.DataCleanManager;
 import com.dhn.marrysocial.common.CommonDataStructure;
+import com.dhn.marrysocial.dialog.ExitAppDialog;
+import com.dhn.marrysocial.dialog.ExitAppDialog.OnConfirmBtnClickListener;
 
 public class SettingsActivity extends Activity implements OnClickListener {
 
@@ -31,12 +33,17 @@ public class SettingsActivity extends Activity implements OnClickListener {
     private TextView mFuncDescBtn;
     private TextView mChangePassword;
     private TextView mLogoutBtn;
+    
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.settings_layout);
+
+        mContext = this;
+
         mReturnBtn = (RelativeLayout) findViewById(R.id.settings_return);
         mVersionUpdate = (RelativeLayout) findViewById(R.id.version_update);
         mAboutUsBtn = (TextView) findViewById(R.id.about_us);
@@ -101,31 +108,29 @@ public class SettingsActivity extends Activity implements OnClickListener {
 
     private void showLogoutDialog(final Context context) {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("退出登录");
-        builder.setMessage("退出当前账号？");
-        builder.setNegativeButton("取消", null);
-        builder.setPositiveButton("确定",
-                new android.content.DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        SharedPreferences prefs = context.getSharedPreferences(
-                                CommonDataStructure.PREFS_LAIQIAN_DEFAULT,
-                                MODE_PRIVATE);
-                        Editor editor = prefs.edit();
-                        editor.putInt(CommonDataStructure.LOGINSTATUS,
-                                CommonDataStructure.LOGIN_STATUS_NO_USER);
-                        editor.commit();
-                        DataCleanManager.cleanApplicationData(context,
-                                CommonDataStructure.DOWNLOAD_PICS_DIR_URL,
-                                CommonDataStructure.HEAD_PICS_DIR_URL,
-                                CommonDataStructure.BACKGROUND_PICS_DIR_URL);
-                        redirectToRegisterActivity();
-                    }
-                });
-        builder.create().show();
+        ExitAppDialog exitDialog = new ExitAppDialog(context);
+        exitDialog.setOnConfirmBtnClickListener(mConfirmBtnClickListener);
+        exitDialog.show();
     }
+
+    private OnConfirmBtnClickListener mConfirmBtnClickListener = new OnConfirmBtnClickListener() {
+
+        @Override
+        public void onConfirmBtnClick() {
+            SharedPreferences prefs = mContext.getSharedPreferences(
+                    CommonDataStructure.PREFS_LAIQIAN_DEFAULT, MODE_PRIVATE);
+            Editor editor = prefs.edit();
+            editor.putInt(CommonDataStructure.LOGINSTATUS,
+                    CommonDataStructure.LOGIN_STATUS_NO_USER);
+            editor.commit();
+            DataCleanManager.cleanApplicationData(mContext,
+                    CommonDataStructure.DOWNLOAD_PICS_DIR_URL,
+                    CommonDataStructure.HEAD_PICS_DIR_URL,
+                    CommonDataStructure.BACKGROUND_PICS_DIR_URL);
+            redirectToRegisterActivity();
+        }
+
+    };
 
     private void redirectToRegisterActivity() {
         Intent intent = new Intent(this, RegisterActivity.class);

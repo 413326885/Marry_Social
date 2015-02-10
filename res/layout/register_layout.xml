@@ -79,7 +79,7 @@
             android:layout_toRightOf="@id/input_verify_code"
             android:background="@drawable/register_login_button_selector"
             android:clickable="true"
-            android:padding="5dp"
+            android:padding="6dp"
             android:text="获取验证码"
             android:textColor="@color/white"
             android:textSize="16dp" />
@@ -95,7 +95,7 @@
         android:layout_marginTop="10dp"
         android:background="@drawable/register_login_button_selector"
         android:clickable="true"
-        android:padding="5dp"
+        android:padding="6dp"
         android:text="开启我的新社交"
         android:textColor="@color/white"
         android:textSize="16dp" />

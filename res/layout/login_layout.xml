@@ -63,8 +63,8 @@
         android:layout_marginTop="10dp"
         android:background="@drawable/register_login_button_selector"
         android:clickable="true"
-        android:padding="5dp"
         android:text="登录"
+        android:padding="6dp"
         android:textColor="@color/white"
         android:textSize="16dp" />
 
