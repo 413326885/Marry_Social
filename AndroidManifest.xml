@@ -27,7 +27,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.READ_SMS" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:name=".MarrySocialApplication"
@@ -37,51 +37,81 @@
         android:theme="@style/StyledIndicators" >
         <activity
             android:name=".WelcomeActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MarrySocialMainActivity" >
+        <activity
+            android:name=".MarrySocialMainActivity"
+            android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".activity.EditCommentsActivity" >
+        <activity
+            android:name=".activity.EditCommentsActivity"
+            android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".activity.ViewPhotoActivity" >
+        <activity
+            android:name=".activity.ViewPhotoActivity"
+            android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".activity.ReplyListsActivity" >
+        <activity
+            android:name=".activity.ReplyListsActivity"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".activity.ChatMsgActivity"
             android:configChanges="orientation|keyboardHidden|navigation"
             android:parentActivityName=".MarrySocialMainActivity"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan|stateHidden" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MarrySocialMainActivity" />
         </activity>
-        <activity android:name=".activity.ContactsInfoActivity" >
+        <activity
+            android:name=".activity.ContactsInfoActivity"
+            android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".activity.ChooseHeaderBackgroundActivity" >
+        <activity
+            android:name=".activity.ChooseHeaderBackgroundActivity"
+            android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".activity.RegisterActivity" >
+        <activity
+            android:name=".activity.RegisterActivity"
+            android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".activity.FillUserInfoActivity" >
+        <activity
+            android:name=".activity.FillUserInfoActivity"
+            android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".activity.InviteFriendsActivity" >
+        <activity
+            android:name=".activity.InviteFriendsActivity"
+            android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".activity.LoginActivity" >
+        <activity
+            android:name=".activity.LoginActivity"
+            android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".activity.SettingsActivity" >
+        <activity
+            android:name=".activity.SettingsActivity"
+            android:screenOrientation="portrait" >
         </activity>
         <activity android:name=".activity.AboutUsActivity" >
         </activity>
-        <activity android:name=".activity.ProductDescActivity" >
+        <activity
+            android:name=".activity.ProductDescActivity"
+            android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".activity.ChangePasswordActivity" >
+        <activity
+            android:name=".activity.ChangePasswordActivity"
+            android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".test.MainActivity" >
+        <activity
+            android:name=".test.MainActivity"
+            android:screenOrientation="portrait" >
         </activity>
 
         <service android:name=".services.ReadContactsIntentService" >
@@ -117,7 +147,6 @@
         </receiver>
         <receiver android:name="com.dhn.marrysocial.broadcast.receive.AutoRunBroadcastReceiver" >
             <intent-filter>
-
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
                 <action android:name="android.intent.action.USER_PRESENT" />

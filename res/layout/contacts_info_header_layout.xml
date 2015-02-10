@@ -39,7 +39,8 @@
             android:layout_marginLeft="30dp"
             android:layout_marginTop="20dp"
             android:text="楠楠"
-            android:textSize="18dp" />
+            android:textSize="18sp"
+            android:textColor="@color/darkgreen" />
 
         <TextView
             android:id="@+id/contacts_info_friends_description"
@@ -50,7 +51,8 @@
             android:layout_marginTop="10dp"
             android:alpha="0.6"
             android:text="来自 楠楠 等3位好友的通信录"
-            android:textSize="14dp" />
+            android:textSize="14sp"
+            android:textColor="@color/darkgreen" />
 
         <ImageView
             android:layout_width="match_parent"

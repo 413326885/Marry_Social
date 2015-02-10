@@ -82,7 +82,7 @@
         android:clickable="true"
         android:padding="5dp"
         android:text="开始聊天"
-        android:textColor="@color/gray"
+        android:textColor="@color/white"
         android:textSize="16dp" />
     <!-- </RelativeLayout> -->
 

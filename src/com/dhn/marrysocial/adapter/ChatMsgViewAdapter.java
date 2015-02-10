@@ -129,7 +129,7 @@ public class ChatMsgViewAdapter extends BaseAdapter {
             holder.chat_msg_send_time.setText(Utils.getAddedTimeTitle(mContext,
                     chat_time));
         } else {
-            holder.chat_msg_send_time.setVisibility(View.INVISIBLE);
+            holder.chat_msg_send_time.setVisibility(View.GONE);
         }
 
         holder.chat_msg_content.setText(msgItem.getChatContent());

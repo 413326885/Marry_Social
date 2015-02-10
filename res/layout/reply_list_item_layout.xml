@@ -4,7 +4,7 @@
     android:id="@+id/chat_item_entry"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/default_bkg_selector" >
+    android:background="@drawable/gray_bkg_selector" >
 
     <com.dhn.marrysocial.roundedimageview.RoundedImageView
         android:id="@+id/reply_list_person_pic"

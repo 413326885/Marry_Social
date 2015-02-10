@@ -2,6 +2,7 @@ package com.dhn.marrysocial.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dhn.marrysocial.MarrySocialMainActivity;
 import com.dhn.marrysocial.R;
@@ -98,6 +100,7 @@ public class SettingsActivity extends Activity implements OnClickListener {
     }
 
     private void showLogoutDialog(final Context context) {
+
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("退出登录");
         builder.setMessage("退出当前账号？");

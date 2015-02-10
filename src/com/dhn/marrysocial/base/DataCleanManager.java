@@ -71,8 +71,8 @@ public class DataCleanManager {
      * * 清除本应用所有的数据 * * @param context * @param filepath
      * */
     public static void cleanApplicationData(Context context, String... filepath) {
-//        cleanInternalCache(context);
-//        cleanExternalCache(context);
+        cleanInternalCache(context);
+        cleanExternalCache(context);
         cleanSharedPreference(context);
         cleanDataBases(context);
 //        cleanFiles(context);

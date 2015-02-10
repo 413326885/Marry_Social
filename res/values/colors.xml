@@ -3,11 +3,12 @@
 
     <color name="headbar_title_color">#aa000000</color>
     <color name="headbar_title_color_selected">#ffef4147</color>
-
+    <color name="ligthgreen">#991abc9c</color>
+    <color name="darkgreen">#ff1abc9c</color>
     <color name="green">#ff008800</color>
     <color name="white">#ffffffff</color>
     <color name="transparent">#00000000</color>
-    <color name="gray">#ff666666</color>
+    <color name="gray">#ff6B6B6B</color>
     <color name="black">#ff000000</color>
     <color name="lightgray">#eeaaaaaa</color>
     <color name="darkgray">#99333333</color>
@@ -23,7 +24,6 @@
     <color name="nav_shadow_color">#ffe4e4e4</color>
     <color name="copyright_color">#ff999999</color>
     <color name="click_color">#ff6c88ae</color>
-
     <color name="main_color">#16a085</color>
     <color name="gray_background_color">#11666666</color>
 

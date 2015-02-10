@@ -34,7 +34,7 @@
     <RelativeLayout
         android:id="@+id/dynamic_info_reply_foot"
         android:layout_width="match_parent"
-        android:layout_height="95px"
+        android:layout_height="48dp"
         android:layout_alignParentBottom="true"
         android:background="@drawable/base_action_bar_bg"
         android:visibility="gone" >

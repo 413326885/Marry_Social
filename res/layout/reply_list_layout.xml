@@ -8,13 +8,14 @@
         android:id="@+id/reply_list_head"
         android:layout_width="match_parent"
         android:layout_height="58dp"
-        android:layout_alignParentTop="true" >
+        android:layout_alignParentTop="true"
+        android:background="#1abc9c" >
 
         <RelativeLayout
             android:id="@+id/reply_list_return"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:background="@drawable/gray_bkg_selector"
+            android:background="@drawable/default_bkg_selector"
             android:clickable="true" >
 
             <ImageView
@@ -48,17 +49,23 @@
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
                 android:text="楠楠"
-                android:textSize="16sp"
-                android:textColor="#1abc9c" />
+                android:textColor="@color/white"
+                android:textSize="16sp" />
         </RelativeLayout>
     </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/reply_list_foot"
         android:layout_width="match_parent"
-        android:layout_height="95px"
+        android:layout_height="48dp"
         android:layout_alignParentBottom="true"
         android:background="@drawable/base_action_bar_bg" >
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:alpha="0.6"
+            android:background="@color/lightgray" />
 
         <ImageView
             android:id="@+id/reply_list_reply_send"
@@ -76,22 +83,24 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentLeft="true"
-            android:layout_marginRight="48dp"
-            android:layout_toLeftOf="@id/dynamic_info_reply_send"
-            android:background="@drawable/gray_bkg_selector"
+            android:layout_marginBottom="6dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="6dp"
+            android:layout_toLeftOf="@id/reply_list_reply_send"
+            android:background="@drawable/register_login_edit_selector"
             android:hint="让世界聆听你的心跳..."
-            android:paddingBottom="2dp"
-            android:paddingLeft="16dp"
-            android:paddingTop="2dp" />
+            android:textColor="@color/gray"
+            android:textSize="15sp" />
     </RelativeLayout>
 
     <ListView
         android:id="@+id/reply_listview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:listSelector="@android:color/transparent"
         android:layout_above="@id/reply_list_foot"
-        android:layout_below="@id/reply_list_head" >
+        android:layout_below="@id/reply_list_head"
+        android:listSelector="@android:color/transparent" >
     </ListView>
 
 </RelativeLayout>
