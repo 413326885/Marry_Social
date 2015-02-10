@@ -91,7 +91,7 @@
             android:layout_centerVertical="true"
             android:paddingLeft="12dp"
             android:paddingRight="12dp"
-            android:src="@drawable/ic_invite" />
+            android:src="@drawable/ic_share" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -125,7 +125,7 @@
             android:layout_centerVertical="true"
             android:paddingLeft="12dp"
             android:paddingRight="12dp"
-            android:src="@drawable/ic_invite" />
+            android:src="@drawable/ic_contact" />
 
         <TextView
             android:layout_width="wrap_content"

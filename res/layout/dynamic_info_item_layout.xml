@@ -198,9 +198,9 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
+            android:layout_gravity="center_vertical"
             android:layout_marginRight="6dp"
-            android:src="@drawable/ic_bravo_selected" />
+            android:src="@drawable/ic_bravo_selected_small" />
 
         <TextView
             android:id="@+id/dynamic_info_bravo_tips_title"
@@ -209,7 +209,7 @@
             android:layout_gravity="center_vertical"
             android:text="@string/dynamic_bravo_tips_title"
             android:textColor="@color/main_color"
-            android:textSize="14dp" />
+            android:textSize="12sp" />
     </LinearLayout>
 
     <TextView
@@ -243,9 +243,9 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
+            android:layout_gravity="center_vertical"
             android:layout_marginRight="6dp"
-            android:src="@drawable/ic_comment_selected" />
+            android:src="@drawable/ic_comment_selected_small" />
 
         <TextView
             android:id="@+id/dynamic_info_reply_tips_title"
@@ -255,7 +255,7 @@
             android:background="@drawable/gray_bkg_selector"
             android:text="@string/dynamic_reply_tips_title"
             android:textColor="@color/main_color"
-            android:textSize="14dp" />
+            android:textSize="12sp" />
     </LinearLayout>
 
     <RelativeLayout

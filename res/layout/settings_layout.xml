@@ -60,7 +60,7 @@
             android:alpha="0.8"
             android:paddingBottom="20dp"
             android:paddingTop="10dp"
-            android:text="扫一扫上面的二维码图案，下载最新交友应用"
+            android:text="扫描下载应用，即刻认识好朋友的朋友"
             android:textSize="16dp" />
     </RelativeLayout>
 
