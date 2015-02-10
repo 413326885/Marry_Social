@@ -6,9 +6,11 @@ import com.dhn.marrysocial.adapter.ContactsListAdapter;
 import com.dhn.marrysocial.base.ContactsInfo;
 import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
+import com.dhn.marrysocial.services.DownloadIndirectFriendsIntentServices;
 import com.dhn.marrysocial.utils.Utils;
 import com.dhn.marrysocial.R;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -54,6 +56,8 @@ public class ContactsListFragment extends Fragment {
 
         mContactMembers.clear();
         mContactMembers.addAll(loadContactsFromDB());
+
+        downloadUserContacts();
     }
 
     @Override
@@ -140,5 +144,11 @@ public class ContactsListFragment extends Fragment {
             }
         }
         return contactMembers;
+    }
+
+    private void downloadUserContacts() {
+        Intent serviceIntent = new Intent(getActivity(),
+                DownloadIndirectFriendsIntentServices.class);
+        getActivity().startService(serviceIntent);
     }
 }

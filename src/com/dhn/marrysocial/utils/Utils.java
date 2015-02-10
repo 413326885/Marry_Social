@@ -1727,7 +1727,7 @@ public class Utils {
     public static ArrayList<ContactsInfo> downloadInDirectFriendsList(
             String RequestURL, String uId, String timeStamp) {
 
-        Log.e(TAG, "nannan downloadDirectFriendsList ");
+        Log.e(TAG, "nannan downloadInDirectFriendsList ");
         URL postUrl = null;
         HttpURLConnection connection = null;
         DataOutputStream output = null;

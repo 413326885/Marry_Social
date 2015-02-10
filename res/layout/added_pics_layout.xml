@@ -7,8 +7,8 @@
         android:id="@+id/added_pics"
         android:layout_width="86dp"
         android:layout_height="86dp"
-        android:layout_marginTop="10dp"
         android:layout_marginRight="16dp"
+        android:layout_marginTop="10dp"
         android:background="@null" />
 
     <ImageView
@@ -17,6 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
+        android:layout_marginRight="6dp"
         android:src="@drawable/ic_delete_pics" />
 
 </RelativeLayout>

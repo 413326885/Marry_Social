@@ -7,6 +7,7 @@ import com.dhn.marrysocial.R;
 import com.dhn.marrysocial.activity.ContactsInfoActivity;
 import com.dhn.marrysocial.base.AsyncHeadPicBitmapLoader;
 import com.dhn.marrysocial.base.ChatMsgItem;
+import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
 import com.dhn.marrysocial.utils.Utils;
 
@@ -30,6 +31,7 @@ public class ChatMsgViewAdapter extends BaseAdapter {
     private LayoutInflater mInflater;
     private ArrayList<ChatMsgItem> mData = new ArrayList<ChatMsgItem>();
     private HashMap<String, Bitmap> mHeadPics = new HashMap<String, Bitmap>();
+    private Long mLastChatTime = 0l;
 
     public static interface IMsgViewType {
         int IMVT_COM_MSG = 0;
@@ -121,8 +123,15 @@ public class ChatMsgViewAdapter extends BaseAdapter {
 
         String time = msgItem.getAddedTime();
         String chat_time = time.substring(0, time.length() - 6);
-        holder.chat_msg_send_time.setText(Utils.getAddedTimeTitle(mContext,
-                chat_time));
+        if ((Long.valueOf(chat_time) - mLastChatTime) > CommonDataStructure.TIME_FIVE_MINUTES_BEFORE) {
+            mLastChatTime = Long.valueOf(chat_time);
+            holder.chat_msg_send_time.setVisibility(View.VISIBLE);
+            holder.chat_msg_send_time.setText(Utils.getAddedTimeTitle(mContext,
+                    chat_time));
+        } else {
+            holder.chat_msg_send_time.setVisibility(View.INVISIBLE);
+        }
+
         holder.chat_msg_content.setText(msgItem.getChatContent());
 
         return convertView;
