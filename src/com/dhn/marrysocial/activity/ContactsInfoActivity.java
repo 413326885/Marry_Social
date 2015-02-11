@@ -19,6 +19,8 @@ import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.common.CommonDataStructure.HeaderBackgroundEntry;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
 import com.dhn.marrysocial.dialog.ProgressLoadDialog;
+import com.dhn.marrysocial.dialog.SelectBackgroundPicDialog;
+import com.dhn.marrysocial.dialog.SelectBackgroundPicDialog.OnSelectPicBtnClickListener;
 import com.dhn.marrysocial.roundedimageview.RoundedImageView;
 import com.dhn.marrysocial.services.UploadCommentsAndBravosAndReplysIntentService;
 import com.dhn.marrysocial.utils.ImageUtils;
@@ -189,6 +191,8 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
     private DataSetChangeObserver mHeaderPicChangeObserver;
     private ProgressLoadDialog mUploadProgressDialog;
 
+    private SelectBackgroundPicDialog mSelectBkgDialog;
+    
     private View mContactsInfoHeader;
     // private int mContactsInfoHeaderWidth;
     // private int mContactsInfoHeaderHeight;
@@ -811,24 +815,22 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
     }
 
     private void showBackgroundPicsPicker(Context context) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setItems(new String[] { "更换相册封面" },
-                new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which) {
-                        case CHANGE_HEAD_BACKGROUND: {
-                            startToChooseBackgroundPic();
-                            break;
-                        }
-                        default:
-                            break;
-                        }
-                    }
-                });
-        builder.create().show();
+        mSelectBkgDialog = new SelectBackgroundPicDialog(
+                context);
+        mSelectBkgDialog
+                .setOnSelectPicBtnClickListener(mSelectPicBtnClickListener);
+        mSelectBkgDialog.show();
     }
+
+    private OnSelectPicBtnClickListener mSelectPicBtnClickListener = new OnSelectPicBtnClickListener() {
+
+        @Override
+        public void onSelectPicBtnClick() {
+            mSelectBkgDialog.dismiss();
+            startToChooseBackgroundPic();
+        }
+
+    };
 
     private void showHeaderPicsPicker(Context context, boolean isCrop) {
         final boolean needCrop = isCrop;

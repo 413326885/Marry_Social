@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="250dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/dialog_trans_bkg" >
+
+    <TextView
+        android:id="@+id/select_background_pic_desc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/default_bkg_selector"
+        android:padding="10dp"
+        android:text="更换相册封面"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+
+</RelativeLayout>
