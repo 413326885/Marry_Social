@@ -28,6 +28,8 @@ import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
 
+import com.dhn.marrysocial.R;
+
 public class DownloadChatMsgService extends Service {
 
     private static final String TAG = "DownloadChatMsgService";
@@ -154,9 +156,24 @@ public class DownloadChatMsgService extends Service {
                 if (!Utils.isAppRunningForeground(mContext)) {
                     int msgCount = getNewMsgCount(chatMsg.getChatId());
                     Bitmap header = loadUserHeadPicFromDB(chatUserUid);
-                    mNotificationManager.showChatMsgNotification(header,
-                            nikename, chatMsg.getChatContent(), msgCount,
-                            chatMsg.getChatId());
+                    Bitmap cropHeader;
+                    if (header == null) {
+
+                        Bitmap icon_launcher = BitmapFactory
+                                .decodeResource(mContext.getResources(),
+                                        R.drawable.ic_launcher);
+                        cropHeader = Utils.resizeAndCropCenter(icon_launcher,
+                                Utils.mTinyCropCenterThumbPhotoWidth, true);
+
+                        mNotificationManager.showChatMsgNotification(
+                                cropHeader, nikename, chatMsg.getChatContent(),
+                                msgCount, chatMsg.getChatId());
+                    } else {
+                        mNotificationManager.showChatMsgNotification(header,
+                                nikename, chatMsg.getChatContent(), msgCount,
+                                chatMsg.getChatId());
+                    }
+
                 }
 
                 return;

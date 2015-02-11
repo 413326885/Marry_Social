@@ -27,7 +27,7 @@
             android:layout_height="125dp"
             android:layout_marginLeft="10dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/head"
+            android:src="@drawable/person_default_big_pic"
             app:border_width="0dp"
             app:corner_radius="125dp"
             app:oval="false" />

@@ -349,6 +349,9 @@ public class CommonDataStructure {
 
     public static final int NOTICE_TYPE_BRAVO = 3;
     public static final int NOTICE_TYPE_DIS_BRAVO = 4;
+
+    public static final String FRIENDS_PUBLIC_ACCOUNT_UID = "10";
+
     // public static final Uri REPLYURL = Uri.parse("content://"
     // + DataSetProvider.AUTHORITY + "/"
     // + MarrySocialDBHelper.DATABASE_COMMENTS_TABLE);
