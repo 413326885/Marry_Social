@@ -15,6 +15,7 @@ import com.dhn.marrysocial.adapter.EditCommentsPhotoViewAdapter;
 import com.dhn.marrysocial.base.ContactsInfo;
 import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
+import com.dhn.marrysocial.dialog.ProgressLoadDialog;
 import com.dhn.marrysocial.provider.DBContentChangeProvider;
 import com.dhn.marrysocial.roundedimageview.RoundedImageView;
 import com.dhn.marrysocial.services.UploadCommentsAndBravosAndReplysIntentService;
@@ -124,7 +125,7 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
     private String mCurrentEditTime;
     private String mBucketId;
 
-    private ProgressDialog mUploadProgressDialog;
+    private ProgressLoadDialog mUploadProgressDialog;
     private Handler mHandler;
     private String mTid;
     private String mUid;
@@ -251,8 +252,11 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
             break;
         }
         case R.id.edit_info_comments_send: {
-            mUploadProgressDialog = ProgressDialog.show(this, "上传动态",
-                    "正在上传动态，请稍后...", false, true);
+
+            mUploadProgressDialog = new ProgressLoadDialog(this);
+            mUploadProgressDialog.setText("正在上传动态，请稍后...");
+            mUploadProgressDialog.show();
+
             mExecutorService.execute(new UploadFiles());
             break;
         }

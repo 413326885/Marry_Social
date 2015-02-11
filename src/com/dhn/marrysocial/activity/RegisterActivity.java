@@ -7,6 +7,7 @@ import com.dhn.marrysocial.R;
 import com.dhn.marrysocial.broadcast.receive.AuthCodeBroadcastReceiver;
 import com.dhn.marrysocial.broadcast.receive.NewTipsBroadcastReceiver;
 import com.dhn.marrysocial.common.CommonDataStructure;
+import com.dhn.marrysocial.dialog.ProgressLoadDialog;
 import com.dhn.marrysocial.utils.AuthCodeUtils;
 import com.dhn.marrysocial.utils.MD5SecretUtils;
 import com.dhn.marrysocial.utils.Utils;
@@ -50,7 +51,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
     private String mPassword;
     private CountTimer mCountTimer;
     private ExecutorService mExecutorService;
-    private ProgressDialog mUploadProgressDialog;
+    private ProgressLoadDialog mUploadProgressDialog;
     private AuthCodeBroadcastReceiver mBroadcastReceiver;
     private SharedPreferences mPrefs;
 
@@ -124,33 +125,36 @@ public class RegisterActivity extends Activity implements OnClickListener {
     public void onClick(View arg0) {
         switch (arg0.getId()) {
         case R.id.register_btn: {
-            startToFillUserinfo();
-            return;
-//            if (!Utils.isActiveNetWorkAvailable(this)) {
-//                mHandler.sendEmptyMessage(NETWORK_INVALID);
-//                return;
-//            }
-//
-//            if (!isPhoneNumValid()) {
-//                mPhoneNumEditText.requestFocus();
-//                return;
-//            }
-//            if (!isPasswordValid()) {
-//                mPasswordEditText.requestFocus();
-//                return;
-//            }
-//            if (!isAuthCodeValid()) {
-//                return;
-//            }
-//            mUploadProgressDialog = ProgressDialog.show(this, "用户注册",
-//                    "正在注册，请稍后...", false, true);
-//            mPassword = MD5SecretUtils.encrypt(mPasswordEditText.getText()
-//                    .toString());
-//            String macAddr = Utils.getMacAddress(this);
-//            mPhoneNum = mPhoneNumEditText.getText().toString();
-//            mExecutorService.execute(new RegisterUserInfo(mPhoneNum, mPassword,
-//                    macAddr));
-//            break;
+//            startToFillUserinfo();
+//            return;
+            if (!Utils.isActiveNetWorkAvailable(this)) {
+                mHandler.sendEmptyMessage(NETWORK_INVALID);
+                return;
+            }
+
+            if (!isPhoneNumValid()) {
+                mPhoneNumEditText.requestFocus();
+                return;
+            }
+            if (!isPasswordValid()) {
+                mPasswordEditText.requestFocus();
+                return;
+            }
+            if (!isAuthCodeValid()) {
+                return;
+            }
+
+            mUploadProgressDialog = new ProgressLoadDialog(this);
+            mUploadProgressDialog.setText("正在注册，请稍后...");
+            mUploadProgressDialog.show();
+
+            mPassword = MD5SecretUtils.encrypt(mPasswordEditText.getText()
+                    .toString());
+            String macAddr = Utils.getMacAddress(this);
+            mPhoneNum = mPhoneNumEditText.getText().toString();
+            mExecutorService.execute(new RegisterUserInfo(mPhoneNum, mPassword,
+                    macAddr));
+            break;
         }
         case R.id.login_btn: {
             startToLogin();

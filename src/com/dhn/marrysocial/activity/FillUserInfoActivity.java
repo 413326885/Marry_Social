@@ -9,6 +9,8 @@ import com.dhn.marrysocial.R;
 import com.dhn.marrysocial.adapter.SelectAstroGridViewAdapter;
 import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
+import com.dhn.marrysocial.dialog.ProgressLoadDialog;
+import com.dhn.marrysocial.dialog.SelectAstroDialog;
 import com.dhn.marrysocial.roundedimageview.RoundedImageView;
 import com.dhn.marrysocial.utils.ImageUtils;
 import com.dhn.marrysocial.utils.Utils;
@@ -70,6 +72,19 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
     private static final int UPLOAD_USER_INFO_FINISH = 105;
     private static final int UPLOAD_USER_INFO_FAIL = 106;
 
+    private static final int[] ASTRO_ICON = {
+            R.drawable.ic_aries_baiyang_green,
+            R.drawable.ic_taurus_jinniu_green,
+            R.drawable.ic_gemini_shuangzhi_green,
+            R.drawable.ic_cancer_juxie_green, R.drawable.ic_leo_shizhi_green,
+            R.drawable.ic_virgo_chunv_green,
+            R.drawable.ic_libra_tiancheng_green,
+            R.drawable.ic_scorpio_tianxie_green,
+            R.drawable.ic_sagittarius_sheshou_green,
+            R.drawable.ic_capricprn_mejie_green,
+            R.drawable.ic_aquarius_shuiping_green,
+            R.drawable.ic_pisces_shuangyu_green };
+
     private RoundedImageView mHeaderImageView;
     private TextView mHeaderText;
     private EditText mUserInfoName;
@@ -83,7 +98,7 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
 
     private MarrySocialDBHelper mDBHelper;
     private ExecutorService mExecutorService;
-    private Dialog mChooseAstroDialog;
+    private SelectAstroDialog mAstroDialog;
 
     private int mGender = 1;
     private int mAstro = 1;
@@ -94,8 +109,10 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
     private Bitmap mCropPhoto = null;
     private String mCropPhotoName;
 
-    private ProgressDialog mUploadUserHeaderProgressDialog;
-    private ProgressDialog mUploadUserInfoProgressDialog;
+    private Context mContext;
+
+    // private ProgressDialog mUploadUserHeaderProgressDialog;
+    private ProgressLoadDialog mUploadUserInfoProgressDialog;
 
     TextWatcher mNameTextChangeListener = new TextWatcher() {
 
@@ -169,9 +186,11 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
                 break;
             }
             case START_TO_UPLOAD_USER_INFO: {
-                mUploadUserInfoProgressDialog = ProgressDialog.show(
-                        FillUserInfoActivity.this, "上传个人信息", "正在上传个人信息，请稍后...",
-                        false, true);
+
+                mUploadUserInfoProgressDialog = new ProgressLoadDialog(mContext);
+                mUploadUserInfoProgressDialog.setText("正在上传个人信息，请稍后...");
+                mUploadUserInfoProgressDialog.show();
+
                 mExecutorService.execute(new UploadUserInfo(mUid));
                 break;
             }
@@ -203,6 +222,9 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.fill_userinfo_layout);
+
+        mContext = this;
+
         mHeaderImageView = (RoundedImageView) findViewById(R.id.userinfo_header);
         mHeaderText = (TextView) findViewById(R.id.userinfo_header_text);
         mUserInfoName = (EditText) findViewById(R.id.userinfo_name);
@@ -536,22 +558,14 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
     }
 
     private void showAstroPicker() {
-        SelectAstroGridViewAdapter adapter = new SelectAstroGridViewAdapter(
-                this);
-        adapter.setOnItemClickListener(onAstroItemClick);
-        GridView astroList = (GridView) LayoutInflater.from(this).inflate(
-                R.layout.astro_layout, null, false);
-        astroList.setAdapter(adapter);
-        mChooseAstroDialog = new AlertDialog.Builder(this).setView(astroList)
-                .create();
-        mChooseAstroDialog.show();
+        mAstroDialog = new SelectAstroDialog(this, onAstroItemClick);
+        mAstroDialog.show();
     }
 
     SelectAstroGridViewAdapter.OnAstroItemClickListener onAstroItemClick = new SelectAstroGridViewAdapter.OnAstroItemClickListener() {
         public void onItemClick(int position) {
-            mAstroImageView
-                    .setImageResource((SelectAstroGridViewAdapter.ASTRO_ICON)[position]);
-            mChooseAstroDialog.dismiss();
+            mAstroImageView.setImageResource(ASTRO_ICON[position]);
+            mAstroDialog.dismiss();
             mAstro = position;
         };
     };

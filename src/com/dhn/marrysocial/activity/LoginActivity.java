@@ -7,11 +7,11 @@ import com.dhn.marrysocial.MarrySocialMainActivity;
 import com.dhn.marrysocial.R;
 import com.dhn.marrysocial.base.ContactsInfo;
 import com.dhn.marrysocial.common.CommonDataStructure;
+import com.dhn.marrysocial.dialog.ProgressLoadDialog;
 import com.dhn.marrysocial.utils.MD5SecretUtils;
 import com.dhn.marrysocial.utils.Utils;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -48,7 +48,7 @@ public class LoginActivity extends Activity implements OnClickListener {
     private String mPassword;
     private String mAuthorName;
     private ExecutorService mExecutorService;
-    private ProgressDialog mUploadProgressDialog;
+    private ProgressLoadDialog mUploadProgressDialog;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -137,8 +137,10 @@ public class LoginActivity extends Activity implements OnClickListener {
                 break;
             }
 
-            mUploadProgressDialog = ProgressDialog.show(this, "用户登录",
-                    "正在登录系统，请稍后...", false, true);
+            mUploadProgressDialog = new ProgressLoadDialog(this);
+            mUploadProgressDialog.setText("正在登录系统，请稍后...");
+            mUploadProgressDialog.show();
+
             mPassword = MD5SecretUtils.encrypt(mPasswordEditText.getText()
                     .toString());
             String macAddr = Utils.getMacAddress(this);

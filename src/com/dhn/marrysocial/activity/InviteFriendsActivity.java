@@ -11,6 +11,7 @@ import com.dhn.marrysocial.adapter.InviteFriendsListAdapter;
 import com.dhn.marrysocial.base.ChatMsgItem;
 import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
+import com.dhn.marrysocial.dialog.ProgressLoadDialog;
 import com.dhn.marrysocial.utils.Utils;
 
 import android.app.Activity;
@@ -52,7 +53,7 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
     private String mUid;
     private MarrySocialDBHelper mDBHelper;
     private ExecutorService mExecutorService;
-    private ProgressDialog mUploadProgressDialog;
+//    private ProgressLoadDialog mUploadProgressDialog;
 
     private RelativeLayout mReturnBtn;
     private RelativeLayout mShareBtn;

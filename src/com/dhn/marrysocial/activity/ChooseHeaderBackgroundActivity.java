@@ -30,6 +30,7 @@ import com.dhn.marrysocial.adapter.HeaderBackgroundPhotoViewAdapter;
 import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.common.CommonDataStructure.HeaderBackgroundEntry;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
+import com.dhn.marrysocial.dialog.ProgressLoadDialog;
 import com.dhn.marrysocial.utils.Utils;
 
 public class ChooseHeaderBackgroundActivity extends Activity implements
@@ -61,7 +62,7 @@ public class ChooseHeaderBackgroundActivity extends Activity implements
 
     private RelativeLayout mChooseBkgReturn;
     private GridView mChooseBkgPics;
-    private ProgressDialog mDownloadProgressDialog;
+    private ProgressLoadDialog mDownloadProgressDialog;
     private MarrySocialDBHelper mDBHelper;
     private ExecutorService mExecutorService;
     private HeaderBackgroundPhotoViewAdapter mPhotoViewAdapter;
@@ -101,8 +102,9 @@ public class ChooseHeaderBackgroundActivity extends Activity implements
         mPhotoViewAdapter.setPhotoOperationListener(mPhotoOperation);
         mChooseBkgPics.setAdapter(mPhotoViewAdapter);
 
-        mDownloadProgressDialog = ProgressDialog.show(this, "下载封面",
-                "正在为你努力的下载封面图片，请稍后...", false, true);
+        mDownloadProgressDialog = new ProgressLoadDialog(this);
+        mDownloadProgressDialog.setText("正在为你努力的下载封面图片，请稍后...");
+        mDownloadProgressDialog.show();
 
         downloadBackgroundPics();
     }

@@ -20,18 +20,18 @@ public class SelectAstroGridViewAdapter extends BaseAdapter {
     private static final String[] ASTRO_DESCRIPTION = { "白羊座", "金牛座", "双子座",
             "巨蟹座", "狮子座", "处女座", "天秤座", "天蝎座", "射手座", "摩羯座", "水瓶座", "双鱼座" };
 
-    public static final int[] ASTRO_ICON = {
-            R.drawable.ic_aries_baiyang_green,
-            R.drawable.ic_taurus_jinniu_green,
-            R.drawable.ic_gemini_shuangzhi_green,
-            R.drawable.ic_cancer_juxie_green, R.drawable.ic_leo_shizhi_green,
-            R.drawable.ic_virgo_chunv_green,
-            R.drawable.ic_libra_tiancheng_green,
-            R.drawable.ic_scorpio_tianxie_green,
-            R.drawable.ic_sagittarius_sheshou_green,
-            R.drawable.ic_capricprn_mejie_green,
-            R.drawable.ic_aquarius_shuiping_green,
-            R.drawable.ic_pisces_shuangyu_green };
+    private static final int[] ASTRO_ICON = {
+            R.drawable.ic_aries_baiyang_gray,
+            R.drawable.ic_taurus_jinniu_gray,
+            R.drawable.ic_gemini_shuangzhi_gray,
+            R.drawable.ic_cancer_juxie_gray, R.drawable.ic_leo_shizhi_gray,
+            R.drawable.ic_virgo_chunv_gray,
+            R.drawable.ic_libra_tiancheng_gray,
+            R.drawable.ic_scorpio_tianxie_gray,
+            R.drawable.ic_sagittarius_sheshou_gray,
+            R.drawable.ic_capricprn_mejie_gray,
+            R.drawable.ic_aquarius_shuiping_gray,
+            R.drawable.ic_pisces_shuangyu_gray };
 
     public interface OnAstroItemClickListener {
         public void onItemClick(int position);

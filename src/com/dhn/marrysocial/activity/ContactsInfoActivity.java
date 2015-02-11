@@ -18,6 +18,7 @@ import com.dhn.marrysocial.base.ReplysItem;
 import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.common.CommonDataStructure.HeaderBackgroundEntry;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
+import com.dhn.marrysocial.dialog.ProgressLoadDialog;
 import com.dhn.marrysocial.roundedimageview.RoundedImageView;
 import com.dhn.marrysocial.services.UploadCommentsAndBravosAndReplysIntentService;
 import com.dhn.marrysocial.utils.ImageUtils;
@@ -143,6 +144,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
             MarrySocialDBHelper.KEY_AUTHOR_NICKNAME,
             MarrySocialDBHelper.KEY_REPLY_CONTENTS,
             MarrySocialDBHelper.KEY_ADDED_TIME };
+
     private String mUserInfoUid;
     private ContactsInfo mUserInfo;
 
@@ -185,12 +187,14 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
 
     private DataSetChangeObserver mChangeObserver;
     private DataSetChangeObserver mHeaderPicChangeObserver;
-    private ProgressDialog mUploadProgressDialog;
+    private ProgressLoadDialog mUploadProgressDialog;
 
     private View mContactsInfoHeader;
     // private int mContactsInfoHeaderWidth;
     // private int mContactsInfoHeaderHeight;
     private String mHeadBkgPath;
+
+    private Context mContext;
 
     private Handler mHandler = new Handler() {
 
@@ -211,9 +215,11 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
                 break;
             }
             case START_TO_UPLOAD: {
-                mUploadProgressDialog = ProgressDialog.show(
-                        ContactsInfoActivity.this, "更改头像", "正在上传头像，请稍后...",
-                        false, true);
+
+                mUploadProgressDialog = new ProgressLoadDialog(mContext);
+                mUploadProgressDialog.setText("正在上传头像，请稍后...");
+                mUploadProgressDialog.show();
+
                 mExecutorService.execute(new UploadHeadPics(mUserInfoUid));
                 break;
             }
@@ -241,7 +247,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
                             .bitmapToDrawable(thumbHeader));
                 } else {
                     mHeaderLayoutBkg
-                    .setBackgroundResource(R.drawable.person_default_bkg);
+                            .setBackgroundResource(R.drawable.person_default_bkg);
                 }
 
             }
@@ -298,6 +304,8 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.contacts_info_layout);
+
+        mContext = this;
 
         mShowChatBtnTransAnimation = new TranslateAnimation(
                 Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
