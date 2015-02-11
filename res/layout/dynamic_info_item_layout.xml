@@ -35,7 +35,7 @@
             android:background="@drawable/gray_bkg_selector"
             android:alpha="0.8"
             android:text="SWINTER"
-            android:textColor="@color/main_color"
+            android:textColor="@color/darkgreen"
             android:textSize="18dp" />
 
         <ImageView
