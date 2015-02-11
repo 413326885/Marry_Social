@@ -140,9 +140,9 @@ public class RegisterActivity extends Activity implements OnClickListener {
                 mPasswordEditText.requestFocus();
                 return;
             }
-            if (!isAuthCodeValid()) {
-                return;
-            }
+//            if (!isAuthCodeValid()) {
+//                return;
+//            }
 
             mUploadProgressDialog = new ProgressLoadDialog(this);
             mUploadProgressDialog.setText("正在注册，请稍后...");
