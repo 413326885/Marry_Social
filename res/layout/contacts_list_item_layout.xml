@@ -4,8 +4,8 @@
     android:id="@+id/contacts_item_entry"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:descendantFocusability="blocksDescendants"
-    android:background="@drawable/gray_bkg_selector" >
+    android:background="@drawable/gray_bkg_selector"
+    android:descendantFocusability="blocksDescendants" >
 
     <com.dhn.marrysocial.roundedimageview.RoundedImageView
         android:id="@+id/contacts_person_pic"
@@ -26,14 +26,25 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="18dp"
-        android:visibility="gone"
+        android:background="@drawable/contacts_radiobtn_selector"
         android:button="@null"
-        android:background="@drawable/contacts_radiobtn_selector" />
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/contacts_new_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="18dp"
+        android:clickable="false"
+        android:focusable="false"
+        android:background="@drawable/icon_new" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@id/contacts_person_description_more"
+        android:layout_toLeftOf="@id/contacts_new_icon"
         android:layout_toRightOf="@id/contacts_person_pic"
         android:orientation="vertical" >
 
@@ -49,9 +60,9 @@
             android:id="@+id/contacts_person_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
             android:layout_marginBottom="4dp"
             android:layout_marginRight="10dp"
+            android:layout_marginTop="4dp"
             android:alpha="0.5"
             android:text="来自 章楠楠 等的通讯录"
             android:textSize="12dp" />

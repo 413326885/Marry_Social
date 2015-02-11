@@ -2,6 +2,7 @@ package com.dhn.marrysocial.adapter;
 
 import java.util.ArrayList;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -31,11 +32,13 @@ public class ContactsListAdapter extends BaseAdapter {
     private LayoutInflater mInflater;
     private ArrayList<ContactsInfo> mData;
     private AsyncHeadPicBitmapLoader mHeadPicBitmapLoader;
+    private MarrySocialDBHelper mDBHelper;
 
     public ContactsListAdapter(Context context) {
         mContext = context;
         mInflater = LayoutInflater.from(mContext);
         mHeadPicBitmapLoader = new AsyncHeadPicBitmapLoader(mContext);
+        mDBHelper = MarrySocialDBHelper.newInstance(mContext);
     }
 
     public void setDataSource(ArrayList<ContactsInfo> source) {
@@ -75,24 +78,29 @@ public class ContactsListAdapter extends BaseAdapter {
                     .findViewById(R.id.contacts_person_description);
             holder.person_description_more = (CheckBox) convertView
                     .findViewById(R.id.contacts_person_description_more);
+            holder.new_contact_icon = (ImageView) convertView
+                    .findViewById(R.id.contacts_new_icon);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
         final int pos = position;
-        holder.contacts_item_entry.setOnClickListener(new View.OnClickListener() {
-            
-            @Override
-            public void onClick(View arg0) {
-                startToViewContactsInfo(mData.get(pos).getUid());
-            }
-        });
+        holder.contacts_item_entry
+                .setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View arg0) {
+                        startToViewContactsInfo(mData.get(pos).getUid());
+                    }
+                });
 
         holder.person_name.setText(mData.get(position).getNickName());
-        mHeadPicBitmapLoader.loadImageBitmap(holder.person_pic, mData.get(position).getUid());
+        mHeadPicBitmapLoader.loadImageBitmap(holder.person_pic,
+                mData.get(position).getUid());
         holder.person_description.setText(String.format(mContext.getResources()
-                .getString(R.string.contacts_detail_more), mData.get(position).getFirstDirectFriend()));
+                .getString(R.string.contacts_detail_more), mData.get(position)
+                .getFirstDirectFriend()));
         holder.person_description_more.setChecked(false);
 
         final ViewHolder holder_temp = holder;
@@ -118,6 +126,13 @@ public class ContactsListAdapter extends BaseAdapter {
 
                     }
                 });
+
+        if (mData.get(position).isNewContact()) {
+            holder.new_contact_icon.setVisibility(View.VISIBLE);
+        } else {
+            holder.new_contact_icon.setVisibility(View.INVISIBLE);
+        }
+
         return convertView;
     }
 
@@ -127,21 +142,38 @@ public class ContactsListAdapter extends BaseAdapter {
         TextView person_name;
         TextView person_description;
         CheckBox person_description_more;
+        ImageView new_contact_icon;
     }
 
     private void startToViewContactsInfo(String uid) {
         Intent intent = new Intent(mContext, ContactsInfoActivity.class);
         intent.putExtra(MarrySocialDBHelper.KEY_UID, uid);
         mContext.startActivity(intent);
+        deleteNewContactsFlagFromContactsDB(uid);
     }
 
-//    private String transArray2String(String[] friends) {
-//        String friend = "";
-//        for (String str : friends) {
-//            friend = friend + str + ", ";
-//        }
-//
-//        friend = friend.substring(0, friend.length() - 2);
-//        return friend;
-//    }
+    private void deleteNewContactsFlagFromContactsDB(String uid) {
+
+        ContentValues insertValues = new ContentValues();
+        insertValues.put(MarrySocialDBHelper.KEY_IS_NEW, MarrySocialDBHelper.HAS_NO_MSG);
+
+        String whereClause = MarrySocialDBHelper.KEY_UID + " = "
+                + uid;
+
+        try{
+            mDBHelper.update(MarrySocialDBHelper.DATABASE_CONTACTS_TABLE,
+                    insertValues, whereClause, null);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+    }
+    // private String transArray2String(String[] friends) {
+    // String friend = "";
+    // for (String str : friends) {
+    // friend = friend + str + ", ";
+    // }
+    //
+    // friend = friend.substring(0, friend.length() - 2);
+    // return friend;
+    // }
 }

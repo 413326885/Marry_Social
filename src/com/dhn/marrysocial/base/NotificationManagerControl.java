@@ -23,6 +23,7 @@ public class NotificationManagerControl {
     private Bitmap mLargeIcon;
 
     private static final int COMMENTS_NOTIFICATION_ID = -100;
+    private static final int CONTACTS_NOTIFICATION_ID = -200;
     private static NotificationManagerControl mNotificationManagerControl = null;
 
     private NotificationManagerControl(Context context) {
@@ -96,5 +97,27 @@ public class NotificationManagerControl {
                 .setContentIntent(resultPendingIntent).setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_ALL).build();
         mNotificationManager.notify(COMMENTS_NOTIFICATION_ID, notification);
+    }
+
+    public void showIndirectsNotification(int contactsCount) {
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(mContext);
+        // Adds the back stack
+        stackBuilder.addParentStack(MarrySocialMainActivity.class);
+        // Adds the Intent to the top of the stack
+        Intent resultIntent = new Intent(mContext,
+                MarrySocialMainActivity.class);
+        stackBuilder.addNextIntent(resultIntent);
+        // Gets a PendingIntent containing the entire back stack
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Notification notification = new NotificationCompat.Builder(mContext)
+                .setLargeIcon(mLargeIcon).setSmallIcon(R.drawable.ic_launcher)
+                .setTicker("您有了新的好友").setContentTitle("新好友")
+                .setContentText("您有了新的好友").setNumber(contactsCount)
+                .setContentIntent(resultPendingIntent).setAutoCancel(true)
+                .setDefaults(Notification.DEFAULT_ALL).build();
+        mNotificationManager.notify(CONTACTS_NOTIFICATION_ID, notification);
     }
 }

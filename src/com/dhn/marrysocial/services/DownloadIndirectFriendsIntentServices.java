@@ -6,12 +6,14 @@ import java.util.concurrent.Executors;
 
 import com.dhn.marrysocial.R;
 import com.dhn.marrysocial.base.ContactsInfo;
+import com.dhn.marrysocial.base.NotificationManagerControl;
 import com.dhn.marrysocial.common.CommonDataStructure;
 import com.dhn.marrysocial.database.MarrySocialDBHelper;
 import com.dhn.marrysocial.utils.Utils;
 
 import android.app.IntentService;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -39,7 +41,9 @@ public class DownloadIndirectFriendsIntentServices extends IntentService {
     private MarrySocialDBHelper mDBHelper;
     private SharedPreferences mPrefs;
 
+    private Context mContext;
     private ExecutorService mExecutorService;
+    private NotificationManagerControl mNotificationManager;
 
     public DownloadIndirectFriendsIntentServices() {
         this(TAG);
@@ -52,11 +56,13 @@ public class DownloadIndirectFriendsIntentServices extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
+        mContext = getApplicationContext();
         mDBHelper = MarrySocialDBHelper.newInstance(this);
         mPrefs = this.getSharedPreferences(PREFS_LAIQIAN_DEFAULT, MODE_PRIVATE);
         mUid = mPrefs.getString(CommonDataStructure.UID, "");
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
                 .availableProcessors() * POOL_SIZE);
+        mNotificationManager = NotificationManagerControl.newInstance(mContext);
     }
 
     @Override
@@ -79,6 +85,8 @@ public class DownloadIndirectFriendsIntentServices extends IntentService {
 
         @Override
         public void run() {
+
+            int newContactsCount = 0;
 
             if (!isContactExistInContactsDB(mUid)) {
                 ContactsInfo authorInfo = Utils.downloadUserInfo(
@@ -107,7 +115,8 @@ public class DownloadIndirectFriendsIntentServices extends IntentService {
 
             if (!isContactExistInContactsDB(CommonDataStructure.FRIENDS_PUBLIC_ACCOUNT_UID)) {
                 ContactsInfo publicAccountInfo = Utils.downloadUserInfo(
-                        CommonDataStructure.URL_GET_USER_PROFILE, CommonDataStructure.FRIENDS_PUBLIC_ACCOUNT_UID);
+                        CommonDataStructure.URL_GET_USER_PROFILE,
+                        CommonDataStructure.FRIENDS_PUBLIC_ACCOUNT_UID);
                 if (publicAccountInfo != null) {
                     insertContactToContactsDB(publicAccountInfo);
                     String headPicOrgUrl = CommonDataStructure.HEAD_PICS_ORG_PATH
@@ -142,6 +151,7 @@ public class DownloadIndirectFriendsIntentServices extends IntentService {
             for (ContactsInfo contact : contactsList) {
                 if (!isContactExistInContactsDB(contact.getUid())) {
                     insertContactToContactsDB(contact);
+                    newContactsCount ++;
                 }
                 String headPicOrgUrl = CommonDataStructure.HEAD_PICS_ORG_PATH
                         + contact.getUid() + ".jpg";
@@ -161,6 +171,10 @@ public class DownloadIndirectFriendsIntentServices extends IntentService {
                     }
                 }
 
+            }
+
+            if (newContactsCount != 0 && !Utils.isAppRunningForeground(mContext)) {
+                mNotificationManager.showIndirectsNotification(newContactsCount);
             }
         }
 
@@ -185,6 +199,8 @@ public class DownloadIndirectFriendsIntentServices extends IntentService {
         values.put(MarrySocialDBHelper.KEY_HEADPIC, contact.getHeadPic());
         values.put(MarrySocialDBHelper.KEY_HEADER_BACKGROUND_INDEX,
                 contact.getHeaderBkgIndex());
+        values.put(MarrySocialDBHelper.KEY_IS_NEW,
+                MarrySocialDBHelper.HAS_NEW_MSG);
 
         try {
             mDBHelper.insert(MarrySocialDBHelper.DATABASE_CONTACTS_TABLE,

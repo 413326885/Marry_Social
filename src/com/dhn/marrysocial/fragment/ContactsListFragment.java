@@ -43,7 +43,8 @@ public class ContactsListFragment extends Fragment {
             MarrySocialDBHelper.KEY_INDIRECT_ID,
             MarrySocialDBHelper.KEY_DIRECT_FRIENDS_COUNT,
             MarrySocialDBHelper.KEY_HEADPIC, MarrySocialDBHelper.KEY_GENDER,
-            MarrySocialDBHelper.KEY_ASTRO, MarrySocialDBHelper.KEY_HOBBY };
+            MarrySocialDBHelper.KEY_ASTRO, MarrySocialDBHelper.KEY_HOBBY,
+            MarrySocialDBHelper.KEY_IS_NEW };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,8 +55,8 @@ public class ContactsListFragment extends Fragment {
                 getActivity().MODE_PRIVATE);
         mAuthorUid = prefs.getString(CommonDataStructure.UID, "");
 
-        mContactMembers.clear();
-        mContactMembers.addAll(loadContactsFromDB());
+//        mContactMembers.clear();
+//        mContactMembers.addAll(loadContactsFromDB());
 
         downloadUserContacts();
     }
@@ -74,6 +75,14 @@ public class ContactsListFragment extends Fragment {
         mListView.setAdapter(mListViewAdapter);
         mListView.setEmptyView(emptyView);
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mContactMembers.clear();
+        mContactMembers.addAll(loadContactsFromDB());
+        mListViewAdapter.notifyDataSetChanged();
     }
 
     private long mExitTime = 0;
@@ -119,6 +128,7 @@ public class ContactsListFragment extends Fragment {
                 int gender = Integer.valueOf(cursor.getInt(9));
                 int astro = Integer.valueOf(cursor.getInt(10));
                 int hobby = Integer.valueOf(cursor.getInt(11));
+                int isNewContact = Integer.valueOf(cursor.getInt(12));
 
                 ContactsInfo contactItem = new ContactsInfo();
                 contactItem.setUid(uid);
@@ -133,6 +143,7 @@ public class ContactsListFragment extends Fragment {
                 contactItem.setFirstDirectFriend(firstDirectFriend);
                 contactItem.setDirectFriends(directFriends);
                 contactItem.setDirectFriendsCount(directFriendsCount);
+                contactItem.setNewContact(isNewContact);
 
                 contactMembers.add(contactItem);
             }

@@ -1,5 +1,7 @@
 package com.dhn.marrysocial.base;
 
+import com.dhn.marrysocial.database.MarrySocialDBHelper;
+
 //    [uid] => 999        //系统用户唯一id
 //    [phone] => 13611221101  //用户手机号码
 //    [avatar] => 0       //用户头像id
@@ -49,6 +51,7 @@ public class ContactsInfo {
     private String mIndirectId;
     private String mHeaderBkgIndex;
     private String mIntroduce;
+    private int mIsNewContact;
 
     public String getUid() {
         return mUid;
@@ -176,5 +179,13 @@ public class ContactsInfo {
 
     public void setIntroduce(String mIntroduce) {
         this.mIntroduce = mIntroduce;
+    }
+
+    public boolean isNewContact() {
+        return mIsNewContact == MarrySocialDBHelper.HAS_NEW_MSG;
+    }
+
+    public void setNewContact(int mIsNewContact) {
+        this.mIsNewContact = mIsNewContact;
     }
 }
