@@ -79,6 +79,20 @@ public class ChatMsgViewAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
+        if (position <= 0) {
+            mLastChatTime = 0l;
+        } else {
+            ChatMsgItem smallItem = mData.get(position - 1);
+            if (smallItem == null) {
+                mLastChatTime = 0l;
+            } else {
+                String lastTime = smallItem.getAddedTime();
+                mLastChatTime = Long.valueOf(lastTime.substring(0,
+                        lastTime.length() - 6));
+            }
+        }
+
         final ChatMsgItem msgItem = mData.get(position);
 
         if (msgItem == null) {
@@ -124,7 +138,6 @@ public class ChatMsgViewAdapter extends BaseAdapter {
         String time = msgItem.getAddedTime();
         String chat_time = time.substring(0, time.length() - 6);
         if ((Long.valueOf(chat_time) - mLastChatTime) > CommonDataStructure.TIME_FIVE_MINUTES_BEFORE) {
-            mLastChatTime = Long.valueOf(chat_time);
             holder.chat_msg_send_time.setVisibility(View.VISIBLE);
             holder.chat_msg_send_time.setText(Utils.getAddedTimeTitle(mContext,
                     chat_time));
@@ -142,7 +155,7 @@ public class ChatMsgViewAdapter extends BaseAdapter {
         TextView chat_msg_send_time;
         TextView chat_msg_content;
     }
-    
+
     private void startToViewContactsInfo(String uid) {
         Intent intent = new Intent(mContext, ContactsInfoActivity.class);
         intent.putExtra(MarrySocialDBHelper.KEY_UID, uid);
