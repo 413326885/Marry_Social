@@ -101,7 +101,7 @@
             android:alpha="0.8"
             android:paddingBottom="15dp"
             android:paddingTop="15dp"
-            android:text="分享给好友"
+            android:text="分享给好友（暂未开放）"
             android:textSize="16dp" />
     </RelativeLayout>
 

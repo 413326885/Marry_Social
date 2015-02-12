@@ -101,7 +101,7 @@ public class InviteFriendsListAdapter extends BaseAdapter {
     }
 
     private void startToInviteFriendViaSMS(Context context, String phone) {
-        String body = " friends+： 体验不一样的社交，快来认识你好朋友的朋友，陌生却又熟悉，生活变得更加有趣，即刻点击下载 www.pkjiao.com/apk   （仅支持安卓用户）";
+        String body = " friends+： 体验不一样的社交，快来认识你好朋友的朋友，即刻点击下载 www.pkjiao.com（仅支持安卓用户）";
         Intent sendIntent = new Intent(Intent.ACTION_SENDTO);
         sendIntent.setData(Uri.parse("smsto:" + phone));
         sendIntent.putExtra("sms_body", body);
