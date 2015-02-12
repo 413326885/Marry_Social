@@ -102,7 +102,7 @@ public class DownloadBravosIntentServices extends IntentService {
                     String nikename = queryNikenameFromContactsDB(notice
                             .getFromUid());
                     if (nikename == null || nikename.length() == 0) {
-                        nikename = "房东是傻逼";
+                        nikename = "新年快乐";
                     }
                     if (!isBravoIdExistInBravosDB(notice.getFromUid(),
                             notice.getCommentId())) {

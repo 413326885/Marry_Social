@@ -92,7 +92,7 @@ public class RefreshListView extends ListView implements OnScrollListener {
 
         mFooterLinearLayout = (LinearLayout) LayoutInflater.from(context)
                 .inflate(R.layout.refresh_list_footer, null);
-        addFooterView(mFooterLinearLayout);
+//        addFooterView(mFooterLinearLayout);
         mFooterProgressBar = (ProgressBar) findViewById(R.id.refresh_list_footer_progressbar);
         mFooterTextView = (TextView) mFooterLinearLayout
                 .findViewById(R.id.refresh_list_footer_text);

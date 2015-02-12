@@ -6,7 +6,7 @@
     <string name="tab_trade">"交易"</string>
     <string name="tab_exerise">"活动"</string>
     <string name="tab_setting">"用户"</string>
-    <string name="exit_confirm">"请再按一次退出来钱"</string>
+    <string name="exit_confirm">"请再按一次退出friends+"</string>
 
     <string name="app_list_header_refresh_down">下拉刷新</string>
     <string name="app_list_header_refreshing">正在刷新</string>

@@ -26,5 +26,9 @@
     <color name="click_color">#ff6c88ae</color>
     <color name="main_color">#16a085</color>
     <color name="gray_background_color">#11666666</color>
+    <color name="swipe_refresh_color_01">#f1c40f</color>
+    <color name="swipe_refresh_color_02">#2ecc71</color>
+    <color name="swipe_refresh_color_03">#3498db</color>
+    <color name="swipe_refresh_color_04">#e74c3c</color>
 
 </resources>

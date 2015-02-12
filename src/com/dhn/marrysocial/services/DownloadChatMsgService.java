@@ -143,7 +143,7 @@ public class DownloadChatMsgService extends Service {
                 }
                 String nikename = queryNikenameFromContactsDB(chatUserUid);
                 if (nikename == null || nikename.length() == 0) {
-                    nikename = "房东是傻逼";
+                    nikename = "新年快乐";
                 }
                 if (!isChatIdExistInBriefChatDB(chatMsg.getChatId())) {
                     insertBriefChatMsgToBriefChatDB(chatMsg, nikename,

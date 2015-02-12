@@ -33,6 +33,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -49,11 +50,13 @@ import android.view.ViewGroup;
 
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class DynamicInfoFragment extends Fragment implements OnClickListener {
+public class DynamicInfoFragment extends Fragment implements OnClickListener,
+        SwipeRefreshLayout.OnRefreshListener {
 
     @SuppressWarnings("unused")
     private static final String TAG = "DynamicInfoFragment";
@@ -87,7 +90,9 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
             MarrySocialDBHelper.KEY_HEADPIC, MarrySocialDBHelper.KEY_GENDER,
             MarrySocialDBHelper.KEY_ASTRO, MarrySocialDBHelper.KEY_HOBBY };
 
-    private RefreshListView mListView;
+    // private RefreshListView mListView;
+    private SwipeRefreshLayout mDynamicInfoSwipeRefresh;
+    private ListView mListView;
     private DynamicInfoListAdapter mListViewAdapter;
     private ImageView mEditComment;
 
@@ -116,6 +121,8 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
     private final static int SEND_REPLY_FINISH = 109;
     private final static int REFRESH_HEADER_PIC = 110;
     private final static int NETWORK_INVALID = 111;
+
+    private final static int REFRESH_COMPLETE = 112;
 
     private AlphaAnimation mHideEditorAlphaAnimation;
     private AlphaAnimation mShowEditorAlphaAnimation;
@@ -221,6 +228,11 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
                 break;
             }
 
+            case REFRESH_COMPLETE: {
+                mDynamicInfoSwipeRefresh.setRefreshing(false);
+                break;
+            }
+
             default:
                 break;
             }
@@ -300,8 +312,15 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
 
         View view = inflater.inflate(R.layout.dynamic_info_fragment_layout,
                 container, false);
-        mListView = (RefreshListView) view
-                .findViewById(R.id.dynamic_info_listView);
+
+        mDynamicInfoSwipeRefresh = (SwipeRefreshLayout) view
+                .findViewById(R.id.dynamic_info_swipe_refresh);
+        mDynamicInfoSwipeRefresh.setOnRefreshListener(this);
+        mDynamicInfoSwipeRefresh.setColorScheme(R.color.swipe_refresh_color_01,
+                R.color.swipe_refresh_color_02, R.color.swipe_refresh_color_03,
+                R.color.swipe_refresh_color_04);
+
+        mListView = (ListView) view.findViewById(R.id.dynamic_info_listView);
         // mListView = (ListView) view.findViewById(R.id.dynamic_info_listView);
         TextView emptyView = (TextView) view
                 .findViewById(R.id.dynamic_info_list_empty);
@@ -314,7 +333,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
         mListViewAdapter.setEnterInContactsInfoActivity(false);
         mListView.setAdapter(mListViewAdapter);
         mListView.setEmptyView(emptyView);
-        mListView.setOnPullDownRefreshListener(mPullDownRefreshListener);
+        // mListView.setOnPullDownRefreshListener(mPullDownRefreshListener);
 
         mListView.setOnTouchListener(new OnTouchListener() {
 
@@ -780,5 +799,11 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener {
             }
         }
         return;
+    }
+
+    @Override
+    public void onRefresh() {
+        startToDownloadUserComments();
+        mHandler.sendEmptyMessageDelayed(REFRESH_COMPLETE, 1200);
     }
 }
