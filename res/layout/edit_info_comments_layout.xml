@@ -26,7 +26,7 @@
                 android:paddingRight="2dp"
                 android:src="@drawable/ic_return_button" />
 
-            <com.dhn.marrysocial.roundedimageview.RoundedImageView
+            <com.pkjiao.friends.mm.roundedimageview.RoundedImageView
                 android:id="@+id/edit_info_comments_person_pic"
                 android:layout_width="51dp"
                 android:layout_height="51dp"

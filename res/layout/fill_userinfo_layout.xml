@@ -45,7 +45,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" >
 
-            <com.dhn.marrysocial.roundedimageview.RoundedImageView
+            <com.pkjiao.friends.mm.roundedimageview.RoundedImageView
                 android:id="@+id/userinfo_header"
                 android:layout_width="93dp"
                 android:layout_height="93dp"

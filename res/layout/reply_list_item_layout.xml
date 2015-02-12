@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/gray_bkg_selector" >
 
-    <com.dhn.marrysocial.roundedimageview.RoundedImageView
+    <com.pkjiao.friends.mm.roundedimageview.RoundedImageView
         android:id="@+id/reply_list_person_pic"
         android:layout_width="102px"
         android:layout_height="102px"

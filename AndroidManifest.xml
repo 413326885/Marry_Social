@@ -9,7 +9,7 @@
         android:targetSdkVersion="21" />
 
     <permission
-        android:name="com.dhn.marrysocial.provider.DATASETPROVIDER"
+        android:name="com.pkjiao.friends.mm.provider.DATASETPROVIDER"
         android:protectionLevel="normal" />
 
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -30,13 +30,13 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
-        android:name=".MarrySocialApplication"
+        android:name="com.pkjiao.friends.mm.MarrySocialApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/StyledIndicators" >
         <activity
-            android:name=".WelcomeActivity"
+            android:name="com.pkjiao.friends.mm.WelcomeActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar" >
@@ -47,25 +47,25 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MarrySocialMainActivity"
+            android:name="com.pkjiao.friends.mm.MarrySocialMainActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".activity.EditCommentsActivity"
+            android:name="com.pkjiao.friends.mm.activity.EditCommentsActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".activity.ViewPhotoActivity"
+            android:name="com.pkjiao.friends.mm.activity.ViewPhotoActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".activity.ReplyListsActivity"
+            android:name="com.pkjiao.friends.mm.activity.ReplyListsActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".activity.ChatMsgActivity"
+            android:name="com.pkjiao.friends.mm.activity.ChatMsgActivity"
             android:configChanges="orientation|keyboardHidden|navigation"
-            android:parentActivityName=".MarrySocialMainActivity"
+            android:parentActivityName="com.pkjiao.friends.mm.MarrySocialMainActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan|stateHidden" >
             <meta-data
@@ -73,80 +73,80 @@
                 android:value=".MarrySocialMainActivity" />
         </activity>
         <activity
-            android:name=".activity.ContactsInfoActivity"
+            android:name="com.pkjiao.friends.mm.activity.ContactsInfoActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".activity.ChooseHeaderBackgroundActivity"
+            android:name="com.pkjiao.friends.mm.activity.ChooseHeaderBackgroundActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".activity.RegisterActivity"
+            android:name="com.pkjiao.friends.mm.activity.RegisterActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".activity.FillUserInfoActivity"
+            android:name="com.pkjiao.friends.mm.activity.FillUserInfoActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".activity.InviteFriendsActivity"
+            android:name="com.pkjiao.friends.mm.activity.InviteFriendsActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".activity.LoginActivity"
+            android:name="com.pkjiao.friends.mm.activity.LoginActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".activity.SettingsActivity"
+            android:name="com.pkjiao.friends.mm.activity.SettingsActivity"
             android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".activity.AboutUsActivity" >
+        <activity android:name="com.pkjiao.friends.mm.activity.AboutUsActivity" >
         </activity>
         <activity
-            android:name=".activity.ProductDescActivity"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
-            android:name=".activity.ChangePasswordActivity"
+            android:name="com.pkjiao.friends.mm.activity.ProductDescActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".test.MainActivity"
+            android:name="com.pkjiao.friends.mm.activity.ChangePasswordActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.pkjiao.friends.mm.test.MainActivity"
             android:screenOrientation="portrait" >
         </activity>
 
-        <service android:name=".services.ReadContactsIntentService" >
+        <service android:name="com.pkjiao.friends.mm.services.ReadContactsIntentService" >
         </service>
-        <service android:name=".services.DownloadChatMsgService" >
+        <service android:name="com.pkjiao.friends.mm.services.DownloadChatMsgService" >
         </service>
-        <service android:name=".services.UploadCommentsAndBravosAndReplysIntentService" >
+        <service android:name="com.pkjiao.friends.mm.services.UploadCommentsAndBravosAndReplysIntentService" >
         </service>
-        <service android:name=".services.DownloadCommentsIntentService" >
+        <service android:name="com.pkjiao.friends.mm.services.DownloadCommentsIntentService" >
         </service>
-        <service android:name=".services.DownloadNoticesService" >
+        <service android:name="com.pkjiao.friends.mm.services.DownloadNoticesService" >
         </service>
-        <service android:name=".services.DownloadIndirectFriendsIntentServices" >
+        <service android:name="com.pkjiao.friends.mm.services.DownloadIndirectFriendsIntentServices" >
         </service>
-        <service android:name=".services.DeleteCommentsAndBravosAndReplysIntentServices" >
+        <service android:name="com.pkjiao.friends.mm.services.DeleteCommentsAndBravosAndReplysIntentServices" >
         </service>
-        <service android:name=".services.DownloadReplysIntentServices" >
+        <service android:name="com.pkjiao.friends.mm.services.DownloadReplysIntentServices" >
         </service>
-        <service android:name=".services.DownloadBravosIntentServices" >
+        <service android:name="com.pkjiao.friends.mm.services.DownloadBravosIntentServices" >
         </service>
 
         <provider
-            android:name="com.dhn.marrysocial.provider.DBContentChangeProvider"
-            android:authorities="com.dhn.marrysocial.provider"
+            android:name="com.pkjiao.friends.mm.provider.DBContentChangeProvider"
+            android:authorities="com.pkjiao.friends.mm.provider"
             android:exported="true"
             android:grantUriPermissions="true"
-            android:permission="com.dhn.marrysocial.provider.DATASETPROVIDER"
+            android:permission="com.pkjiao.friends.mm.provider.DATASETPROVIDER"
             android:syncable="false" />
 
-        <receiver android:name="com.dhn.marrysocial.broadcast.receive.NewTipsBroadcastReceiver" >
+        <receiver android:name="com.pkjiao.friends.mm.broadcast.receive.NewTipsBroadcastReceiver" >
         </receiver>
-        <receiver android:name="com.dhn.marrysocial.broadcast.receive.AuthCodeBroadcastReceiver" >
+        <receiver android:name="com.pkjiao.friends.mm.broadcast.receive.AuthCodeBroadcastReceiver" >
         </receiver>
-        <receiver android:name="com.dhn.marrysocial.broadcast.receive.AutoRunBroadcastReceiver" >
+        <receiver android:name="com.pkjiao.friends.mm.broadcast.receive.AutoRunBroadcastReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
