@@ -747,8 +747,10 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
                     uri = Uri.fromFile(new File(
                             CommonDataStructure.HEAD_PICS_DIR_URL, fileName));
                 }
-                cropImage(uri, Utils.mCropCenterThumbPhotoWidth,
-                        Utils.mCropCenterThumbPhotoWidth, CROP_PICTURE);
+                if (uri != null) {
+                    cropImage(uri, Utils.mCropCenterThumbPhotoWidth,
+                            Utils.mCropCenterThumbPhotoWidth, CROP_PICTURE);
+                }
                 break;
             }
 

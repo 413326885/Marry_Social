@@ -413,11 +413,10 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
     }
 
     private void showHeaderPicsPicker(Context context, boolean isCrop) {
-        
+
         final boolean needCrop = isCrop;
 
-        mSelectHeaderPicDialog = new SelectHeaderPicDialog(
-                context);
+        mSelectHeaderPicDialog = new SelectHeaderPicDialog(context);
         mSelectHeaderPicDialog
                 .setOnSmallItemClickListener(new OnSmallItemClickListener() {
 
@@ -468,7 +467,7 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
                     public void onGalleryBtnClick() {
 
                         Intent openGalleryIntent = new Intent(
-                                Intent.ACTION_GET_CONTENT);
+                                Intent.ACTION_PICK);
                         if (needCrop) {
                             REQUEST_CODE = NEED_CROP;
                         } else {
@@ -482,82 +481,7 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
                     }
                 });
         mSelectHeaderPicDialog.show();
-        
-        
-//        final boolean needCrop = isCrop;
-//        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-//        builder.setTitle("图片来源");
-//        builder.setNegativeButton("取消", null);
-//        builder.setItems(new String[] { "拍照", "相册" },
-//                new DialogInterface.OnClickListener() {
-//                    // 类型码
-//                    int REQUEST_CODE;
-//
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        switch (which) {
-//                        case TAKE_PICTURE_FROM_CAMERA:
-//                            Uri imageUri = null;
-//                            String fileName = null;
-//                            Intent openCameraIntent = new Intent(
-//                                    MediaStore.ACTION_IMAGE_CAPTURE);
-//                            if (needCrop) {
-//                                REQUEST_CODE = NEED_CROP;
-//                                // 删除上一次截图的临时文件
-//                                SharedPreferences sharedPreferences = getSharedPreferences(
-//                                        CommonDataStructure.PREFS_LAIQIAN_DEFAULT,
-//                                        MODE_PRIVATE);
-//                                ImageUtils
-//                                        .deletePhotoAtPathAndName(
-//                                                CommonDataStructure.HEAD_PICS_DIR_URL,
-//                                                sharedPreferences
-//                                                        .getString(
-//                                                                CommonDataStructure.HEAD_PIC_NAME,
-//                                                                ""));
-//
-//                                // 保存本次截图临时文件名字
-//                                fileName = "head_pic_" + mUid + ".jpg";
-//                                Editor editor = sharedPreferences.edit();
-//                                editor.putString(
-//                                        CommonDataStructure.HEAD_PIC_NAME,
-//                                        fileName);
-//                                editor.commit();
-//                            } else {
-//                                REQUEST_CODE = TAKE_PICTURE_FROM_CAMERA;
-//                                fileName = "image.jpg";
-//                            }
-//                            imageUri = Uri.fromFile(new File(
-//                                    CommonDataStructure.HEAD_PICS_DIR_URL,
-//                                    fileName));
-//                            // 指定照片保存路径（SD卡），image.jpg为一个临时文件，每次拍照后这个图片都会被替换
-//                            openCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-//                                    imageUri);
-//                            startActivityForResult(openCameraIntent,
-//                                    REQUEST_CODE);
-//                            break;
-//
-//                        case CHOOSE_PICTURE_FROM_GALLERY:
-//                            Intent openGalleryIntent = new Intent(
-//                                    Intent.ACTION_GET_CONTENT);
-//                            if (needCrop) {
-//                                REQUEST_CODE = NEED_CROP;
-//                            } else {
-//                                REQUEST_CODE = CHOOSE_PICTURE_FROM_GALLERY;
-//                            }
-//                            openGalleryIntent
-//                                    .setDataAndType(
-//                                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-//                                            "image/*");
-//                            startActivityForResult(openGalleryIntent,
-//                                    REQUEST_CODE);
-//                            break;
-//
-//                        default:
-//                            break;
-//                        }
-//                    }
-//                });
-//        builder.create().show();
+
     }
 
     // 截取图片
@@ -593,8 +517,11 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
                     uri = Uri.fromFile(new File(
                             CommonDataStructure.HEAD_PICS_DIR_URL, fileName));
                 }
-                cropImage(uri, Utils.mCropCenterThumbPhotoWidth,
-                        Utils.mCropCenterThumbPhotoWidth, CROP_PICTURE);
+                if (uri != null) {
+                    cropImage(uri, Utils.mCropCenterThumbPhotoWidth,
+                            Utils.mCropCenterThumbPhotoWidth, CROP_PICTURE);
+                }
+
                 break;
             }
 
