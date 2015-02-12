@@ -656,7 +656,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener,
             mHandler.sendEmptyMessageDelayed(SHOW_SOFT_INPUT_METHOD, 50);
             Message msg = mHandler.obtainMessage();
             msg.what = SELECT_SPECIFIED_LIST_ITEM;
-            msg.arg1 = position + 1;
+            msg.arg1 = position;
             mHandler.sendMessage(msg);
         }
     };

@@ -838,8 +838,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
 
         final boolean needCrop = isCrop;
 
-        mSelectHeaderPicDialog = new SelectHeaderPicDialog(
-                context);
+        mSelectHeaderPicDialog = new SelectHeaderPicDialog(context);
         mSelectHeaderPicDialog
                 .setOnSmallItemClickListener(new OnSmallItemClickListener() {
 
@@ -889,8 +888,10 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
                     @Override
                     public void onGalleryBtnClick() {
 
+                        // Intent openGalleryIntent = new Intent(
+                        // Intent.ACTION_GET_CONTENT);
                         Intent openGalleryIntent = new Intent(
-                                Intent.ACTION_GET_CONTENT);
+                                Intent.ACTION_PICK);
                         if (needCrop) {
                             REQUEST_CODE = NEED_CROP;
                         } else {

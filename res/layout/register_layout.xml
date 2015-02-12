@@ -115,6 +115,7 @@
             android:clickable="true"
             android:gravity="center_horizontal"
             android:text="登录"
+            android:padding="5dp"
             android:textColor="@color/white"
             android:textSize="16dp" />
     </RelativeLayout>
