@@ -53,7 +53,7 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
     private String mUid;
     private MarrySocialDBHelper mDBHelper;
     private ExecutorService mExecutorService;
-//    private ProgressLoadDialog mUploadProgressDialog;
+    // private ProgressLoadDialog mUploadProgressDialog;
 
     private RelativeLayout mReturnBtn;
     private RelativeLayout mShareBtn;
@@ -68,20 +68,20 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
         public void handleMessage(Message msg) {
             switch (msg.what) {
             case START_TO_UPLOAD_CONTACTS: {
-//                mUploadProgressDialog = ProgressDialog.show(
-//                        InviteFriendsActivity.this, "获取好友",
-//                        "正在为你计算好友信息，请稍后...", false, true);
+                // mUploadProgressDialog = ProgressDialog.show(
+                // InviteFriendsActivity.this, "获取好友",
+                // "正在为你计算好友信息，请稍后...", false, true);
                 mExecutorService.execute(new UploadUserContacts(mUid));
                 break;
             }
             case UPLOAD_CONTACTS_SUCCESS: {
-//                mUploadProgressDialog.dismiss();
+                // mUploadProgressDialog.dismiss();
                 loadContactsFromDirectDB();
                 mListAdapter.notifyDataSetChanged();
                 break;
             }
             case READ_USER_CONTACTS_FAIL: {
-//                mUploadProgressDialog.dismiss();
+                // mUploadProgressDialog.dismiss();
                 Toast.makeText(InviteFriendsActivity.this, "读取通讯录失败", 1000)
                         .show();
                 break;
@@ -161,7 +161,10 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
 
         @Override
         public void run() {
-            ArrayList<CommonDataStructure.ContactEntry> contacts = getAllContactsInfo();
+
+            ArrayList<CommonDataStructure.ContactEntry> contacts = new ArrayList<CommonDataStructure.ContactEntry>();
+            contacts.addAll(getAllContactsInfo());
+
             if (contacts == null || contacts.size() == 0) {
                 mHandler.sendEmptyMessage(READ_USER_CONTACTS_FAIL);
                 return;
@@ -218,9 +221,9 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
                 contact.contact_sortKey = sortKey;
                 contact.contact_phone_number = contact_phone;
                 contact.contact_id = contact_id;
-                if (name != null && isPhoneNumber(contact_phone)) {
-                    contactMembers.add(contact);
-                }
+                // if (name != null && isPhoneNumber(contact_phone)) {
+                contactMembers.add(contact);
+                // }
 
             }
 
@@ -348,7 +351,8 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
 
     private void redirectToMainActivity() {
         Intent intent = new Intent(this, MarrySocialMainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK
+                | intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
     }

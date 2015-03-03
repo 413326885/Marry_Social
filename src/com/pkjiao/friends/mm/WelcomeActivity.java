@@ -7,7 +7,6 @@ import com.pkjiao.friends.mm.activity.LoginActivity;
 import com.pkjiao.friends.mm.activity.RegisterActivity;
 import com.pkjiao.friends.mm.common.CommonDataStructure;
 import com.pkjiao.friends.mm.services.DownloadIndirectFriendsIntentServices;
-import com.pkjiao.friends.mm.services.ReadContactsIntentService;
 import com.pkjiao.friends.mm.test.MainActivity;
 
 import android.app.Activity;
