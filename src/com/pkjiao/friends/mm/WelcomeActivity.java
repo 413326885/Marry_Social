@@ -52,7 +52,7 @@ public class WelcomeActivity extends Activity {
         setContentView(view);
 
         AlphaAnimation animation = new AlphaAnimation(0.3f, 1.0f);
-        animation.setDuration(2000);
+        animation.setDuration(100);
         view.startAnimation(animation);
         animation.setAnimationListener(new AnimationListener() {
             @Override

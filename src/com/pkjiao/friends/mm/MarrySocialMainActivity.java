@@ -133,6 +133,12 @@ public class MarrySocialMainActivity extends FragmentActivity implements
 
             @Override
             public void onPageScrollStateChanged(int arg0) {
+                int fragmentIndex = mViewPager.getCurrentItem();
+                if (fragmentIndex == CONTACTSLISTFRAGMENT) {
+                    Fragment currentFragment = mViewPagerFragmentAdapter
+                            .getItem(fragmentIndex);
+                    ((ContactsListFragment) currentFragment).dismissPopupWindow();
+                }
             }
         });
     }

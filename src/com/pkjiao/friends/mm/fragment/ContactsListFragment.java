@@ -3,10 +3,13 @@ package com.pkjiao.friends.mm.fragment;
 import java.util.ArrayList;
 
 import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.adapter.ContactsExpandableListAdapter;
 import com.pkjiao.friends.mm.adapter.ContactsListAdapter;
 import com.pkjiao.friends.mm.base.ContactsInfo;
 import com.pkjiao.friends.mm.common.CommonDataStructure;
 import com.pkjiao.friends.mm.database.MarrySocialDBHelper;
+import com.pkjiao.friends.mm.pingyin.AssortView;
+import com.pkjiao.friends.mm.pingyin.AssortView.OnTouchAssortButtonListener;
 import com.pkjiao.friends.mm.services.DownloadIndirectFriendsIntentServices;
 import com.pkjiao.friends.mm.utils.Utils;
 
@@ -17,11 +20,14 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ExpandableListView;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 public class ContactsListFragment extends Fragment {
@@ -31,8 +37,10 @@ public class ContactsListFragment extends Fragment {
 
     private String mAuthorUid;
 
-    private ListView mListView;
-    private ContactsListAdapter mListViewAdapter;
+    private AssortView mAssortView;
+    private PopupWindow mPopupWindow;
+    private ExpandableListView mListView;
+    private ContactsExpandableListAdapter mListViewAdapter;
     private ArrayList<ContactsInfo> mContactMembers = new ArrayList<ContactsInfo>();
 
     private static final String[] PROJECTION = { MarrySocialDBHelper.KEY_UID,
@@ -55,9 +63,6 @@ public class ContactsListFragment extends Fragment {
                 getActivity().MODE_PRIVATE);
         mAuthorUid = prefs.getString(CommonDataStructure.UID, "");
 
-//        mContactMembers.clear();
-//        mContactMembers.addAll(loadContactsFromDB());
-
         downloadUserContacts();
     }
 
@@ -67,22 +72,60 @@ public class ContactsListFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.contacts_list_fragment_layout,
                 container, false);
-        mListView = (ListView) view.findViewById(R.id.contacts_listview);
+        mListView = (ExpandableListView) view
+                .findViewById(R.id.contacts_listview);
         TextView emptyView = (TextView) view
                 .findViewById(R.id.contacts_list_empty);
-        mListViewAdapter = new ContactsListAdapter(getActivity());
+        mListViewAdapter = new ContactsExpandableListAdapter(getActivity());
+        mContactMembers.clear();
+        mContactMembers.addAll(loadContactsFromDB());
         mListViewAdapter.setDataSource(mContactMembers);
         mListView.setAdapter(mListViewAdapter);
         mListView.setEmptyView(emptyView);
+
+        mAssortView = (AssortView) view.findViewById(R.id.assort_view);
+        mAssortView.setOnTouchAssortListener(new OnTouchAssortButtonListener() {
+
+            View layoutView = LayoutInflater.from(getActivity()).inflate(
+                    R.layout.contacts_list_show_assort_char_layout, null);
+            TextView text = (TextView) layoutView
+                    .findViewById(R.id.assort_char);
+
+            public void onTouchAssortButtonListener(String str) {
+                int index = mListViewAdapter.getAssort().getHashList()
+                        .indexOfKey(str);
+                if (index != -1) {
+                    mListView.setSelectedGroup(index);
+                }
+                if (mPopupWindow != null) {
+                    text.setText(str);
+                } else {
+                    mPopupWindow = new PopupWindow(layoutView, 160, 160, false);
+                    mPopupWindow.showAtLocation(getActivity().getWindow()
+                            .getDecorView(), Gravity.CENTER, 0, 0);
+                }
+                text.setText(str);
+            }
+
+            public void onTouchAssortButtonUP() {
+                if (mPopupWindow != null)
+                    mPopupWindow.dismiss();
+                mPopupWindow = null;
+            }
+        });
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mContactMembers.clear();
-        mContactMembers.addAll(loadContactsFromDB());
+//        mContactMembers.clear();
+//        mContactMembers.addAll(loadContactsFromDB());
+//        mListViewAdapter.setDataSource(mContactMembers);
         mListViewAdapter.notifyDataSetChanged();
+        for (int i = 0, length = mListViewAdapter.getGroupCount(); i < length; i++) {
+            mListView.expandGroup(i);
+        }
     }
 
     private long mExitTime = 0;
@@ -161,5 +204,15 @@ public class ContactsListFragment extends Fragment {
         Intent serviceIntent = new Intent(getActivity(),
                 DownloadIndirectFriendsIntentServices.class);
         getActivity().startService(serviceIntent);
+    }
+
+    public void dismissPopupWindow() {
+        if (mPopupWindow != null) {
+            mPopupWindow.dismiss();
+        }
+
+        mPopupWindow = null;
+        mAssortView.clear();
+
     }
 }

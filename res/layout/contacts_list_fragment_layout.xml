@@ -3,11 +3,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <ListView
+    <ExpandableListView
         android:id="@+id/contacts_listview"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-    </ListView>
+        android:layout_height="wrap_content"
+        android:groupIndicator="@null"
+        android:scrollbars="none" >
+    </ExpandableListView>
+
+    <com.pkjiao.friends.mm.pingyin.AssortView
+        android:id="@+id/assort_view"
+        android:layout_width="30dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/default_bkg_selector" >
+    </com.pkjiao.friends.mm.pingyin.AssortView>
 
     <TextView
         android:id="@+id/contacts_list_empty"
