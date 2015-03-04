@@ -51,106 +51,11 @@
             android:textSize="16dp" />
     </RelativeLayout>
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:layout_below="@id/invite_friends_toolbar"
-        android:alpha="0.6"
-        android:background="@color/darkgray" />
-
-    <TextView
-        android:id="@+id/invite_friends_desc"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/invite_friends_toolbar"
-        android:alpha="0.8"
-        android:paddingBottom="15dp"
-        android:paddingLeft="24dp"
-        android:paddingRight="24dp"
-        android:paddingTop="15dp"
-        android:text="添加喜欢的好友，认识更多他们的朋友"
-        android:textSize="16dp" />
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:layout_below="@id/invite_friends_desc"
-        android:alpha="0.6"
-        android:background="@color/darkgray" />
-
-    <RelativeLayout
-        android:id="@+id/share_group"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/invite_friends_desc" >
-
-        <ImageView
-            android:id="@+id/share_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
-            android:src="@drawable/ic_share" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@id/share_icon"
-            android:alpha="0.8"
-            android:paddingBottom="15dp"
-            android:paddingTop="15dp"
-            android:text="分享给好友（暂未开放）"
-            android:textSize="16dp" />
-    </RelativeLayout>
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:layout_below="@id/share_group"
-        android:alpha="0.6"
-        android:background="@color/darkgray" />
-
-    <RelativeLayout
-        android:id="@+id/contacts_group"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/share_group" >
-
-        <ImageView
-            android:id="@+id/contacts_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
-            android:src="@drawable/ic_contact" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@id/contacts_icon"
-            android:alpha="0.8"
-            android:paddingBottom="15dp"
-            android:paddingTop="15dp"
-            android:text="通讯录好友"
-            android:textSize="16dp" />
-    </RelativeLayout>
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:layout_below="@id/contacts_group"
-        android:alpha="0.6"
-        android:background="@color/darkgray" />
-
     <ListView
         android:id="@+id/invite_friends_listView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/contacts_group"
+        android:layout_below="@id/invite_friends_toolbar"
         android:listSelector="#00000000" >
     </ListView>
 

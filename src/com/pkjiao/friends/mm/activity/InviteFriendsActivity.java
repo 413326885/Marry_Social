@@ -12,6 +12,7 @@ import com.pkjiao.friends.mm.base.ChatMsgItem;
 import com.pkjiao.friends.mm.common.CommonDataStructure;
 import com.pkjiao.friends.mm.database.MarrySocialDBHelper;
 import com.pkjiao.friends.mm.dialog.ProgressLoadDialog;
+import com.pkjiao.friends.mm.roundedimageview.RoundedImageView;
 import com.pkjiao.friends.mm.utils.Utils;
 
 import android.app.Activity;
@@ -27,12 +28,15 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.ContactsContract;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class InviteFriendsActivity extends Activity implements OnClickListener {
@@ -57,6 +61,8 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
 
     private RelativeLayout mReturnBtn;
     private RelativeLayout mShareBtn;
+    private View mInviteFriendsHeader;
+    private RelativeLayout mShareToFriendsBtn;
     private ListView mListView;
     private Button mInviteFinishBtn;
     private InviteFriendsListAdapter mListAdapter;
@@ -98,14 +104,19 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.invite_friends_layout);
         mReturnBtn = (RelativeLayout) findViewById(R.id.invite_friends_return);
-        mShareBtn = (RelativeLayout) findViewById(R.id.share_group);
         mListView = (ListView) findViewById(R.id.invite_friends_listView);
         mInviteFinishBtn = (Button) findViewById(R.id.invite_friends_finish);
 
         mReturnBtn.setOnClickListener(this);
-        mShareBtn.setOnClickListener(this);
         mInviteFinishBtn.setOnClickListener(this);
 
+        mInviteFriendsHeader = (LayoutInflater.from(this).inflate(
+                R.layout.invite_friends_header_layout, null, false));
+        mShareToFriendsBtn = (RelativeLayout) mInviteFriendsHeader
+                .findViewById(R.id.share_group);
+        mShareToFriendsBtn.setOnClickListener(this);
+
+        mListView.addHeaderView(mInviteFriendsHeader);
         mListAdapter = new InviteFriendsListAdapter(this);
         mListAdapter.setDataSource(mContactList);
         mListView.setAdapter(mListAdapter);
