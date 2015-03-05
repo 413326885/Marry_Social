@@ -412,12 +412,12 @@ public class CommonDataStructure {
         public String headerBkgIndex;
     }
 
-    public static class ContactEntry {
-        public String contact_name;
-        public String contact_phone_number;
-        public int contact_id;
-        public String contact_sortKey;
-        public String direct_id;
-        public String direct_uid;
-    }
+//    public static class ContactEntry {
+//        public String contact_name;
+//        public String contact_phone_number;
+//        public int contact_id;
+//        public String contact_sortKey;
+//        public String direct_id;
+//        public String direct_uid;
+//    }
 }

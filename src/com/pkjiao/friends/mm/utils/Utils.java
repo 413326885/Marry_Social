@@ -2789,12 +2789,12 @@ public class Utils {
         return macAddress;
     }
 
-    public static ArrayList<CommonDataStructure.ContactEntry> uploadUserContacts(
+    public static ArrayList<ContactsInfo> uploadUserContacts(
             String RequestURL, String uid,
-            ArrayList<CommonDataStructure.ContactEntry> contactsList) {
+            ArrayList<ContactsInfo> contactsList) {
 
         Log.e(TAG, "nannan uploadUserContacts ");
-        ArrayList<CommonDataStructure.ContactEntry> contactEntrys = new ArrayList<CommonDataStructure.ContactEntry>();
+        ArrayList<ContactsInfo> contactEntrys = new ArrayList<ContactsInfo>();
 
         URL postUrl = null;
         DataOutputStream outputStream = null;
@@ -2824,11 +2824,11 @@ public class Utils {
             outputStream = new DataOutputStream(connection.getOutputStream());
 
             JSONArray contactList = new JSONArray();
-            for (CommonDataStructure.ContactEntry entry : contactsList) {
+            for (ContactsInfo entry : contactsList) {
                 JSONObject contact = new JSONObject();
-                contact.put(CommonDataStructure.FULLNAME, entry.contact_name);
+                contact.put(CommonDataStructure.FULLNAME, entry.getNickName());
                 contact.put(CommonDataStructure.PHONE,
-                        entry.contact_phone_number);
+                        entry.getPhoneNum());
                 contact.put(CommonDataStructure.UID, uid);
 
                 contactList.put(contact);
@@ -2871,11 +2871,11 @@ public class Utils {
                 String direct_id = result.getString("directid");
                 String direct_uid = result.getString("directuid");
                 String direct_name = result.getString("directname");
-                CommonDataStructure.ContactEntry entry = new CommonDataStructure.ContactEntry();
-                entry.direct_id = direct_id;
-                entry.direct_uid = direct_uid;
-                entry.contact_phone_number = phone_num;
-                entry.contact_name = direct_name;
+                ContactsInfo entry = new ContactsInfo();
+                entry.setDirectId(direct_id);
+                entry.setUid(direct_uid);
+                entry.setNickName(direct_name);
+                entry.setPhoneNum(phone_num);
                 contactEntrys.add(entry);
             }
 

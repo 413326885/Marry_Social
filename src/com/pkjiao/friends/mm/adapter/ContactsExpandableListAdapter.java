@@ -45,7 +45,6 @@ public class ContactsExpandableListAdapter extends BaseExpandableListAdapter {
 
     public ContactsExpandableListAdapter(Context context) {
         super();
-
         mContext = context;
         mInflater = LayoutInflater.from(mContext);
         mHeadPicBitmapLoader = new AsyncHeadPicBitmapLoader(mContext);
@@ -54,10 +53,10 @@ public class ContactsExpandableListAdapter extends BaseExpandableListAdapter {
 
     public void setDataSource(ArrayList<ContactsInfo> source) {
         mData = source;
-        sort();
+        sortByFirstChar();
     }
 
-    private void sort() {
+    private void sortByFirstChar() {
         for (ContactsInfo contact : mData) {
             assort.getHashList().add(contact);
         }

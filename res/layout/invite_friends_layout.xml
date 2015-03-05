@@ -51,12 +51,22 @@
             android:textSize="16dp" />
     </RelativeLayout>
 
-    <ListView
+    <ExpandableListView
         android:id="@+id/invite_friends_listView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/invite_friends_toolbar"
-        android:listSelector="#00000000" >
-    </ListView>
+        android:groupIndicator="@null"
+        android:scrollbars="none" >
+    </ExpandableListView>
+
+    <com.pkjiao.friends.mm.pingyin.AssortView
+        android:id="@+id/invite_friends_assort_view"
+        android:layout_width="30dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/invite_friends_toolbar"
+        android:background="@drawable/default_bkg_selector" >
+    </com.pkjiao.friends.mm.pingyin.AssortView>
 
 </RelativeLayout>

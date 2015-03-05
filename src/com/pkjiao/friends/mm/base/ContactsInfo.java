@@ -52,6 +52,7 @@ public class ContactsInfo {
     private String mHeaderBkgIndex;
     private String mIntroduce;
     private int mIsNewContact;
+    private String mDirectId;
 
     public String getUid() {
         return mUid;
@@ -163,6 +164,14 @@ public class ContactsInfo {
 
     public void setIndirectId(String mIndirectId) {
         this.mIndirectId = mIndirectId;
+    }
+
+    public String getDirectId() {
+        return mDirectId;
+    }
+
+    public void setDirectId(String mDirectId) {
+        this.mDirectId = mDirectId;
     }
 
     public String getHeaderBkgIndex() {

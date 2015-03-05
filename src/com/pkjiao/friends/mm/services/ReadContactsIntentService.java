@@ -13,6 +13,7 @@ import android.provider.ContactsContract;
 import android.widget.Toast;
 
 import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.base.ContactsInfo;
 import com.pkjiao.friends.mm.common.CommonDataStructure;
 import com.pkjiao.friends.mm.database.MarrySocialDBHelper;
 import com.pkjiao.friends.mm.utils.Utils;
@@ -59,19 +60,19 @@ public class ReadContactsIntentService extends IntentService {
             return;
         }
 
-        ArrayList<CommonDataStructure.ContactEntry> contacts = getAllContactsInfo();
+        ArrayList<ContactsInfo> contacts = getAllContactsInfo();
         if (contacts == null || contacts.size() == 0) {
             return;
         }
 
-        ArrayList<CommonDataStructure.ContactEntry> resultEntry = Utils
+        ArrayList<ContactsInfo> resultEntry = Utils
                 .uploadUserContacts(CommonDataStructure.URL_UPLOAD_CONTACTS,
                         mUid, contacts);
         if (resultEntry == null || resultEntry.size() == 0) {
             return;
         }
-        for (CommonDataStructure.ContactEntry entry : resultEntry) {
-            if (!isPhoneNumExistInDirectDB(entry.contact_phone_number)) {
+        for (ContactsInfo entry : resultEntry) {
+            if (!isPhoneNumExistInDirectDB(entry.getPhoneNum())) {
                 insertContactsToDirectDB(entry);
             } else {
                 updateDirectIdToDirectDB(entry);
@@ -85,8 +86,8 @@ public class ReadContactsIntentService extends IntentService {
         super.onDestroy();
     }
 
-    private ArrayList<CommonDataStructure.ContactEntry> getAllContactsInfo() {
-        ArrayList<CommonDataStructure.ContactEntry> contactMembers = new ArrayList<CommonDataStructure.ContactEntry>();
+    private ArrayList<ContactsInfo> getAllContactsInfo() {
+        ArrayList<ContactsInfo> contactMembers = new ArrayList<ContactsInfo>();
         Cursor cursor = null;
 
         try {
@@ -99,22 +100,16 @@ public class ReadContactsIntentService extends IntentService {
                             "data1" }, null, null, "sort_key");
 
             while (cursor.moveToNext()) {
-                CommonDataStructure.ContactEntry contact = new CommonDataStructure.ContactEntry();
+                ContactsInfo contact = new ContactsInfo();
                 String name = cursor.getString(0);
-                String sortKey = getSortKey(cursor.getString(1));
                 String contact_phone = cursor
                         .getString(cursor
                                 .getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                int contact_id = cursor
-                        .getInt(cursor
-                                .getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID));
-                contact.contact_name = name;
-                contact.contact_sortKey = sortKey;
-                contact.contact_phone_number = contact_phone;
-                contact.contact_id = contact_id;
-                if (name != null && isPhoneNumber(contact_phone)) {
+                contact.setNickName(name);
+                contact.setPhoneNum(contact_phone);
+//                if (name != null && isPhoneNumber(contact_phone)) {
                     contactMembers.add(contact);
-                }
+//                }
 
             }
 
@@ -146,16 +141,16 @@ public class ReadContactsIntentService extends IntentService {
     }
 
     private void insertContactsToDirectDB(
-            CommonDataStructure.ContactEntry contact) {
+            ContactsInfo contact) {
 
         ContentValues insertValues = new ContentValues();
         insertValues.put(MarrySocialDBHelper.KEY_PHONE_NUM,
-                contact.contact_phone_number);
+                contact.getPhoneNum());
         insertValues
-                .put(MarrySocialDBHelper.KEY_REALNAME, contact.contact_name);
-        insertValues.put(MarrySocialDBHelper.KEY_DIRECT_ID, contact.direct_id);
+                .put(MarrySocialDBHelper.KEY_REALNAME, contact.getNickName());
+        insertValues.put(MarrySocialDBHelper.KEY_DIRECT_ID, contact.getDirectId());
         insertValues
-                .put(MarrySocialDBHelper.KEY_DIRECT_UID, contact.direct_uid);
+                .put(MarrySocialDBHelper.KEY_DIRECT_UID, contact.getUid());
 
         try {
             mDBHelper.insert(MarrySocialDBHelper.DATABASE_DIRECT_TABLE,
@@ -167,17 +162,17 @@ public class ReadContactsIntentService extends IntentService {
     }
 
     private void updateDirectIdToDirectDB(
-            CommonDataStructure.ContactEntry contact) {
+            ContactsInfo contact) {
 
         ContentValues values = new ContentValues();
         values.put(MarrySocialDBHelper.KEY_PHONE_NUM,
-                contact.contact_phone_number);
-        values.put(MarrySocialDBHelper.KEY_REALNAME, contact.contact_name);
-        values.put(MarrySocialDBHelper.KEY_DIRECT_ID, contact.direct_id);
-        values.put(MarrySocialDBHelper.KEY_DIRECT_UID, contact.direct_uid);
+                contact.getPhoneNum());
+        values.put(MarrySocialDBHelper.KEY_REALNAME, contact.getNickName());
+        values.put(MarrySocialDBHelper.KEY_DIRECT_ID, contact.getDirectId());
+        values.put(MarrySocialDBHelper.KEY_DIRECT_UID, contact.getUid());
 
         String whereClause = MarrySocialDBHelper.KEY_PHONE_NUM + " = " + '"'
-                + contact.contact_phone_number + '"';
+                + contact.getPhoneNum() + '"';
 
         try {
             mDBHelper.update(MarrySocialDBHelper.DATABASE_DIRECT_TABLE, values,

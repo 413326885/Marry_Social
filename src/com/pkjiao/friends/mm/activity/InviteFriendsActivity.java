@@ -7,17 +7,22 @@ import java.util.regex.Pattern;
 
 import com.dhn.marrysocial.R;
 import com.pkjiao.friends.mm.MarrySocialMainActivity;
+import com.pkjiao.friends.mm.adapter.InviteFriendsExpandableListAdapter;
 import com.pkjiao.friends.mm.adapter.InviteFriendsListAdapter;
 import com.pkjiao.friends.mm.base.ChatMsgItem;
+import com.pkjiao.friends.mm.base.ContactsInfo;
 import com.pkjiao.friends.mm.common.CommonDataStructure;
 import com.pkjiao.friends.mm.database.MarrySocialDBHelper;
 import com.pkjiao.friends.mm.dialog.ProgressLoadDialog;
+import com.pkjiao.friends.mm.pingyin.AssortView;
+import com.pkjiao.friends.mm.pingyin.AssortView.OnTouchAssortButtonListener;
 import com.pkjiao.friends.mm.roundedimageview.RoundedImageView;
 import com.pkjiao.friends.mm.utils.Utils;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -28,13 +33,16 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.ContactsContract;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,12 +70,17 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
     private RelativeLayout mReturnBtn;
     private RelativeLayout mShareBtn;
     private View mInviteFriendsHeader;
+    private TextView mInviteDescriptionBtn;
     private RelativeLayout mShareToFriendsBtn;
-    private ListView mListView;
+    private RelativeLayout mContactFriendsBtn;
+    private ExpandableListView mListView;
     private Button mInviteFinishBtn;
-    private InviteFriendsListAdapter mListAdapter;
+    private InviteFriendsExpandableListAdapter mListAdapter;
 
-    private ArrayList<CommonDataStructure.ContactEntry> mContactList = new ArrayList<CommonDataStructure.ContactEntry>();
+    private AssortView mAssortView;
+    private PopupWindow mPopupWindow;
+
+    private ArrayList<ContactsInfo> mContactList = new ArrayList<ContactsInfo>();
 
     private Handler mHandler = new Handler() {
         @Override
@@ -103,8 +116,11 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.invite_friends_layout);
+        
+        final Activity context = this;
+        
         mReturnBtn = (RelativeLayout) findViewById(R.id.invite_friends_return);
-        mListView = (ListView) findViewById(R.id.invite_friends_listView);
+        mListView = (ExpandableListView) findViewById(R.id.invite_friends_listView);
         mInviteFinishBtn = (Button) findViewById(R.id.invite_friends_finish);
 
         mReturnBtn.setOnClickListener(this);
@@ -112,14 +128,54 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
 
         mInviteFriendsHeader = (LayoutInflater.from(this).inflate(
                 R.layout.invite_friends_header_layout, null, false));
+        mInviteDescriptionBtn = (TextView) mInviteFriendsHeader
+                .findViewById(R.id.invite_friends_desc);
         mShareToFriendsBtn = (RelativeLayout) mInviteFriendsHeader
                 .findViewById(R.id.share_group);
+        mContactFriendsBtn = (RelativeLayout) mInviteFriendsHeader
+                .findViewById(R.id.contacts_group);
+        mInviteDescriptionBtn.setOnClickListener(this);
         mShareToFriendsBtn.setOnClickListener(this);
+        mContactFriendsBtn.setOnClickListener(this);
+
+        mContactList.clear();
+        mContactList.addAll(getAllContactsInfo());
 
         mListView.addHeaderView(mInviteFriendsHeader);
-        mListAdapter = new InviteFriendsListAdapter(this);
+        mListAdapter = new InviteFriendsExpandableListAdapter(this);
         mListAdapter.setDataSource(mContactList);
         mListView.setAdapter(mListAdapter);
+
+        mAssortView = (AssortView) findViewById(R.id.invite_friends_assort_view);
+        mAssortView.setOnTouchAssortListener(new OnTouchAssortButtonListener() {
+
+            View layoutView = LayoutInflater.from(context).inflate(
+                    R.layout.contacts_list_show_assort_char_layout, null);
+            TextView text = (TextView) layoutView
+                    .findViewById(R.id.assort_char);
+
+            public void onTouchAssortButtonListener(String str) {
+                int index = mListAdapter.getAssort().getHashList()
+                        .indexOfKey(str);
+                if (index != -1) {
+                    mListView.setSelectedGroup(index);
+                }
+                if (mPopupWindow != null) {
+                    text.setText(str);
+                } else {
+                    mPopupWindow = new PopupWindow(layoutView, 160, 160, false);
+                    mPopupWindow.showAtLocation(context.getWindow()
+                            .getDecorView(), Gravity.CENTER, 0, 0);
+                }
+                text.setText(str);
+            }
+
+            public void onTouchAssortButtonUP() {
+                if (mPopupWindow != null)
+                    mPopupWindow.dismiss();
+                mPopupWindow = null;
+            }
+        });
 
         SharedPreferences prefs = this.getSharedPreferences(
                 CommonDataStructure.PREFS_LAIQIAN_DEFAULT, MODE_PRIVATE);
@@ -128,11 +184,16 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
                 .availableProcessors() * POOL_SIZE);
 
-        mContactList.clear();
-        mContactList.addAll(getAllContactsInfo());
-        mListAdapter.notifyDataSetChanged();
-
         mHandler.sendEmptyMessage(START_TO_UPLOAD_CONTACTS);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mListAdapter.notifyDataSetChanged();
+        for (int i = 0, length = mListAdapter.getGroupCount(); i < length; i++) {
+            mListView.expandGroup(i);
+        }
     }
 
     @Override
@@ -142,6 +203,8 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
             this.finish();
             break;
         }
+        case R.id.invite_friends_desc:
+        case R.id.contacts_group:
         case R.id.share_group: {
             break;
         }
@@ -173,7 +236,7 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
         @Override
         public void run() {
 
-            ArrayList<CommonDataStructure.ContactEntry> contacts = new ArrayList<CommonDataStructure.ContactEntry>();
+            ArrayList<ContactsInfo> contacts = new ArrayList<ContactsInfo>();
             contacts.addAll(getAllContactsInfo());
 
             if (contacts == null || contacts.size() == 0) {
@@ -185,15 +248,13 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
             // insertContactsToDirectDB(entry);
             // }
             // }
-            ArrayList<CommonDataStructure.ContactEntry> resultEntry = Utils
-                    .uploadUserContacts(
-                            CommonDataStructure.URL_UPLOAD_CONTACTS, uid,
-                            contacts);
+            ArrayList<ContactsInfo> resultEntry = Utils.uploadUserContacts(
+                    CommonDataStructure.URL_UPLOAD_CONTACTS, uid, contacts);
             if (resultEntry == null || resultEntry.size() == 0) {
                 return;
             }
-            for (CommonDataStructure.ContactEntry entry : resultEntry) {
-                if (!isPhoneNumExistInDirectDB(entry.contact_phone_number)) {
+            for (ContactsInfo entry : resultEntry) {
+                if (!isPhoneNumExistInDirectDB(entry.getPhoneNum())) {
                     insertContactsToDirectDB(entry);
                 } else {
                     updateDirectIdToDirectDB(entry);
@@ -205,8 +266,8 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
 
     }
 
-    private ArrayList<CommonDataStructure.ContactEntry> getAllContactsInfo() {
-        ArrayList<CommonDataStructure.ContactEntry> contactMembers = new ArrayList<CommonDataStructure.ContactEntry>();
+    private ArrayList<ContactsInfo> getAllContactsInfo() {
+        ArrayList<ContactsInfo> contactMembers = new ArrayList<ContactsInfo>();
         Cursor cursor = null;
 
         try {
@@ -219,19 +280,13 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
                             "data1" }, null, null, "sort_key");
 
             while (cursor.moveToNext()) {
-                CommonDataStructure.ContactEntry contact = new CommonDataStructure.ContactEntry();
+                ContactsInfo contact = new ContactsInfo();
                 String name = cursor.getString(0);
-                String sortKey = getSortKey(cursor.getString(1));
                 String contact_phone = cursor
                         .getString(cursor
                                 .getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                int contact_id = cursor
-                        .getInt(cursor
-                                .getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID));
-                contact.contact_name = name;
-                contact.contact_sortKey = sortKey;
-                contact.contact_phone_number = contact_phone;
-                contact.contact_id = contact_id;
+                contact.setNickName(name);
+                contact.setPhoneNum(contact_phone);
                 // if (name != null && isPhoneNumber(contact_phone)) {
                 contactMembers.add(contact);
                 // }
@@ -246,36 +301,36 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
         return contactMembers;
     }
 
-    private static String getSortKey(String sortKeyString) {
-        String key = sortKeyString.substring(0, 1).toUpperCase();
-        if (key.matches("[A-Z]")) {
-            return key;
-        }
-        return "#";
-    }
+    // private static String getSortKey(String sortKeyString) {
+    // String key = sortKeyString.substring(0, 1).toUpperCase();
+    // if (key.matches("[A-Z]")) {
+    // return key;
+    // }
+    // return "#";
+    // }
+    //
+    // private static boolean isPhoneNumber(String input) {
+    //
+    // if (input == null) {
+    // return false;
+    // }
+    //
+    // String regex =
+    // "1([\\d]{10})|((\\+[0-9]{2,4})?\\(?[0-9]+\\)?-?)?[0-9]{7,8}";
+    // Pattern p = Pattern.compile(regex);
+    // return p.matcher(input).matches();
+    // }
 
-    private static boolean isPhoneNumber(String input) {
-
-        if (input == null) {
-            return false;
-        }
-
-        String regex = "1([\\d]{10})|((\\+[0-9]{2,4})?\\(?[0-9]+\\)?-?)?[0-9]{7,8}";
-        Pattern p = Pattern.compile(regex);
-        return p.matcher(input).matches();
-    }
-
-    private void insertContactsToDirectDB(
-            CommonDataStructure.ContactEntry contact) {
+    private void insertContactsToDirectDB(ContactsInfo contact) {
 
         ContentValues insertValues = new ContentValues();
         insertValues.put(MarrySocialDBHelper.KEY_PHONE_NUM,
-                contact.contact_phone_number);
-        insertValues
-                .put(MarrySocialDBHelper.KEY_REALNAME, contact.contact_name);
-        insertValues.put(MarrySocialDBHelper.KEY_DIRECT_ID, contact.direct_id);
-        insertValues
-                .put(MarrySocialDBHelper.KEY_DIRECT_UID, contact.direct_uid);
+                contact.getPhoneNum());
+        insertValues.put(MarrySocialDBHelper.KEY_REALNAME,
+                contact.getNickName());
+        insertValues.put(MarrySocialDBHelper.KEY_DIRECT_ID,
+                contact.getDirectId());
+        insertValues.put(MarrySocialDBHelper.KEY_DIRECT_UID, contact.getUid());
 
         try {
             mDBHelper.insert(MarrySocialDBHelper.DATABASE_DIRECT_TABLE,
@@ -285,18 +340,16 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
         }
     }
 
-    private void updateDirectIdToDirectDB(
-            CommonDataStructure.ContactEntry contact) {
+    private void updateDirectIdToDirectDB(ContactsInfo contact) {
 
         ContentValues values = new ContentValues();
-        values.put(MarrySocialDBHelper.KEY_PHONE_NUM,
-                contact.contact_phone_number);
-        values.put(MarrySocialDBHelper.KEY_REALNAME, contact.contact_name);
-        values.put(MarrySocialDBHelper.KEY_DIRECT_ID, contact.direct_id);
-        values.put(MarrySocialDBHelper.KEY_DIRECT_UID, contact.direct_uid);
+        values.put(MarrySocialDBHelper.KEY_PHONE_NUM, contact.getPhoneNum());
+        values.put(MarrySocialDBHelper.KEY_REALNAME, contact.getNickName());
+        values.put(MarrySocialDBHelper.KEY_DIRECT_ID, contact.getDirectId());
+        values.put(MarrySocialDBHelper.KEY_DIRECT_UID, contact.getUid());
 
         String whereClause = MarrySocialDBHelper.KEY_PHONE_NUM + " = " + '"'
-                + contact.contact_phone_number + '"';
+                + contact.getPhoneNum() + '"';
         try {
             mDBHelper.update(MarrySocialDBHelper.DATABASE_DIRECT_TABLE, values,
                     whereClause, null);
@@ -343,11 +396,11 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
             }
 
             while (cursor.moveToNext()) {
-                CommonDataStructure.ContactEntry item = new CommonDataStructure.ContactEntry();
-                item.contact_phone_number = cursor.getString(0);
-                item.contact_name = cursor.getString(1);
-                item.direct_id = cursor.getString(2);
-                item.direct_uid = cursor.getString(3);
+                ContactsInfo item = new ContactsInfo();
+                item.setPhoneNum(cursor.getString(0));
+                item.setNickName(cursor.getString(1));
+                item.setDirectId(cursor.getString(2));
+                item.setUid(cursor.getString(3));
                 mContactList.add(item);
             }
 

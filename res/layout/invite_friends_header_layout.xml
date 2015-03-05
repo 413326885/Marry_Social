@@ -7,7 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
         android:alpha="0.6"
-        android:background="@color/darkgray" />
+        android:background="@color/lightgray" />
 
     <TextView
         android:id="@+id/invite_friends_desc"
@@ -26,7 +26,7 @@
         android:layout_height="0.5dp"
         android:layout_below="@id/invite_friends_desc"
         android:alpha="0.6"
-        android:background="@color/darkgray" />
+        android:background="@color/lightgray" />
 
     <RelativeLayout
         android:id="@+id/share_group"
@@ -60,7 +60,7 @@
         android:layout_height="0.5dp"
         android:layout_below="@id/share_group"
         android:alpha="0.6"
-        android:background="@color/darkgray" />
+        android:background="@color/lightgray" />
 
     <RelativeLayout
         android:id="@+id/contacts_group"
@@ -88,12 +88,5 @@
             android:text="通讯录好友"
             android:textSize="16dp" />
     </RelativeLayout>
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:layout_below="@id/contacts_group"
-        android:alpha="0.6"
-        android:background="@color/darkgray" />
 
 </RelativeLayout>

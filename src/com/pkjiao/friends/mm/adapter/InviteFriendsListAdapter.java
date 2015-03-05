@@ -3,6 +3,7 @@ package com.pkjiao.friends.mm.adapter;
 import java.util.ArrayList;
 
 import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.base.ContactsInfo;
 import com.pkjiao.friends.mm.common.CommonDataStructure;
 
 import android.content.Context;
@@ -22,14 +23,14 @@ public class InviteFriendsListAdapter extends BaseAdapter {
 
     private Context mContext;
     private LayoutInflater mInflater;
-    private ArrayList<CommonDataStructure.ContactEntry> mData;
+    private ArrayList<ContactsInfo> mData;
 
     public InviteFriendsListAdapter(Context context) {
         mContext = context;
         mInflater = LayoutInflater.from(mContext);
     }
 
-    public void setDataSource(ArrayList<CommonDataStructure.ContactEntry> source) {
+    public void setDataSource(ArrayList<ContactsInfo> source) {
         mData = source;
     }
 
@@ -51,7 +52,7 @@ public class InviteFriendsListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        final CommonDataStructure.ContactEntry contact = mData.get(position);
+        final ContactsInfo contact = mData.get(position);
 
         ViewHolder holder = null;
         if (convertView == null) {
@@ -69,9 +70,9 @@ public class InviteFriendsListAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        holder.invite_friend_name.setText(contact.contact_name);
-        if (contact.direct_uid == null
-                || "0".equalsIgnoreCase(contact.direct_uid)) {
+        holder.invite_friend_name.setText(contact.getNickName());
+        if (contact.getUid() == null
+                || "0".equalsIgnoreCase(contact.getUid())) {
             holder.invite_friend_registed.setVisibility(View.GONE);
         } else {
             holder.invite_friend_registed.setVisibility(View.VISIBLE);
@@ -87,7 +88,7 @@ public class InviteFriendsListAdapter extends BaseAdapter {
                     @Override
                     public void onClick(View v) {
                         startToInviteFriendViaSMS(mContext,
-                                contact.contact_phone_number);
+                                contact.getPhoneNum());
                     }
                 });
 
