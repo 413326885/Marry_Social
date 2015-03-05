@@ -140,7 +140,7 @@ public class MarrySocialDBHelper {
             + "photo_remote_org_path text, header_background_index text, current_status integer )";
 
     private static final String DATABASE_CREATE_DIRECTS = "create table directs ("
-            + "_id integer PRIMARY KEY AUTOINCREMENT, phone_num text, realname text, "
+            + "_id integer PRIMARY KEY AUTOINCREMENT, phone_num text, nickname text, "
             + "direct_id text, direct_uid text )";
 
     private final Context mContext;

@@ -24,7 +24,7 @@ public class ReadContactsIntentService extends IntentService {
 
     private static final String[] DIRECT_PROJECTION = {
             MarrySocialDBHelper.KEY_PHONE_NUM,
-            MarrySocialDBHelper.KEY_REALNAME,
+            MarrySocialDBHelper.KEY_NICKNAME,
             MarrySocialDBHelper.KEY_DIRECT_ID,
             MarrySocialDBHelper.KEY_DIRECT_UID };
 
@@ -147,7 +147,7 @@ public class ReadContactsIntentService extends IntentService {
         insertValues.put(MarrySocialDBHelper.KEY_PHONE_NUM,
                 contact.getPhoneNum());
         insertValues
-                .put(MarrySocialDBHelper.KEY_REALNAME, contact.getNickName());
+                .put(MarrySocialDBHelper.KEY_NICKNAME, contact.getNickName());
         insertValues.put(MarrySocialDBHelper.KEY_DIRECT_ID, contact.getDirectId());
         insertValues
                 .put(MarrySocialDBHelper.KEY_DIRECT_UID, contact.getUid());
@@ -167,7 +167,7 @@ public class ReadContactsIntentService extends IntentService {
         ContentValues values = new ContentValues();
         values.put(MarrySocialDBHelper.KEY_PHONE_NUM,
                 contact.getPhoneNum());
-        values.put(MarrySocialDBHelper.KEY_REALNAME, contact.getNickName());
+        values.put(MarrySocialDBHelper.KEY_NICKNAME, contact.getNickName());
         values.put(MarrySocialDBHelper.KEY_DIRECT_ID, contact.getDirectId());
         values.put(MarrySocialDBHelper.KEY_DIRECT_UID, contact.getUid());
 
