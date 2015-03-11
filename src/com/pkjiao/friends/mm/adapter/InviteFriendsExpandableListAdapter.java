@@ -30,7 +30,8 @@ import com.pkjiao.friends.mm.pingyin.AssortPinyinList;
 import com.pkjiao.friends.mm.pingyin.LanguageComparator;
 import com.pkjiao.friends.mm.pingyin.LanguageComparator_CN;
 
-public class InviteFriendsExpandableListAdapter extends BaseExpandableListAdapter {
+public class InviteFriendsExpandableListAdapter extends
+        BaseExpandableListAdapter {
 
     @SuppressWarnings("unused")
     private static final String TAG = "InviteFriendsExpandableListAdapter";
@@ -42,7 +43,6 @@ public class InviteFriendsExpandableListAdapter extends BaseExpandableListAdapte
     private Context mContext;
     private LayoutInflater mInflater;
     private ArrayList<ContactsInfo> mData;
-
 
     public InviteFriendsExpandableListAdapter(Context context) {
         super();
@@ -61,8 +61,7 @@ public class InviteFriendsExpandableListAdapter extends BaseExpandableListAdapte
         }
         assort.getHashList().sortKeyComparator(cnSort);
         for (int i = 0, length = assort.getHashList().size(); i < length; i++) {
-            Collections.sort((assort.getHashList().getValueListIndex(i)),
-                    sort);
+            Collections.sort((assort.getHashList().getValueListIndex(i)), sort);
         }
 
     }
@@ -100,23 +99,20 @@ public class InviteFriendsExpandableListAdapter extends BaseExpandableListAdapte
         if (contactsItem.getUid() == null
                 || "0".equalsIgnoreCase(contactsItem.getUid())) {
             holder.invite_friend_registed.setVisibility(View.GONE);
+            holder.invite_friends_btn.setVisibility(View.VISIBLE);
+            holder.invite_friends_btn
+                    .setOnClickListener(new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View v) {
+                            startToInviteFriendViaSMS(mContext,
+                                    contactsItem.getPhoneNum());
+                        }
+                    });
         } else {
             holder.invite_friend_registed.setVisibility(View.VISIBLE);
+            holder.invite_friends_btn.setVisibility(View.GONE);
         }
-        // if ("0".equalsIgnoreCase(contact.direct_uid)) {
-        // holder.invite_friend_registed.setVisibility(View.GONE);
-        // } else {
-        // holder.invite_friend_registed.setVisibility(View.VISIBLE);
-        // }
-        holder.invite_friends_btn
-                .setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        startToInviteFriendViaSMS(mContext,
-                                contactsItem.getPhoneNum());
-                    }
-                });
 
         return convertView;
 
@@ -142,8 +138,8 @@ public class InviteFriendsExpandableListAdapter extends BaseExpandableListAdapte
             ViewGroup parent) {
         GroupViewHolder holder = null;
         if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.contacts_list_group_item_layout,
-                    parent, false);
+            convertView = mInflater.inflate(
+                    R.layout.contacts_list_group_item_layout, parent, false);
             holder = new GroupViewHolder();
             holder.group_name = (TextView) convertView
                     .findViewById(R.id.contacts_group_name);
@@ -153,7 +149,7 @@ public class InviteFriendsExpandableListAdapter extends BaseExpandableListAdapte
             holder = (GroupViewHolder) convertView.getTag();
         }
         holder.group_name.setText(assort.getFirstChar(assort.getHashList()
-              .getValueIndex(group, 0).getNickName()));
+                .getValueIndex(group, 0).getNickName()));
 
         return convertView;
     }

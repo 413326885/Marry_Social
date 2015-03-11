@@ -20,19 +20,6 @@
             android:text="愚蠢的小萝卜"
             android:textSize="16dp" />
 
-        <TextView
-            android:id="@+id/invite_friend_registed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:visibility="gone"
-            android:layout_toRightOf="@id/invite_friend_name"
-            android:paddingLeft="4dp"
-            android:alpha="0.8"
-            android:text="已注册"
-            android:textSize="10dp"
-            android:textColor="@color/main_color" />
-
         <Button
             android:id="@+id/invite_friends_btn"
             android:layout_width="wrap_content"
@@ -46,6 +33,20 @@
             android:clickable="true"
             android:text="邀请"
             android:textColor="@color/white"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/invite_friend_registed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="20dp"
+            android:layout_marginRight="60dp"
+            android:layout_marginTop="20dp"
+            android:paddingLeft="4dp"
+            android:text="已注册"
+            android:textColor="@color/main_color"
             android:textSize="16dp" />
     </RelativeLayout>
 

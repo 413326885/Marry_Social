@@ -116,9 +116,15 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.invite_friends_layout);
-        
+
         final Activity context = this;
-        
+        SharedPreferences prefs = this.getSharedPreferences(
+                CommonDataStructure.PREFS_LAIQIAN_DEFAULT, MODE_PRIVATE);
+        mUid = prefs.getString(CommonDataStructure.UID, "");
+        mDBHelper = MarrySocialDBHelper.newInstance(this);
+        mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
+                .availableProcessors() * POOL_SIZE);
+
         mReturnBtn = (RelativeLayout) findViewById(R.id.invite_friends_return);
         mListView = (ExpandableListView) findViewById(R.id.invite_friends_listView);
         mInviteFinishBtn = (Button) findViewById(R.id.invite_friends_finish);
@@ -139,7 +145,7 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
         mContactFriendsBtn.setOnClickListener(this);
 
         mContactList.clear();
-        mContactList.addAll(getAllContactsInfo());
+        mContactList.addAll(getNeedInviteContacts());
 
         mListView.addHeaderView(mInviteFriendsHeader);
         mListAdapter = new InviteFriendsExpandableListAdapter(this);
@@ -176,13 +182,6 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
                 mPopupWindow = null;
             }
         });
-
-        SharedPreferences prefs = this.getSharedPreferences(
-                CommonDataStructure.PREFS_LAIQIAN_DEFAULT, MODE_PRIVATE);
-        mUid = prefs.getString(CommonDataStructure.UID, "");
-        mDBHelper = MarrySocialDBHelper.newInstance(this);
-        mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
-                .availableProcessors() * POOL_SIZE);
 
         mHandler.sendEmptyMessage(START_TO_UPLOAD_CONTACTS);
     }
@@ -264,6 +263,40 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
             mHandler.sendEmptyMessage(UPLOAD_CONTACTS_SUCCESS);
         }
 
+    }
+
+    private ArrayList<ContactsInfo> getNeedInviteContacts() {
+        ArrayList<ContactsInfo> contactMembers = new ArrayList<ContactsInfo>();
+        Cursor cursor = null;
+
+        try {
+            cursor = mDBHelper.query(MarrySocialDBHelper.DATABASE_DIRECT_TABLE,
+                    DIRECT_PROJECTION, null, null, null, null, null,
+                    null);
+            if (cursor == null || cursor.getCount() == 0) {
+                contactMembers.addAll(getAllContactsInfo());
+                return contactMembers;
+            }
+
+            while (cursor.moveToNext()) {
+                ContactsInfo contact = new ContactsInfo();
+                String phone_num = cursor.getString(0);
+                String nickname = cursor.getString(1);
+                String direct_id = cursor.getString(2);
+                String direct_uid = cursor.getString(3);
+                contact.setNickName(nickname);
+                contact.setPhoneNum(phone_num);
+                contact.setDirectId(direct_id);
+                contact.setUid(direct_uid);
+                contactMembers.add(contact);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            cursor.close();
+        }
+        return contactMembers;
     }
 
     private ArrayList<ContactsInfo> getAllContactsInfo() {
