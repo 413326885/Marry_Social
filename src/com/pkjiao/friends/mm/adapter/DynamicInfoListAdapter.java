@@ -466,7 +466,8 @@ public class DynamicInfoListAdapter extends BaseAdapter {
             String url = uId + "_" + bucketId + "_" + commentId + "_"
                     + (index + 1);
             commentPics.get(index).setVisibility(View.VISIBLE);
-            mAsyncBitmapLoader.loadImageBitmap(commentPics.get(index), url);
+            mAsyncBitmapLoader.loadImageBitmap(commentPics.get(index), url,
+                    AsyncImageViewBitmapLoader.NEED_DECODE_FROM_CLOUD);
         }
 
     }

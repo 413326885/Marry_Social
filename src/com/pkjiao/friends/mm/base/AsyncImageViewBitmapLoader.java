@@ -27,12 +27,15 @@ public class AsyncImageViewBitmapLoader {
     @SuppressWarnings("unused")
     private static final String TAG = "AsyncImageViewBitmapLoader";
 
-    private final String[] IMAGES_PROJECTION = {
+    private static final String[] IMAGES_PROJECTION = {
             MarrySocialDBHelper.KEY_PHOTO_NAME,
             MarrySocialDBHelper.KEY_PHOTO_LOCAL_PATH,
             MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH,
             MarrySocialDBHelper.KEY_PHOTO_REMOTE_THUMB_PATH,
             MarrySocialDBHelper.KEY_PHOTO_ID };
+
+    public static final int NEED_DECODE_FROM_CLOUD = 1;
+    public static final int DECODE_LOCAL_DIRECT = 2;
 
     private MemoryCache mMemoryCache = new MemoryCache();
     private FileCache mFileCache;
@@ -55,7 +58,7 @@ public class AsyncImageViewBitmapLoader {
     // final int stub_id = R.drawable.stub;
 
     // 最主要的方法
-    public void loadImageBitmap(ImageView imageView, String url) {
+    public void loadImageBitmap(ImageView imageView, String url, int from) {
 
         mImageViews.put(imageView, url);
 
@@ -65,14 +68,33 @@ public class AsyncImageViewBitmapLoader {
             imageView.setImageBitmap(bitmap);
         } else {
             // 若没有的话则开启新线程加载图片
-            queuePhoto(url, imageView);
+            queuePhoto(url, imageView, from);
             imageView.setBackgroundResource(R.color.gray_background_color);
         }
     }
 
-    private void queuePhoto(String url, ImageView imageView) {
-        PhotoToLoad p = new PhotoToLoad(url, imageView);
+    private void queuePhoto(String url, ImageView imageView, int from) {
+        PhotoToLoad p = new PhotoToLoad(url, imageView, from);
         mExecutorService.submit(new PhotosLoader(p));
+    }
+
+    private Bitmap getLocalBitmap(String url) {
+        File f = mFileCache.getFile(url);
+
+        // 先从文件缓存中查找是否有
+        Bitmap bitmap = decodeFile(f);
+        if (bitmap != null)
+            return bitmap;
+
+        Bitmap thumbBitmap = null;
+        Bitmap cropBitmap = null;
+        if (url != null && url.length() != 0) {
+            thumbBitmap = Utils.decodeThumbnail(url, null,
+                    Utils.mThumbPhotoWidth);
+            cropBitmap = Utils.resizeAndCropCenter(thumbBitmap,
+                    Utils.mCropCenterThumbPhotoWidth, true);
+        }
+        return cropBitmap;
     }
 
     private Bitmap getBitmap(String url) {
@@ -192,10 +214,12 @@ public class AsyncImageViewBitmapLoader {
     private class PhotoToLoad {
         public String url;
         public ImageView imageView;
+        public int from;
 
-        public PhotoToLoad(String u, ImageView i) {
+        public PhotoToLoad(String u, ImageView i, int f) {
             url = u;
             imageView = i;
+            from = f;
         }
     }
 
@@ -210,7 +234,19 @@ public class AsyncImageViewBitmapLoader {
         public void run() {
             if (imageViewReused(photoToLoad))
                 return;
-            Bitmap bmp = getBitmap(photoToLoad.url);
+            Bitmap bmp = null;
+            switch (photoToLoad.from) {
+            case NEED_DECODE_FROM_CLOUD: {
+                bmp = getBitmap(photoToLoad.url);
+                break;
+            }
+            case DECODE_LOCAL_DIRECT: {
+                bmp = getLocalBitmap(photoToLoad.url);
+                break;
+            }
+            default:
+                break;
+            }
             mMemoryCache.put(photoToLoad.url, bmp);
             if (imageViewReused(photoToLoad))
                 return;

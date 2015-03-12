@@ -51,4 +51,9 @@
         <item name="android:textSize">16sp</item>
     </style>
 
+    <style name="album_popup_anim">
+        <item name="android:windowEnterAnimation">@anim/slide_in</item>
+        <item name="android:windowExitAnimation">@anim/slide_out</item>
+    </style>
+
 </resources>

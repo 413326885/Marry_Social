@@ -7,7 +7,6 @@
     <string name="tab_exerise">"活动"</string>
     <string name="tab_setting">"用户"</string>
     <string name="exit_confirm">"请再按一次退出friends+"</string>
-
     <string name="app_list_header_refresh_down">下拉刷新</string>
     <string name="app_list_header_refreshing">正在刷新</string>
     <string name="app_list_header_refresh_up">松开刷新</string>
@@ -15,10 +14,9 @@
     <string name="app_list_footer_more">更多</string>
     <string name="app_list_footer_loading">正在加载</string>
     <string name="network_not_available">网络连接不可用</string>
-<!--     <string name="contacts_detail">来自 %s... 等的通讯录</string> -->
+    <!-- <string name="contacts_detail">来自 %s... 等的通讯录</string> -->
     <string name="contacts_detail_more">来自 %s 的通讯录</string>
     <string name="add_pics_limit">您最多可以添加 9 张照片</string>
-
     <string name="time_just_now">刚刚</string>
     <string name="time_five_seconds_before">五分钟前</string>
     <string name="time_ten_seconds_before">十分钟前</string>
@@ -29,9 +27,10 @@
     <string name="time_three_hours_before">三小时前</string>
     <string name="time_five_hours_before">五小时前</string>
     <string name="time_one_day_before">一天前</string>
-
     <string name="dynamic_bravo_tips_title">共 %1$d 个人点赞</string>
     <string name="dynamic_reply_tips_title">显示全部 %1$d 条评论</string>
-
     <string name="chat_msg_friends_more">来自 %1$s 等%2$d位好友的通信录</string>
+    <string name="album_photo_count">共 %1$d 张</string>
+    <string name="choose_photo_finish">完成(%1$d/%2$d)</string>
+
 </resources>

@@ -16,6 +16,7 @@ import com.pkjiao.friends.mm.base.ContactsInfo;
 import com.pkjiao.friends.mm.common.CommonDataStructure;
 import com.pkjiao.friends.mm.database.MarrySocialDBHelper;
 import com.pkjiao.friends.mm.dialog.ProgressLoadDialog;
+import com.pkjiao.friends.mm.photochoose.PhotoChooseActivity;
 import com.pkjiao.friends.mm.provider.DBContentChangeProvider;
 import com.pkjiao.friends.mm.roundedimageview.RoundedImageView;
 import com.pkjiao.friends.mm.services.UploadCommentsAndBravosAndReplysIntentService;
@@ -272,21 +273,28 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
         }
     }
 
+//    private void pickPhotosFromGallery() {
+//        if (!checkAndResetSelectPhotoButtonStatus()) {
+//            Toast.makeText(this, R.string.add_pics_limit, Toast.LENGTH_SHORT)
+//                    .show();
+//            return;
+//        }
+//        try {
+//            Intent intent = new Intent();
+//            intent.setType("image/*");
+//            intent.setAction(Intent.ACTION_GET_CONTENT);
+//            startActivityForResult(intent, SELECTION_PHOTO_FROM_GALLERY);
+//        } catch (ActivityNotFoundException e) {
+//        }
+//    }
+
     private void pickPhotosFromGallery() {
-        if (!checkAndResetSelectPhotoButtonStatus()) {
-            Toast.makeText(this, R.string.add_pics_limit, Toast.LENGTH_SHORT)
-                    .show();
-            return;
-        }
         try {
-            Intent intent = new Intent();
-            intent.setType("image/*");
-            intent.setAction(Intent.ACTION_GET_CONTENT);
+            Intent intent = new Intent(this, PhotoChooseActivity.class);
             startActivityForResult(intent, SELECTION_PHOTO_FROM_GALLERY);
         } catch (ActivityNotFoundException e) {
         }
     }
-
     private void pickPhotosFromCamera() {
         if (!checkAndResetSelectPhotoButtonStatus()) {
             Toast.makeText(this, R.string.add_pics_limit, Toast.LENGTH_SHORT)
