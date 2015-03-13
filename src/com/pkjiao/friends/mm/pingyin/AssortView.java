@@ -52,7 +52,7 @@ public class AssortView extends Button {
 
         for (int i = 0, length = mAssortChars.length; i < length; i++) {
             mPaint.setAntiAlias(true);
-            mPaint.setTypeface(Typeface.DEFAULT_BOLD);
+            mPaint.setTypeface(Typeface.DEFAULT);
             mPaint.setColor(Color.GRAY);
             mPaint.setTextSize(30);
             if (i == mSelectedIndex) {
