@@ -1475,7 +1475,7 @@ public class Utils {
                 resp.append(line);
             }
 
-             Log.e(TAG, "nannan downloadNoticesList resp  = " + resp);
+            Log.e(TAG, "nannan downloadNoticesList resp  = " + resp);
             JSONObject response = new JSONObject(resp.toString());
             String code = response.getString("code");
             if (!"200".equalsIgnoreCase(code)) {
@@ -2789,9 +2789,8 @@ public class Utils {
         return macAddress;
     }
 
-    public static ArrayList<ContactsInfo> uploadUserContacts(
-            String RequestURL, String uid,
-            ArrayList<ContactsInfo> contactsList) {
+    public static ArrayList<ContactsInfo> uploadUserContacts(String RequestURL,
+            String uid, ArrayList<ContactsInfo> contactsList) {
 
         Log.e(TAG, "nannan uploadUserContacts ");
         ArrayList<ContactsInfo> contactEntrys = new ArrayList<ContactsInfo>();
@@ -2827,8 +2826,7 @@ public class Utils {
             for (ContactsInfo entry : contactsList) {
                 JSONObject contact = new JSONObject();
                 contact.put(CommonDataStructure.FULLNAME, entry.getNickName());
-                contact.put(CommonDataStructure.PHONE,
-                        entry.getPhoneNum());
+                contact.put(CommonDataStructure.PHONE, entry.getPhoneNum());
                 contact.put(CommonDataStructure.UID, uid);
 
                 contactList.put(contact);
@@ -3149,5 +3147,15 @@ public class Utils {
         }
 
         return false;
+    }
+
+    public static int dp2px(Context context, float dpValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
+    }
+
+    public static int px2dp(Context context, float pxValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (pxValue / scale + 0.5f);
     }
 }

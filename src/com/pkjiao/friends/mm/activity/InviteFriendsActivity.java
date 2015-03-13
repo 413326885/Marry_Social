@@ -169,7 +169,9 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
                 if (mPopupWindow != null) {
                     text.setText(str);
                 } else {
-                    mPopupWindow = new PopupWindow(layoutView, 160, 160, false);
+                    int width = Utils.dp2px(InviteFriendsActivity.this, 80);
+                    int height = Utils.dp2px(InviteFriendsActivity.this, 80);
+                    mPopupWindow = new PopupWindow(layoutView, width, height, false);
                     mPopupWindow.showAtLocation(context.getWindow()
                             .getDecorView(), Gravity.CENTER, 0, 0);
                 }

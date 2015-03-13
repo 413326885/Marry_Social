@@ -100,7 +100,9 @@ public class ContactsListFragment extends Fragment {
                 if (mPopupWindow != null) {
                     text.setText(str);
                 } else {
-                    mPopupWindow = new PopupWindow(layoutView, 160, 160, false);
+                    int width = Utils.dp2px(getActivity(), 80);
+                    int height = Utils.dp2px(getActivity(), 80);
+                    mPopupWindow = new PopupWindow(layoutView, width, height, false);
                     mPopupWindow.showAtLocation(getActivity().getWindow()
                             .getDecorView(), Gravity.CENTER, 0, 0);
                 }
