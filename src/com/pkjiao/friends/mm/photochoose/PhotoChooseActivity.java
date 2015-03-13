@@ -8,6 +8,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.common.CommonDataStructure;
+import com.pkjiao.friends.mm.database.MarrySocialDBHelper;
 import com.pkjiao.friends.mm.dialog.ProgressLoadDialog;
 import com.pkjiao.friends.mm.photochoose.PhotoChooseAdapter.OnPhotoClickListener;
 
@@ -15,6 +17,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -98,19 +101,23 @@ public class PhotoChooseActivity extends Activity {
     private Activity mContext;
     private ExecutorService mExecutorService;
 
+    private int mMaxPhotoCount;
+
     private Handler mHandler = new Handler() {
         public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
             case LOADPHOTOFINISH: {
-                mProgressDialog.dismiss();
                 if (mAlbums != null && mAlbums.size() != 0) {
-                    AlbumItem item = mAlbums.get(0);
+                    int choosedAlbumIndex = findMaxAlbum(mAlbums);
+                    AlbumItem item = mAlbums.get(choosedAlbumIndex);
                     mChoosedAlbumBucketId = item.getAlbumBucketId();
                     mChoosedAlbumName = item.getAlbumDisplayName();
                     mChoosedAlbumPhotosCount = item.getAlbumPhotoCount();
-                    mAlbums.get(0).setIsSelected(true);
+                    mAlbums.get(choosedAlbumIndex).setIsSelected(true);
                 }
-                initPopupWindow();
+                if (mPopupWindow == null) {
+                    initPopupWindow();
+                }
                 mHandler.sendEmptyMessage(STARTTOLOADPHOTOS);
                 break;
             }
@@ -125,6 +132,9 @@ public class PhotoChooseActivity extends Activity {
                 mChoosedAlbumPhotosCountBtn.setText(String.format(
                         mContext.getString(R.string.album_photo_count),
                         mChoosedAlbumPhotosCount));
+                if (mProgressDialog.isShowing()) {
+                    mProgressDialog.dismiss();
+                }
                 mPopupWindow.dismiss();
                 break;
             }
@@ -139,6 +149,10 @@ public class PhotoChooseActivity extends Activity {
         setContentView(R.layout.choose_photo_layout);
 
         mContext = this;
+        Intent intent = getIntent();
+        mMaxPhotoCount = intent.getIntExtra(
+                CommonDataStructure.MULTI_CHOOSE_PHOTO_COUNT, 9);
+
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         mScreenHeight = displayMetrics.heightPixels;
@@ -152,6 +166,7 @@ public class PhotoChooseActivity extends Activity {
         mPhotoChooseAdapter = new PhotoChooseAdapter(mContext);
         mPhotoChooseAdapter.setDataSource(mChoosedAlbumPhotos);
         mPhotoChooseAdapter.setOnPhotoClickListener(mPhotoClickListener);
+        mPhotoChooseAdapter.setMaxPhotoCount(mMaxPhotoCount);
         mPhotoGridView.setAdapter(mPhotoChooseAdapter);
 
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
@@ -162,6 +177,9 @@ public class PhotoChooseActivity extends Activity {
         mChoosedAlbumBottomLayout.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (mPopupWindow == null) {
+                    initPopupWindow();
+                }
                 mPopupWindow.setAnimationStyle(R.style.album_popup_anim);
                 mPopupWindow.showAsDropDown(mChoosedAlbumBottomLayout, 0, 0);
 
@@ -183,6 +201,7 @@ public class PhotoChooseActivity extends Activity {
 
             @Override
             public void onClick(View arg0) {
+                finishActivity(mPhotoChooseAdapter.getSelectedPhoto());
             }
         });
     }
@@ -313,6 +332,7 @@ public class PhotoChooseActivity extends Activity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                     int position, long id) {
+                clearSelectedFlag();
                 AlbumItem item = mAlbums.get(position);
                 mChoosedAlbumBucketId = item.getAlbumBucketId();
                 mChoosedAlbumName = item.getAlbumDisplayName();
@@ -359,11 +379,38 @@ public class PhotoChooseActivity extends Activity {
             } else {
                 String text = String.format(
                         mContext.getString(R.string.choose_photo_finish),
-                        count, 9);
+                        count, mMaxPhotoCount);
                 mChoosePhotoFinishBtn.setText(text);
                 mChoosePhotoFinishBtn.setEnabled(true);
             }
 
         }
     };
+
+    private void clearSelectedFlag() {
+        for (AlbumItem album : mAlbums) {
+            album.setIsSelected(false);
+        }
+    }
+
+    private void finishActivity(ArrayList<String> selectedPhotos) {
+
+        Intent data = new Intent();
+        data.putStringArrayListExtra(CommonDataStructure.MULTI_CHOOSE_PHOTO,
+                selectedPhotos);
+        setResult(RESULT_OK, data);
+        this.finish();
+    }
+
+    private int findMaxAlbum(ArrayList<AlbumItem> albums) {
+        int max = 0;
+        int count = 0;
+        for (int index = 0; index < albums.size(); index++) {
+            if (albums.get(index).getAlbumPhotoCount() > count) {
+                count = albums.get(index).getAlbumPhotoCount();
+                max = index;
+            }
+        }
+        return max;
+    }
 }

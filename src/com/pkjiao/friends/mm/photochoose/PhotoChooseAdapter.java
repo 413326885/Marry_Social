@@ -22,14 +22,19 @@ public class PhotoChooseAdapter extends BaseAdapter {
     protected LayoutInflater mInflater;
     protected Context mContext;
     private AsyncImageViewBitmapLoader mAsyncBitmapLoader;
-    private List<String> mPhotos = new ArrayList<String>();
-    private List<String> mChoosedPhotos = new LinkedList<String>();
+    private ArrayList<String> mPhotos = new ArrayList<String>();
+    private ArrayList<String> mChoosedPhotos = new ArrayList<String>();
     private OnPhotoClickListener mPhotoClickListener;
+    private int mMaxPhotoCount;
 
     public void setOnPhotoClickListener(OnPhotoClickListener listener) {
         mPhotoClickListener = listener;
     }
 
+    public void setMaxPhotoCount(int count) {
+        mMaxPhotoCount = count;
+    }
+    
     public PhotoChooseAdapter(Context context) {
         mContext = context;
         this.mInflater = LayoutInflater.from(mContext);
@@ -55,6 +60,10 @@ public class PhotoChooseAdapter extends BaseAdapter {
         return position;
     }
 
+    public ArrayList<String> getSelectedPhoto() {
+        return mChoosedPhotos;
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
@@ -72,6 +81,8 @@ public class PhotoChooseAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
+        holder.choosedPhoto.setBackgroundResource(R.color.gray_background_color);
+        holder.choosedPhotoIcon.setImageResource(R.drawable.icon_photo_unselected);
         final String photoPath = mPhotos.get(position);
         mAsyncBitmapLoader.loadImageBitmap(holder.choosedPhoto, photoPath,
                 AsyncImageViewBitmapLoader.DECODE_LOCAL_DIRECT);
@@ -79,17 +90,20 @@ public class PhotoChooseAdapter extends BaseAdapter {
         final ViewHolder holderTmp = holder;
         holder.choosedPhoto.setColorFilter(null);
         holder.choosedPhoto.setOnClickListener(new OnClickListener() {
+
             @Override
             public void onClick(View v) {
 
                 if (mChoosedPhotos.contains(photoPath)) {
                     mChoosedPhotos.remove(photoPath);
                     holderTmp.choosedPhoto.setColorFilter(null);
+                    holderTmp.choosedPhotoIcon.setImageResource(R.drawable.icon_photo_unselected);
                     mPhotoClickListener.onPhotoClicked(mChoosedPhotos.size());
-                } else if (mChoosedPhotos.size() < 9) {
+                } else if (mChoosedPhotos.size() < mMaxPhotoCount) {
                     mChoosedPhotos.add(photoPath);
                     holderTmp.choosedPhoto.setColorFilter(Color
                             .parseColor("#77000000"));
+                    holderTmp.choosedPhotoIcon.setImageResource(R.drawable.icon_photo_selected);
                     mPhotoClickListener.onPhotoClicked(mChoosedPhotos.size());
                 } else {
                     Toast.makeText(

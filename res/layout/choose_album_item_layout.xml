@@ -22,7 +22,7 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="15dp"
-        android:background="@drawable/icon_new"
+        android:background="@drawable/icon_album_selected"
         android:clickable="false"
         android:focusable="false" />
 

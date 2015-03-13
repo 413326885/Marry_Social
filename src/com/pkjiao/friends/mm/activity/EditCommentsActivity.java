@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.sql.CommonDataSource;
+
 import com.dhn.marrysocial.R;
 import com.pkjiao.friends.mm.adapter.EditCommentsPhotoViewAdapter;
 import com.pkjiao.friends.mm.base.ContactsInfo;
@@ -66,6 +68,7 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
     private static final int SELECTION_PHOTO_FROM_CAMERA = 1986;
     private static final int CROP_PHOTO_FROM_CAMERA = 1987;
     private static final int SELECTION_PHOTO_FROM_GALLERY = 1988;
+    private static final int MULTI_SELECT_PHOTO = 1989;
 
     public static final String IMG_TYPE = "image/*";
     public static final String FILE_PREX = "marrysocial_";
@@ -249,7 +252,7 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
             break;
         }
         case R.id.edit_info_comments_gallery: {
-            pickPhotosFromGallery();
+            pickMultiPhotos();
             break;
         }
         case R.id.edit_info_comments_send: {
@@ -273,28 +276,30 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
         }
     }
 
-//    private void pickPhotosFromGallery() {
-//        if (!checkAndResetSelectPhotoButtonStatus()) {
-//            Toast.makeText(this, R.string.add_pics_limit, Toast.LENGTH_SHORT)
-//                    .show();
-//            return;
-//        }
-//        try {
-//            Intent intent = new Intent();
-//            intent.setType("image/*");
-//            intent.setAction(Intent.ACTION_GET_CONTENT);
-//            startActivityForResult(intent, SELECTION_PHOTO_FROM_GALLERY);
-//        } catch (ActivityNotFoundException e) {
-//        }
-//    }
+    // private void pickPhotosFromGallery() {
+    // if (!checkAndResetSelectPhotoButtonStatus()) {
+    // Toast.makeText(this, R.string.add_pics_limit, Toast.LENGTH_SHORT)
+    // .show();
+    // return;
+    // }
+    // try {
+    // Intent intent = new Intent();
+    // intent.setType("image/*");
+    // intent.setAction(Intent.ACTION_GET_CONTENT);
+    // startActivityForResult(intent, SELECTION_PHOTO_FROM_GALLERY);
+    // } catch (ActivityNotFoundException e) {
+    // }
+    // }
 
-    private void pickPhotosFromGallery() {
+    private void pickMultiPhotos() {
         try {
             Intent intent = new Intent(this, PhotoChooseActivity.class);
-            startActivityForResult(intent, SELECTION_PHOTO_FROM_GALLERY);
+            intent.putExtra(CommonDataStructure.MULTI_CHOOSE_PHOTO_COUNT, 9 - mOriginalThumbBitmapsPath.size());
+            startActivityForResult(intent, MULTI_SELECT_PHOTO);
         } catch (ActivityNotFoundException e) {
         }
     }
+
     private void pickPhotosFromCamera() {
         if (!checkAndResetSelectPhotoButtonStatus()) {
             Toast.makeText(this, R.string.add_pics_limit, Toast.LENGTH_SHORT)
@@ -390,6 +395,25 @@ public class EditCommentsActivity extends Activity implements OnClickListener {
                 mOriginalThumbBitmapsPath.add(filePath);
                 mOriginalThumbBitmaps.add(thumbBitmap);
                 mCropCenterThumbBitmaps.add(cropBitmap);
+                break;
+            }
+            case MULTI_SELECT_PHOTO: {
+                if (data == null) {
+                    Log.v(TAG, "data intent is null!");
+                }
+                ArrayList<String> selectedPhotos = data
+                        .getStringArrayListExtra(CommonDataStructure.MULTI_CHOOSE_PHOTO);
+                for (String path : selectedPhotos) {
+                    Bitmap thumbBitmap = null;
+                    Bitmap cropBitmap = null;
+                    thumbBitmap = Utils.decodeThumbnail(path, null,
+                            Utils.mThumbPhotoWidth);
+                    cropBitmap = Utils.resizeAndCropCenter(thumbBitmap,
+                            Utils.mCropCenterThumbPhotoWidth, true);
+                    mOriginalThumbBitmapsPath.add(path);
+                    mOriginalThumbBitmaps.add(thumbBitmap);
+                    mCropCenterThumbBitmaps.add(cropBitmap);
+                }
                 break;
             }
             default:
