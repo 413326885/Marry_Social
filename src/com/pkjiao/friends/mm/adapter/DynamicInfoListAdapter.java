@@ -242,11 +242,13 @@ public class DynamicInfoListAdapter extends BaseAdapter {
             holder.mHeadPic.setClickable(false);
             holder.mNickName.setClickable(false);
         } else {
-            holder.mDynamicInfoFriends.setVisibility(View.VISIBLE);
-            holder.mDynamicInfoFriends.setText(String.format(mContext
-                    .getResources().getString(R.string.contacts_detail_more),
-                    mUserInfoEntrys.get(mCommentsData.get(position).getUid())
-                            .getFirstDirectFriend()));
+            if (mUserInfoEntrys.get(mCommentsData.get(position).getUid()) != null) {
+                holder.mDynamicInfoFriends.setVisibility(View.VISIBLE);
+                holder.mDynamicInfoFriends.setText(String.format(mContext
+                        .getResources().getString(R.string.contacts_detail_more),
+                        mUserInfoEntrys.get(mCommentsData.get(position).getUid())
+                                .getFirstDirectFriend()));
+            }
 
             holder.mHeadPic.setClickable(true);
             holder.mNickName.setClickable(true);
