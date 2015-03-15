@@ -7,8 +7,10 @@ import com.pkjiao.friends.mm.adapter.PhotoPagerAdapter;
 import com.pkjiao.friends.mm.adapter.PhotoPagerAdapter.PhotoClickListener;
 import com.pkjiao.friends.mm.base.CommentsItem;
 import com.pkjiao.friends.mm.database.MarrySocialDBHelper;
+import com.pkjiao.friends.mm.fragment.ImageDetailFragment;
 import com.pkjiao.friends.mm.utils.Utils;
 import com.pkjiao.friends.mm.view.DragImageView;
+import com.pkjiao.friends.mm.view.HackyViewPager;
 import com.pkjiao.friends.mm.viewpagerindicator.LinePageIndicator;
 
 import android.app.Activity;
@@ -16,6 +18,10 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
@@ -23,7 +29,7 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.ImageView;
 
-public class ViewPhotoActivity extends Activity {
+public class ViewPhotoActivity extends FragmentActivity {
 
     private static final String TAG = "MarrySocialMainActivity";
 
@@ -34,12 +40,14 @@ public class ViewPhotoActivity extends Activity {
             MarrySocialDBHelper.KEY_PHOTO_REMOTE_THUMB_PATH,
             MarrySocialDBHelper.KEY_PHOTO_POS };
 
-    private ViewPager mViewPager;
+    private HackyViewPager mViewPager;
     // private ArrayList<DragImageView> mPhotoViews = new
     // ArrayList<DragImageView>();
     private ArrayList<ImageView> mPhotoViews = new ArrayList<ImageView>();
+    private ArrayList<String> mPhotoUrls = new ArrayList<String>();
     private ArrayList<SmallPhotoItem> mSmallPhotoItems = new ArrayList<SmallPhotoItem>();
     private MarrySocialDBHelper mDBHelper;
+    private boolean mIsLocalPhotos;
 
     private String mUId;
     private String mBucketId;
@@ -61,31 +69,37 @@ public class ViewPhotoActivity extends Activity {
 
         loadPhotoItemsFromDB();
         setPhotoViewBitmaps();
+        initPhotoViewUrls();
         initViewPager();
 
     }
 
     private void initViewPager() {
-        mViewPager = (ViewPager) findViewById(R.id.photo_view_pager);
-        PhotoPagerAdapter photoAdapter = new PhotoPagerAdapter(this,
-                mPhotoViews);
-        photoAdapter.setPhotoClickListener(mPhotoClickListener);
-        mViewPager.setAdapter(photoAdapter);
-        // mViewPager.setOnClickListener(new OnClickListener() {
-        //
-        // @Override
-        // public void onClick(View arg0) {
-        // Log.e(TAG, "ViewPhotoActivity.this.finish()");
-        // ViewPhotoActivity.this.finish();
-        // }
-        // });
+        mViewPager = (HackyViewPager) findViewById(R.id.photo_view_pager);
+        if (mIsLocalPhotos) {
+            PhotoPagerAdapter photoAdapter = new PhotoPagerAdapter(this,
+                    mPhotoViews);
+            photoAdapter.setPhotoClickListener(mPhotoClickListener);
+            mViewPager.setAdapter(photoAdapter);
+            mViewPager.setOnClickListener(new OnClickListener() {
+
+                @Override
+                public void onClick(View arg0) {
+                    Log.e(TAG, "ViewPhotoActivity.this.finish()");
+                    ViewPhotoActivity.this.finish();
+                }
+            });
+        } else {
+            ImagePagerAdapter photoAdapter = new ImagePagerAdapter(
+                    getSupportFragmentManager(), mSmallPhotoItems);
+            mViewPager.setAdapter(photoAdapter);
+        }
 
         LinePageIndicator underLineIndicator = (LinePageIndicator) findViewById(R.id.photo_view_indicator);
         underLineIndicator.setViewPager(mViewPager, mOrgPosition);
     }
 
     private void loadPhotoItemsFromDB() {
-        ArrayList<CommentsItem> commentEntrys = new ArrayList<CommentsItem>();
         Cursor cursor = null;
         String whereClause = null;
 
@@ -136,6 +150,16 @@ public class ViewPhotoActivity extends Activity {
         }
     }
 
+    private void initPhotoViewUrls() {
+        if (mSmallPhotoItems.get(0).photoRemoteOrgPath == null || mSmallPhotoItems.get(0).photoRemoteOrgPath.length() == 0) {
+            mIsLocalPhotos = true;
+        }
+        for (SmallPhotoItem item : mSmallPhotoItems) {
+            String photoPath = item.photoRemoteOrgPath;
+            mPhotoUrls.add(photoPath);
+        }
+    }
+
     class SmallPhotoItem {
         String photoName;
         String photoLocalPath;
@@ -150,4 +174,30 @@ public class ViewPhotoActivity extends Activity {
             ViewPhotoActivity.this.finish();
         }
     };
+
+    private class ImagePagerAdapter extends FragmentStatePagerAdapter {
+
+        public ArrayList<SmallPhotoItem> photoUrlList;
+
+        public ImagePagerAdapter(FragmentManager fm, ArrayList<SmallPhotoItem> fileList) {
+            super(fm);
+            this.photoUrlList = fileList;
+        }
+
+        @Override
+        public int getCount() {
+            return photoUrlList == null ? 0 : photoUrlList.size();
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            String url;
+            url= photoUrlList.get(position).photoRemoteOrgPath;
+            if (url == null || url.length() == 0) {
+                url = photoUrlList.get(position).photoLocalPath;
+            }
+            return ImageDetailFragment.newInstance(url);
+        }
+
+    }
 }

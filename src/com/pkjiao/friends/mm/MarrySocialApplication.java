@@ -2,10 +2,14 @@ package com.pkjiao.friends.mm;
 
 import java.io.File;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.pkjiao.friends.mm.common.CommonDataStructure;
 import com.pkjiao.friends.mm.database.MarrySocialDBHelper;
 import com.pkjiao.friends.mm.services.DownloadNoticesService;
 
+import com.dhn.marrysocial.R;
 import android.app.Application;
 import android.content.Intent;
 import android.os.Environment;
@@ -19,6 +23,7 @@ public class MarrySocialApplication extends Application {
         MarrySocialDBHelper.newInstance(getApplicationContext());
         // startDownloadNoticesServices();
         initDataDir();
+        initUILImageLoader();
     }
 
     // private void startDownloadNoticesServices() {
@@ -70,5 +75,18 @@ public class MarrySocialApplication extends Application {
             exp.printStackTrace();
         }
         Toast.makeText(this, "没有有效的可用内存空间", 1000).show();
+    }
+
+    private void initUILImageLoader() {
+        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+                .showImageForEmptyUri(R.drawable.empty_photo).cacheInMemory(true)
+                .cacheOnDisc(true).build();
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
+                getApplicationContext())
+                .defaultDisplayImageOptions(defaultOptions)
+                .discCacheSize(50 * 1024 * 1024)//
+                .discCacheFileCount(100)// 缓存一百张图片
+                .writeDebugLogs().build();
+        ImageLoader.getInstance().init(config);
     }
 }
