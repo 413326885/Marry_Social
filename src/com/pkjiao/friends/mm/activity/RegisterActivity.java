@@ -125,36 +125,36 @@ public class RegisterActivity extends Activity implements OnClickListener {
     public void onClick(View arg0) {
         switch (arg0.getId()) {
         case R.id.register_btn: {
-//            startToFillUserinfo();
-//            return;
-            if (!Utils.isActiveNetWorkAvailable(this)) {
-                mHandler.sendEmptyMessage(NETWORK_INVALID);
-                return;
-            }
-
-            if (!isPhoneNumValid()) {
-                mPhoneNumEditText.requestFocus();
-                return;
-            }
-            if (!isPasswordValid()) {
-                mPasswordEditText.requestFocus();
-                return;
-            }
-            if (!isAuthCodeValid()) {
-                return;
-            }
-
-            mUploadProgressDialog = new ProgressLoadDialog(this);
-            mUploadProgressDialog.setText("正在注册，请稍后...");
-            mUploadProgressDialog.show();
-
-            mPassword = MD5SecretUtils.encrypt(mPasswordEditText.getText()
-                    .toString());
-            String macAddr = Utils.getMacAddress(this);
-            mPhoneNum = mPhoneNumEditText.getText().toString();
-            mExecutorService.execute(new RegisterUserInfo(mPhoneNum, mPassword,
-                    macAddr));
-            break;
+            startToFillUserinfo();
+            return;
+//            if (!Utils.isActiveNetWorkAvailable(this)) {
+//                mHandler.sendEmptyMessage(NETWORK_INVALID);
+//                return;
+//            }
+//
+//            if (!isPhoneNumValid()) {
+//                mPhoneNumEditText.requestFocus();
+//                return;
+//            }
+//            if (!isPasswordValid()) {
+//                mPasswordEditText.requestFocus();
+//                return;
+//            }
+//            if (!isAuthCodeValid()) {
+//                return;
+//            }
+//
+//            mUploadProgressDialog = new ProgressLoadDialog(this);
+//            mUploadProgressDialog.setText("正在注册，请稍后...");
+//            mUploadProgressDialog.show();
+//
+//            mPassword = MD5SecretUtils.encrypt(mPasswordEditText.getText()
+//                    .toString());
+//            String macAddr = Utils.getMacAddress(this);
+//            mPhoneNum = mPhoneNumEditText.getText().toString();
+//            mExecutorService.execute(new RegisterUserInfo(mPhoneNum, mPassword,
+//                    macAddr));
+//            break;
         }
         case R.id.login_btn: {
             startToLogin();

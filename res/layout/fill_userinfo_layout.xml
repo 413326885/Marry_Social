@@ -51,8 +51,8 @@
                 android:layout_height="93dp"
                 android:layout_centerVertical="true"
                 android:layout_toRightOf="@id/edit_info_comment_arrow"
-                android:scaleType="centerCrop"
                 android:background="@drawable/person_default_big_pic"
+                android:scaleType="centerCrop"
                 app:border_width="0dp"
                 app:corner_radius="93dp"
                 app:oval="false" />
@@ -62,10 +62,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:visibility="gone"
                 android:text="头像"
+                android:textColor="@color/gray"
                 android:textSize="16sp"
-                android:textColor="@color/gray" />
+                android:visibility="gone" />
         </RelativeLayout>
 
         <EditText
@@ -85,10 +85,10 @@
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/userinfo_header_name_group"
-        android:background="@drawable/register_login_edit_selector"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="5dp"
         android:layout_marginTop="5dp"
+        android:background="@drawable/register_login_edit_selector"
         android:hint="个性签名"
         android:minWidth="200dp"
         android:textSize="14sp" />
@@ -167,8 +167,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:text="星座"
             android:paddingLeft="10dp"
+            android:text="星座"
             android:textColor="@color/gray"
             android:textSize="18sp" />
 
@@ -195,15 +195,16 @@
         android:layout_below="@id/userinfo_astro_group"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="5dp"
-        android:layout_marginTop="15dp" >
+        android:layout_marginTop="15dp"
+        android:visibility="gone" >
 
         <TextView
             android:id="@+id/userinfo_hobby"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:text="爱好"
             android:paddingLeft="10dp"
+            android:text="爱好"
             android:textColor="@color/gray"
             android:textSize="18sp" />
 
@@ -247,6 +248,19 @@
             </LinearLayout>
         </LinearLayout>
     </RelativeLayout>
+
+    <EditText
+        android:id="@+id/userinfo_department"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/userinfo_hobby_group"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/register_login_edit_selector"
+        android:hint="所属行业"
+        android:minWidth="200dp"
+        android:textSize="14sp" />
 
     <Button
         android:id="@+id/userinfo_invite_friends"

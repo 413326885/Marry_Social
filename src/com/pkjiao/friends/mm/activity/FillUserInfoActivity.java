@@ -97,6 +97,7 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
     private RadioButton mHobbyMaleBtn;
     private RadioButton mHobbyFemaleBtn;
     private Button mInviteFriendsBtn;
+    private EditText mUserInfoDepartment;
 
     private MarrySocialDBHelper mDBHelper;
     private ExecutorService mExecutorService;
@@ -206,6 +207,9 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
                 editor.putInt(CommonDataStructure.LOGINSTATUS,
                         CommonDataStructure.LONIN_STATUS_FILLED_INFO);
                 editor.commit();
+
+                mUploadUserInfoProgressDialog.dismiss();
+                startToInviteFriends();
                 break;
             }
             case UPLOAD_USER_INFO_FAIL: {
@@ -238,6 +242,7 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
         mHobbyMaleBtn = (RadioButton) findViewById(R.id.userinfo_hobby_male);
         mHobbyFemaleBtn = (RadioButton) findViewById(R.id.userinfo_hobby_female);
         mInviteFriendsBtn = (Button) findViewById(R.id.userinfo_invite_friends);
+        mUserInfoDepartment = (EditText) findViewById(R.id.userinfo_department);
 
         SharedPreferences prefs = this.getSharedPreferences(
                 CommonDataStructure.PREFS_LAIQIAN_DEFAULT, MODE_PRIVATE);
@@ -583,13 +588,14 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
         public void run() {
             String nickname = mUserInfoName.getText().toString();
             String intro = mUserinfoSignature.getText().toString();
+            String department = mUserInfoDepartment.getText().toString();
             String result = Utils.updateUserInfo(
                     CommonDataStructure.URL_UPDATE_USER_INFO, uid, nickname,
                     mGender, mAstro, mHobby, intro);
 
             if (result != null && result.length() != 0) {
                 mHandler.sendEmptyMessage(UPLOAD_USER_INFO_FINISH);
-                mHandler.sendEmptyMessage(START_TO_UPLOAD_USER_HEADER);
+                // mHandler.sendEmptyMessage(START_TO_UPLOAD_USER_HEADER);
             } else {
                 mHandler.sendEmptyMessage(UPLOAD_USER_INFO_FAIL);
             }
@@ -597,20 +603,20 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
     }
 
     private boolean inUserInfoValid() {
-        if (mUserHeadPic == null) {
-            Toast.makeText(this, "头像不能为空", 500).show();
-            return false;
-        }
+        // if (mUserHeadPic == null) {
+        // Toast.makeText(this, "头像不能为空", 500).show();
+        // return false;
+        // }
         if (mUserInfoName.getText().toString().length() == 0) {
             mUserInfoName.requestFocus();
             Toast.makeText(this, "昵称不能为空", 500).show();
             return false;
         }
-        if (mUserinfoSignature.getText().toString().length() == 0) {
-            mUserinfoSignature.requestFocus();
-            Toast.makeText(this, "个性签名不能为空", 500).show();
-            return false;
-        }
+        // if (mUserinfoSignature.getText().toString().length() == 0) {
+        // mUserinfoSignature.requestFocus();
+        // Toast.makeText(this, "个性签名不能为空", 500).show();
+        // return false;
+        // }
         return true;
     }
 
