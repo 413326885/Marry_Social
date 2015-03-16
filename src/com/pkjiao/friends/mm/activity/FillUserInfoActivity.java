@@ -97,7 +97,7 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
     private RadioButton mHobbyMaleBtn;
     private RadioButton mHobbyFemaleBtn;
     private Button mInviteFriendsBtn;
-    private EditText mUserInfoDepartment;
+    private EditText mUserInfoProfession;
 
     private MarrySocialDBHelper mDBHelper;
     private ExecutorService mExecutorService;
@@ -207,9 +207,6 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
                 editor.putInt(CommonDataStructure.LOGINSTATUS,
                         CommonDataStructure.LONIN_STATUS_FILLED_INFO);
                 editor.commit();
-
-                mUploadUserInfoProgressDialog.dismiss();
-                startToInviteFriends();
                 break;
             }
             case UPLOAD_USER_INFO_FAIL: {
@@ -242,7 +239,7 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
         mHobbyMaleBtn = (RadioButton) findViewById(R.id.userinfo_hobby_male);
         mHobbyFemaleBtn = (RadioButton) findViewById(R.id.userinfo_hobby_female);
         mInviteFriendsBtn = (Button) findViewById(R.id.userinfo_invite_friends);
-        mUserInfoDepartment = (EditText) findViewById(R.id.userinfo_department);
+        mUserInfoProfession = (EditText) findViewById(R.id.userinfo_profession);
 
         SharedPreferences prefs = this.getSharedPreferences(
                 CommonDataStructure.PREFS_LAIQIAN_DEFAULT, MODE_PRIVATE);
@@ -332,14 +329,16 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
 
         @Override
         public void run() {
-            CommonDataStructure.UploadHeadPicResultEntry resultEntry = Utils
-                    .uploadHeadPicBitmap(
-                            CommonDataStructure.URL_UPLOAD_HEAD_PIC, uid,
-                            mCropPhoto, mCropPhotoName);
-            if (!isUidExistInHeadPicDB(uid)) {
-                insertHeadPicToHeadPicsDB(resultEntry);
-            } else {
-                updateHeadPicToHeadPicsDB(resultEntry);
+            if (mCropPhoto != null) {
+                CommonDataStructure.UploadHeadPicResultEntry resultEntry = Utils
+                        .uploadHeadPicBitmap(
+                                CommonDataStructure.URL_UPLOAD_HEAD_PIC, uid,
+                                mCropPhoto, mCropPhotoName);
+                if (!isUidExistInHeadPicDB(uid)) {
+                    insertHeadPicToHeadPicsDB(resultEntry);
+                } else {
+                    updateHeadPicToHeadPicsDB(resultEntry);
+                }
             }
 
             mHandler.sendEmptyMessage(UPLOAD_USER_HEADER_FINISH);
@@ -588,14 +587,14 @@ public class FillUserInfoActivity extends Activity implements OnClickListener {
         public void run() {
             String nickname = mUserInfoName.getText().toString();
             String intro = mUserinfoSignature.getText().toString();
-            String department = mUserInfoDepartment.getText().toString();
+            String profession = mUserInfoProfession.getText().toString();
             String result = Utils.updateUserInfo(
                     CommonDataStructure.URL_UPDATE_USER_INFO, uid, nickname,
-                    mGender, mAstro, mHobby, intro);
+                    mGender, mAstro, mHobby, intro, profession);
 
             if (result != null && result.length() != 0) {
                 mHandler.sendEmptyMessage(UPLOAD_USER_INFO_FINISH);
-                // mHandler.sendEmptyMessage(START_TO_UPLOAD_USER_HEADER);
+                mHandler.sendEmptyMessage(START_TO_UPLOAD_USER_HEADER);
             } else {
                 mHandler.sendEmptyMessage(UPLOAD_USER_INFO_FAIL);
             }

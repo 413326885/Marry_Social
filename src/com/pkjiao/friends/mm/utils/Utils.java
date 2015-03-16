@@ -2554,7 +2554,7 @@ public class Utils {
     }
 
     public static String updateUserInfo(String RequestURL, String uid,
-            String nickname, int gender, int astro, int hobby, String intro) {
+            String nickname, int gender, int astro, int hobby, String intro, String profession) {
 
         Log.e(TAG, "nannan updateUserInfo ");
         String result = "";
@@ -2592,6 +2592,7 @@ public class Utils {
             chatMsg.put(CommonDataStructure.ASTRO, String.valueOf(astro));
             chatMsg.put(CommonDataStructure.HOBBY, String.valueOf(hobby));
             chatMsg.put(CommonDataStructure.INTRODUCE, intro);
+            chatMsg.put(CommonDataStructure.PROFESSION, profession);
 
             String content = "jsondata="
                     + URLEncoder.encode(chatMsg.toString(), "UTF-8");

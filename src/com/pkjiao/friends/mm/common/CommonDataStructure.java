@@ -29,6 +29,7 @@ public class CommonDataStructure {
     public static final String ASTRO = "astro";
     public static final String HOBBY = "hobby";
     public static final String INTRODUCE = "intro";
+    public static final String PROFESSION = "profession";
     public static final String LOGINSTATUS = "login_status";
     public static final String NOTIFICATION_COMMENTS_COUNT = "notification_comments_count";
     public static final String AUTH_CODE = "code";
