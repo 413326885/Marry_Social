@@ -53,6 +53,7 @@ public class ContactsInfo {
     private String mIntroduce;
     private int mIsNewContact;
     private String mDirectId;
+    private String mProfession;
 
     public String getUid() {
         return mUid;
@@ -196,5 +197,13 @@ public class ContactsInfo {
 
     public void setNewContact(int mIsNewContact) {
         this.mIsNewContact = mIsNewContact;
+    }
+
+    public String getProfession() {
+        return mProfession;
+    }
+
+    public void setProfession(String mProfession) {
+        this.mProfession = mProfession;
     }
 }

@@ -1924,6 +1924,7 @@ public class Utils {
             int hobby = Integer.valueOf(respData.getString("hobby"));
             String headerbkg = respData.getString("systembackground");
             String intruduce = respData.getString("intro");
+            String profession = respData.getString("profession");
 
             contact.setUid(uid);
             contact.setPhoneNum(phoneNum);
@@ -1939,6 +1940,7 @@ public class Utils {
             contact.setDirectFriendsCount(0);
             contact.setHeaderBkgIndex(headerbkg);
             contact.setIntroduce(intruduce);
+            contact.setProfession(profession);
 
             reader.close();
 

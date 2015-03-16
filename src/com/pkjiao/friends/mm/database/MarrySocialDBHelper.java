@@ -56,6 +56,7 @@ public class MarrySocialDBHelper {
     public static final String KEY_INTRODUCT = "introduce";
     public static final String KEY_READ_STATUS = "read_status";
     public static final String KEY_IS_NEW = "is_new";
+    public static final String KEY_PROFESSION = "profession";
 
     // for comments table
     public static final String KEY_ID = "_id";
@@ -102,7 +103,7 @@ public class MarrySocialDBHelper {
 
     private static final String DATABASE_CREATE_CONTACTS = "create table contacts ( "
             + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, phone_num text, nickname text, realname text, "
-            + "hobby integer, gender integer, astro integer, introduce text, directfriendscount integer, is_new integer, "
+            + "hobby integer, gender integer, astro integer, introduce text, profession text, directfriendscount integer, is_new integer, "
             + "firstdirectfriend text, directfriends text, indirect_id text, avatar integer, header_background_index text, read_status integer )";
 
     private static final String DATABASE_CREATE_COMMENTS = "create table comments ( "

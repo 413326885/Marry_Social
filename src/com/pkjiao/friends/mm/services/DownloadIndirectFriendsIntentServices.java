@@ -189,6 +189,7 @@ public class DownloadIndirectFriendsIntentServices extends IntentService {
         values.put(MarrySocialDBHelper.KEY_GENDER, contact.getGender());
         values.put(MarrySocialDBHelper.KEY_ASTRO, contact.getAstro());
         values.put(MarrySocialDBHelper.KEY_INTRODUCT, contact.getIntroduce());
+        values.put(MarrySocialDBHelper.KEY_PROFESSION, contact.getProfession());
         values.put(MarrySocialDBHelper.KEY_DIRECT_FRIENDS_COUNT,
                 contact.getDirectFriendsCount());
         values.put(MarrySocialDBHelper.KEY_FIRST_DIRECT_FRIEND,
