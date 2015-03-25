@@ -21,7 +21,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 import com.pkjiao.friends.mm.adapter.ChatMsgViewAdapter.IMsgViewType;
 import com.pkjiao.friends.mm.base.ChatMsgItem;
 import com.pkjiao.friends.mm.base.NoticesItem;

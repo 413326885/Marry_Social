@@ -6,7 +6,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 import com.pkjiao.friends.mm.activity.EditCommentsActivity;
 import com.pkjiao.friends.mm.adapter.DynamicInfoListAdapter;
 import com.pkjiao.friends.mm.adapter.DynamicInfoListAdapter.onReplyBtnClickedListener;

@@ -2,7 +2,7 @@ package com.pkjiao.friends.mm.activity;
 
 import java.util.ArrayList;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 import com.pkjiao.friends.mm.adapter.PhotoPagerAdapter;
 import com.pkjiao.friends.mm.adapter.PhotoPagerAdapter.PhotoClickListener;
 import com.pkjiao.friends.mm.base.CommentsItem;

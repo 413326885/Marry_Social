@@ -25,7 +25,7 @@ import android.view.Window;
 import android.widget.GridView;
 import android.widget.RelativeLayout;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 import com.pkjiao.friends.mm.adapter.HeaderBackgroundPhotoViewAdapter;
 import com.pkjiao.friends.mm.common.CommonDataStructure;
 import com.pkjiao.friends.mm.common.CommonDataStructure.HeaderBackgroundEntry;

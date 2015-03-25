@@ -12,7 +12,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.widget.Toast;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 import com.pkjiao.friends.mm.common.CommonDataStructure;
 import com.pkjiao.friends.mm.database.MarrySocialDBHelper;
 import com.pkjiao.friends.mm.services.UploadCommentsAndBravosAndReplysIntentService.BravoEntry;

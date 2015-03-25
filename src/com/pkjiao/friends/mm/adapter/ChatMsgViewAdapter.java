@@ -3,7 +3,7 @@ package com.pkjiao.friends.mm.adapter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 import com.pkjiao.friends.mm.activity.ContactsInfoActivity;
 import com.pkjiao.friends.mm.base.AsyncHeadPicBitmapLoader;
 import com.pkjiao.friends.mm.base.ChatMsgItem;

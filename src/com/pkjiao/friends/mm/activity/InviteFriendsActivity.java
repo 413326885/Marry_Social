@@ -5,7 +5,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 import com.pkjiao.friends.mm.MarrySocialMainActivity;
 import com.pkjiao.friends.mm.adapter.InviteFriendsExpandableListAdapter;
 import com.pkjiao.friends.mm.adapter.InviteFriendsListAdapter;

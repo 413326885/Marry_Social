@@ -9,7 +9,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 import com.pkjiao.friends.mm.common.CommonDataStructure;
 import com.pkjiao.friends.mm.database.MarrySocialDBHelper;
 import com.pkjiao.friends.mm.utils.Utils;
@@ -31,7 +31,8 @@ public class AsyncImageViewBitmapLoader {
             MarrySocialDBHelper.KEY_PHOTO_NAME,
             MarrySocialDBHelper.KEY_PHOTO_LOCAL_PATH,
             MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH,
-            MarrySocialDBHelper.KEY_PHOTO_REMOTE_THUMB_PATH,
+            MarrySocialDBHelper.KEY_PHOTO_REMOTE_SMALL_THUMB_PATH,
+            MarrySocialDBHelper.KEY_PHOTO_REMOTE_BIG_THUMB_PATH,
             MarrySocialDBHelper.KEY_PHOTO_ID };
 
     public static final int NEED_DECODE_FROM_CLOUD = 1;

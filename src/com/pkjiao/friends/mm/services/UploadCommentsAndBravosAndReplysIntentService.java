@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 import com.pkjiao.friends.mm.common.CommonDataStructure;
 import com.pkjiao.friends.mm.common.CommonDataStructure.UploadReplysResultEntry;
 import com.pkjiao.friends.mm.database.MarrySocialDBHelper;
@@ -264,8 +264,10 @@ public class UploadCommentsAndBravosAndReplysIntentService extends
         ContentValues values = new ContentValues();
         values.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH,
                 uploadResult.orgUrl);
-        values.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_THUMB_PATH,
-                uploadResult.thumbUrl);
+        values.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_SMALL_THUMB_PATH,
+                uploadResult.smallThumbUrl);
+        values.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_BIG_THUMB_PATH,
+                uploadResult.bigThumbUrl);
         values.put(MarrySocialDBHelper.KEY_PHOTO_ID, uploadResult.photoId);
         if (uploadResult.result) {
             values.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,

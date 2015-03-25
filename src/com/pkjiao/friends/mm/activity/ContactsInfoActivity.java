@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 import com.pkjiao.friends.mm.adapter.DynamicInfoListAdapter;
 import com.pkjiao.friends.mm.adapter.DynamicInfoListAdapter.onReplyBtnClickedListener;
 import com.pkjiao.friends.mm.base.CommentsItem;

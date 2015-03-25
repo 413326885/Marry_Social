@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 import com.pkjiao.friends.mm.activity.ContactsInfoActivity;
 import com.pkjiao.friends.mm.adapter.ContactsListAdapter.ViewHolder;
 import com.pkjiao.friends.mm.base.AsyncHeadPicBitmapLoader;

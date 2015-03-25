@@ -9,7 +9,7 @@ import com.pkjiao.friends.mm.common.CommonDataStructure;
 import com.pkjiao.friends.mm.database.MarrySocialDBHelper;
 import com.pkjiao.friends.mm.services.DownloadNoticesService;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 import android.app.Application;
 import android.content.Intent;
 import android.os.Environment;

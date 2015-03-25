@@ -16,7 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 import com.pkjiao.friends.mm.MarrySocialMainActivity;
 import com.pkjiao.friends.mm.base.DataCleanManager;
 import com.pkjiao.friends.mm.common.CommonDataStructure;

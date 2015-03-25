@@ -66,7 +66,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 import com.pkjiao.friends.mm.adapter.ChatMsgViewAdapter.IMsgViewType;
 import com.pkjiao.friends.mm.base.ChatMsgItem;
 import com.pkjiao.friends.mm.base.CommentsItem;
@@ -560,7 +560,8 @@ public class Utils {
                 resultEntry.photoId = photoId;
                 resultEntry.pos = pos;
                 resultEntry.orgUrl = orginal;
-                resultEntry.thumbUrl = thumb;
+                resultEntry.smallThumbUrl = thumb;
+                resultEntry.bigThumbUrl = thumb;
 
             }
         } catch (MalformedURLException e) {
@@ -2166,7 +2167,12 @@ public class Utils {
                                 + "_"
                                 + position
                                 + "." + type);
-                        image.setPhotoRemoteThumbPath(CommonDataStructure.REMOTE_THUMB_PHOTO_PATH
+                        image.setPhotoRemoteSmallThumbPath(CommonDataStructure.REMOTE_SMALL_THUMB_PHOTO_PATH
+                                + comment.getString("tid")
+                                + "_"
+                                + position
+                                + "." + type);
+                        image.setPhotoRemoteBigThumbPath(CommonDataStructure.REMOTE_BIG_THUMB_PHOTO_PATH
                                 + comment.getString("tid")
                                 + "_"
                                 + position

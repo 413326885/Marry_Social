@@ -1,6 +1,6 @@
 package com.pkjiao.friends.mm;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 import com.pkjiao.friends.mm.activity.FillUserInfoActivity;
 import com.pkjiao.friends.mm.activity.InviteFriendsActivity;
 import com.pkjiao.friends.mm.activity.LoginActivity;

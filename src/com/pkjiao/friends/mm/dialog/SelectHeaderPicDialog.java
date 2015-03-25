@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 
 public class SelectHeaderPicDialog extends Dialog implements
         android.view.View.OnClickListener {

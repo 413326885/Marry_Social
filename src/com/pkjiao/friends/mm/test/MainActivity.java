@@ -23,7 +23,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 
 public class MainActivity extends Activity implements OnClickListener{
 

@@ -12,7 +12,7 @@ import java.util.concurrent.Executors;
 
 import javax.sql.CommonDataSource;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 import com.pkjiao.friends.mm.adapter.EditCommentsPhotoViewAdapter;
 import com.pkjiao.friends.mm.base.ContactsInfo;
 import com.pkjiao.friends.mm.common.CommonDataStructure;

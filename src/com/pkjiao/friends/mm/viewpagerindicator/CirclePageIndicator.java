@@ -16,7 +16,7 @@
  */
 package com.pkjiao.friends.mm.viewpagerindicator;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 
 import android.content.Context;
 import android.content.res.Resources;

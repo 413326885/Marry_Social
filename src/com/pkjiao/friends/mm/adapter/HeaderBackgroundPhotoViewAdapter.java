@@ -2,7 +2,7 @@ package com.pkjiao.friends.mm.adapter;
 
 import java.util.ArrayList;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 import com.pkjiao.friends.mm.common.CommonDataStructure.HeaderBackgroundEntry;
 
 import android.content.Context;

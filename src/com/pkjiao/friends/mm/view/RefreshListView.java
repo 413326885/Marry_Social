@@ -23,7 +23,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 
 /**
  * 下拉刷新，底部更多

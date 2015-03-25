@@ -1,6 +1,6 @@
 package com.pkjiao.friends.mm.dialog;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 
 import android.app.Dialog;
 import android.content.Context;

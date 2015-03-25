@@ -16,7 +16,7 @@ import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 import com.pkjiao.friends.mm.MarrySocialApplication;
 import com.pkjiao.friends.mm.activity.ContactsInfoActivity;
 import com.pkjiao.friends.mm.base.AsyncHeadPicBitmapLoader;

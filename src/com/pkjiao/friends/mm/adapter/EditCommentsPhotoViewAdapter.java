@@ -2,7 +2,7 @@ package com.pkjiao.friends.mm.adapter;
 
 import java.util.ArrayList;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 
 import android.content.Context;
 import android.graphics.Bitmap;

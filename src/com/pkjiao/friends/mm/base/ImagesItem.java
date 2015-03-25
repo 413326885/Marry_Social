@@ -13,7 +13,8 @@ public class ImagesItem {
     private String mPhotoType;
     private String mPhotoLocalPath;
     private String mPhotoRemoteOrgPath;
-    private String mPhotoRemoteThumbPath;
+    private String mPhotoRemoteSmallThumbPath;
+    private String mPhotoRemoteBigThumbPath;
     private String mAddTime;
 
     public String getUid() {
@@ -88,12 +89,20 @@ public class ImagesItem {
         this.mPhotoRemoteOrgPath = mPhotoRemoteOrgPath;
     }
 
-    public String getPhotoRemoteThumbPath() {
-        return mPhotoRemoteThumbPath;
+    public String getPhotoRemoteSmallThumbPath() {
+        return mPhotoRemoteSmallThumbPath;
     }
 
-    public void setPhotoRemoteThumbPath(String mPhotoRemoteThumbPath) {
-        this.mPhotoRemoteThumbPath = mPhotoRemoteThumbPath;
+    public void setPhotoRemoteSmallThumbPath(String mPhotoRemoteSmallThumbPath) {
+        this.mPhotoRemoteSmallThumbPath = mPhotoRemoteSmallThumbPath;
+    }
+
+    public String getPhotoRemoteBigThumbPath() {
+        return mPhotoRemoteBigThumbPath;
+    }
+
+    public void setPhotoRemoteBigThumbPath(String mPhotoRemoteBigThumbPath) {
+        this.mPhotoRemoteBigThumbPath = mPhotoRemoteBigThumbPath;
     }
 
     public String getAddTime() {

@@ -314,8 +314,9 @@ public class CommonDataStructure {
             + DBContentChangeProvider.AUTHORITY + "/"
             + MarrySocialDBHelper.DATABASE_HEAD_BACKGROUND_PICS_TABLE);
 
-    public static final String REMOTE_ORG_PHOTO_PATH = "http://static.pkjiao.com/topic/";
-    public static final String REMOTE_THUMB_PHOTO_PATH = "http://static.pkjiao.com/thumbnail/topic/";
+    public static final String REMOTE_ORG_PHOTO_PATH = "http://static.pkjiao.com/thumbnail/topic/720x1280/";
+    public static final String REMOTE_SMALL_THUMB_PHOTO_PATH = "http://static.pkjiao.com/thumbnail/topic/165x165/";
+    public static final String REMOTE_BIG_THUMB_PHOTO_PATH = "http://static.pkjiao.com/thumbnail/topic/500x500/";
 
     public static final String KEY_UPLOAD_TYPE = "upload_type";
     public static final String KEY_DELETE_TYPE = "delete_type";
@@ -384,7 +385,8 @@ public class CommonDataStructure {
         public int pos;
         public String photoId;
         public String orgUrl;
-        public String thumbUrl;
+        public String bigThumbUrl;
+        public String smallThumbUrl;
     }
 
     public static class UploadHeadPicResultEntry {

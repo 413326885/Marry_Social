@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 import com.pkjiao.friends.mm.adapter.DynamicInfoListAdapter.ViewHolder;
 import com.pkjiao.friends.mm.base.AsyncHeadPicBitmapLoader;
 import com.pkjiao.friends.mm.base.ReplysItem;

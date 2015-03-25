@@ -14,7 +14,7 @@ import android.database.Cursor;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 import com.pkjiao.friends.mm.base.CommentsItem;
 import com.pkjiao.friends.mm.base.ContactsInfo;
 import com.pkjiao.friends.mm.base.ImagesItem;
@@ -213,8 +213,10 @@ public class DownloadCommentsIntentService extends IntentService {
                 image.getPhotoType());
         insertValues.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH,
                 image.getPhotoRemoteOrgPath());
-        insertValues.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_THUMB_PATH,
-                image.getPhotoRemoteThumbPath());
+        insertValues.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_SMALL_THUMB_PATH,
+                image.getPhotoRemoteSmallThumbPath());
+        insertValues.put(MarrySocialDBHelper.KEY_PHOTO_REMOTE_BIG_THUMB_PATH,
+                image.getPhotoRemoteBigThumbPath());
         insertValues.put(MarrySocialDBHelper.KEY_CURRENT_STATUS,
                 MarrySocialDBHelper.NEED_DOWNLOAD_FROM_CLOUD);
 

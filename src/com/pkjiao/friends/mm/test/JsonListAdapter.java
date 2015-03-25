@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 
 public class JsonListAdapter extends BaseAdapter {
 

@@ -1,6 +1,6 @@
 package com.pkjiao.friends.mm.dialog;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 import com.pkjiao.friends.mm.adapter.SelectAstroGridViewAdapter;
 import com.pkjiao.friends.mm.adapter.SelectAstroGridViewAdapter.OnAstroItemClickListener;
 

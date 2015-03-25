@@ -2,7 +2,7 @@ package com.pkjiao.friends.mm;
 
 import java.util.ArrayList;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 import com.pkjiao.friends.mm.activity.ContactsInfoActivity;
 import com.pkjiao.friends.mm.activity.InviteFriendsActivity;
 import com.pkjiao.friends.mm.activity.LoginActivity;

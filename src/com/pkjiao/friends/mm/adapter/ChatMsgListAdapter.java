@@ -13,7 +13,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 import com.pkjiao.friends.mm.activity.ChatMsgActivity;
 import com.pkjiao.friends.mm.base.AsyncHeadPicBitmapLoader;
 import com.pkjiao.friends.mm.base.ChatMsgItem;

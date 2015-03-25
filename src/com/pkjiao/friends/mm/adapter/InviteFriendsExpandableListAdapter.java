@@ -18,7 +18,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 import com.pkjiao.friends.mm.activity.ContactsInfoActivity;
 import com.pkjiao.friends.mm.adapter.ContactsExpandableListAdapter.ChildViewHolder;
 import com.pkjiao.friends.mm.adapter.ContactsExpandableListAdapter.GroupViewHolder;

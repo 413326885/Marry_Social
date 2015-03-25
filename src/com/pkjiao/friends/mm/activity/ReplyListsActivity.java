@@ -2,7 +2,7 @@ package com.pkjiao.friends.mm.activity;
 
 import java.util.ArrayList;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 import com.pkjiao.friends.mm.adapter.ReplyListAdapter;
 import com.pkjiao.friends.mm.base.ReplysItem;
 import com.pkjiao.friends.mm.common.CommonDataStructure;

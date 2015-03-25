@@ -78,6 +78,8 @@ public class MarrySocialDBHelper {
     public static final String KEY_PHOTO_POS = "photo_position";
     public static final String KEY_PHOTO_TYPE = "photo_type";
     public static final String KEY_PHOTO_ID = "photo_id";
+    public static final String KEY_PHOTO_REMOTE_SMALL_THUMB_PATH = "photo_remote_small_thumb_path";
+    public static final String KEY_PHOTO_REMOTE_BIG_THUMB_PATH = "photo_remote_big_thumb_path";
 
     // for replys table
     public static final String KEY_REPLY_CONTENTS = "reply_contents";
@@ -114,9 +116,9 @@ public class MarrySocialDBHelper {
     private static final String DATABASE_CREATE_IMAGES = "create table images ( "
             + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, bucket_id text, comment_id text, "
             + "photo_id text, added_time text, photo_position integer, photo_type text, photo_name text, photo_local_path text, "
-            + "photo_remote_org_path text, photo_remote_thumb_path text, current_status integer )";
+            + "photo_remote_org_path text, photo_remote_small_thumb_path text, photo_remote_big_thumb_path text, current_status integer )";
 
-    private static final String DATABASE_CREATE_BRAVOS = "create table bravos ("
+    private static final String DATABASE_CREATE_BRAVOS = "create table bravos ( "
             + "_id integer PRIMARY KEY AUTOINCREMENT, uid text, bucket_id text, comment_id text, "
             + "author_nickname text, added_time text, current_status integer, read_status integer )";
 

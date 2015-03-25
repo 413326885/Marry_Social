@@ -2,7 +2,7 @@ package com.pkjiao.friends.mm.fragment;
 
 import java.util.ArrayList;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 import com.pkjiao.friends.mm.adapter.ContactsExpandableListAdapter;
 import com.pkjiao.friends.mm.adapter.ContactsListAdapter;
 import com.pkjiao.friends.mm.base.ContactsInfo;

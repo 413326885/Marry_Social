@@ -14,7 +14,7 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.widget.ImageView;
 
-import com.dhn.marrysocial.R;
+import com.pkjiao.friends.mm.R;
 import com.pkjiao.friends.mm.database.MarrySocialDBHelper;
 
 public class AsyncHeadPicBitmapLoader {
