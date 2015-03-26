@@ -1,44 +1,33 @@
 package net.sourceforge.simcpux.wxapi;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import com.pkjiao.friends.mm.share.AbsShareMsg;
-import com.pkjiao.friends.mm.share.Constants;
-import com.pkjiao.friends.mm.share.MsgImage;
-import com.pkjiao.friends.mm.share.MsgImageText;
-import com.pkjiao.friends.mm.share.PType;
-import com.pkjiao.friends.mm.share.Util;
-import com.tencent.mm.sdk.openapi.BaseReq;
-import com.tencent.mm.sdk.openapi.BaseResp;
-import com.tencent.mm.sdk.openapi.ConstantsAPI;
-import com.tencent.mm.sdk.openapi.SendMessageToWX;
-import com.tencent.mm.sdk.openapi.ShowMessageFromWX;
-import com.tencent.mm.sdk.openapi.IWXAPI;
-import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
-import com.tencent.mm.sdk.openapi.WXAPIFactory;
-import com.tencent.mm.sdk.openapi.WXAppExtendObject;
-import com.tencent.mm.sdk.openapi.WXImageObject;
-import com.tencent.mm.sdk.openapi.WXMediaMessage;
-import com.tencent.mm.sdk.openapi.WXWebpageObject;
-
-import com.pkjiao.friends.mm.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
+import com.pkjiao.friends.mm.R;
+import com.pkjiao.friends.mm.share.Constants;
+import com.pkjiao.friends.mm.share.PType;
+import com.pkjiao.friends.mm.share.ShareMsg;
+import com.pkjiao.friends.mm.share.Util;
+import com.tencent.mm.sdk.openapi.BaseReq;
+import com.tencent.mm.sdk.openapi.BaseResp;
+import com.tencent.mm.sdk.openapi.ConstantsAPI;
+import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
+import com.tencent.mm.sdk.openapi.SendMessageToWX;
+import com.tencent.mm.sdk.openapi.ShowMessageFromWX;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
+import com.tencent.mm.sdk.openapi.WXMediaMessage;
+import com.tencent.mm.sdk.openapi.WXWebpageObject;
+
 public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
-    public final static String BUNDLE_SHOW = "WXEnetry_jrj_show";
+
     private static final int THUMB_SIZE = 150;
-    // IWXAPI
-    private IWXAPI api;
+
+    private IWXAPI mWXApi;
 
     boolean isFirstIn = true;
 
@@ -46,11 +35,12 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.wx_send_empty);
-        api = WXAPIFactory.createWXAPI(this, Constants.WX_APP_ID, false);
-        api.registerApp(Constants.WX_APP_ID);
-        api.handleIntent(getIntent(), this);
+        mWXApi = WXAPIFactory.createWXAPI(this, Constants.WX_APP_ID, false);
+        mWXApi.registerApp(Constants.WX_APP_ID);
+        mWXApi.handleIntent(getIntent(), this);
 
-        AbsShareMsg msg = getIntent().getParcelableExtra(BUNDLE_SHOW);
+        ShareMsg msg = getIntent().getParcelableExtra(
+                Constants.KEY_BUNDLE_SHARE);
         shareMsg(msg);
 
     }
@@ -74,7 +64,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
         super.onNewIntent(intent);
 
         setIntent(intent);
-        api.handleIntent(intent, this);
+        mWXApi.handleIntent(intent, this);
     }
 
     @Override
@@ -111,125 +101,52 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
         }
 
         Toast.makeText(this, result, Toast.LENGTH_LONG).show();
-//        finish();
+        finish();
     }
 
-    private void shareMsg(final AbsShareMsg msg) {
-//        new Thread() {
-//            public void run() {
-                if (msg instanceof MsgImage) {
-                    shareImage((MsgImage) msg);
-                } else if (msg instanceof MsgImageText) {
-                    shareWebPage((MsgImageText) msg);
-                }
-//            };
-//        }.start();
+    private void shareMsg(final ShareMsg msg) {
+        new Thread() {
+            public void run() {
+                shareWebPage(msg);
+            };
+        }.start();
     }
 
-    public void shareImage(MsgImage msg) {
+    public void shareWebPage(ShareMsg msg) {
+
         if (msg == null)
             return;
+
         boolean isTimelineCb = false;
         if (msg.pType == PType.PLATFORM_WX_friends) {
             isTimelineCb = true;
         }
-        WXImageObject wxImage = new WXImageObject();
-        WXMediaMessage wxmsg = new WXMediaMessage(wxImage);
-        if (msg.image != null) {
-            wxmsg.thumbData = Util.bmpToByteArray(msg.image, true);
-        } else if (msg.imagePath != null) {
-            wxImage.imagePath = msg.imagePath;
-            Bitmap bmp = BitmapFactory.decodeFile(msg.imagePath);
-            Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, THUMB_SIZE,
-                    THUMB_SIZE, true);
-            bmp.recycle();
-            wxmsg.thumbData = Util.bmpToByteArray(thumbBmp, true);
-        } else if (msg.imageUrl != null) {
-            wxImage.imageUrl = msg.imageUrl;
-            Bitmap bmp = null;
-            try {
-                bmp = BitmapFactory.decodeStream(new URL(msg.imageUrl)
-                        .openStream());
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, THUMB_SIZE,
-                    THUMB_SIZE, true);
-            bmp.recycle();
-            wxmsg.thumbData = Util.bmpToByteArray(thumbBmp, true);
-        }
-        SendMessageToWX.Req req = new SendMessageToWX.Req();
-        req.transaction = buildTransaction("image");
-        req.message = wxmsg;
-        req.scene = isTimelineCb ? SendMessageToWX.Req.WXSceneTimeline
-                : SendMessageToWX.Req.WXSceneSession;
-        api.sendReq(req);
-    }
 
-    public void shareWebPage(MsgImageText mt) {
-        if (mt == null)
-            return;
-        boolean isTimelineCb = false;
-        if (mt.pType == PType.PLATFORM_WX_friends) {
-            isTimelineCb = true;
-        }
         WXWebpageObject webpage = new WXWebpageObject();
-        webpage.webpageUrl = mt.targetUrl;
-        WXMediaMessage msg = new WXMediaMessage(webpage);
-        msg.title = mt.title;
-        msg.description = mt.summary;
+        webpage.webpageUrl = msg.targetUrl;
+        WXMediaMessage mediaMsg = new WXMediaMessage(webpage);
+        mediaMsg.title = msg.title;
+        mediaMsg.description = msg.summary;
 
-        Bitmap thumb = BitmapFactory.decodeResource(getResources(),
-                R.drawable.send_music_thumb);
-        msg.thumbData = Util.bmpToByteArray(thumb, true);
-        // Bitmap thumb = BitmapFactory.decodeResource(getResources(),
-        // R.drawable.ic_launcher);
-        // msg.thumbData = Util.bmpToByteArray(thumb, true);
-
-        // if (mt.image != null) {
-        // msg.thumbData = Util.bmpToByteArray(mt.image, true);
-        // } else if (mt.imageUrl != null) {
-        // msg.thumbData = Util.readFromFile(mt.imageUrl, 0, (int) new File(
-        // mt.imageUrl).length());
-        // }
+        Bitmap bmp = BitmapFactory.decodeResource(getResources(),
+                R.drawable.ic_launcher);
+        Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, THUMB_SIZE, THUMB_SIZE, true);
+        bmp.recycle();
+        mediaMsg.thumbData = Util.bmpToByteArray(thumbBmp, true);
 
         SendMessageToWX.Req req = new SendMessageToWX.Req();
         req.transaction = buildTransaction("webpage");
-        req.message = msg;
+        req.message = mediaMsg;
         req.scene = isTimelineCb ? SendMessageToWX.Req.WXSceneTimeline
                 : SendMessageToWX.Req.WXSceneSession;
-        api.sendReq(req);
+        mWXApi.sendReq(req);
     }
 
     private void goToGetMsg() {
-        // Intent intent = new Intent(this, GetFromWXActivity.class);
-        // intent.putExtras(getIntent());
-        // startActivity(intent);
-        // finish();
+        finish();
     }
 
     private void goToShowMsg(ShowMessageFromWX.Req showReq) {
-        WXMediaMessage wxMsg = showReq.message;
-        WXAppExtendObject obj = (WXAppExtendObject) wxMsg.mediaObject;
-
-        StringBuffer msg = new StringBuffer();
-        msg.append("description: ");
-        msg.append(wxMsg.description);
-        msg.append("\n");
-        msg.append("extInfo: ");
-        msg.append(obj.extInfo);
-        msg.append("\n");
-        msg.append("filePath: ");
-        msg.append(obj.filePath);
-
-        // Intent intent = new Intent(this, ShowFromWXActivity.class);
-        // intent.putExtra(Constants.ShowMsgActivity.STitle, wxMsg.title);
-        // intent.putExtra(Constants.ShowMsgActivity.SMessage, msg.toString());
-        // intent.putExtra(Constants.ShowMsgActivity.BAThumbData,
-        // wxMsg.thumbData);
-        // startActivity(intent);
         finish();
     }
 

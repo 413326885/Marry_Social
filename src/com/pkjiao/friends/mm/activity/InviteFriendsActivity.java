@@ -1,33 +1,10 @@
 package com.pkjiao.friends.mm.activity;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.regex.Pattern;
-
-import com.pkjiao.friends.mm.R;
-import com.pkjiao.friends.mm.MarrySocialMainActivity;
-import com.pkjiao.friends.mm.adapter.InviteFriendsExpandableListAdapter;
-import com.pkjiao.friends.mm.adapter.InviteFriendsListAdapter;
-import com.pkjiao.friends.mm.base.ChatMsgItem;
-import com.pkjiao.friends.mm.base.ContactsInfo;
-import com.pkjiao.friends.mm.common.CommonDataStructure;
-import com.pkjiao.friends.mm.database.MarrySocialDBHelper;
-import com.pkjiao.friends.mm.dialog.ProgressLoadDialog;
-import com.pkjiao.friends.mm.pingyin.AssortView;
-import com.pkjiao.friends.mm.pingyin.AssortView.OnTouchAssortButtonListener;
-import com.pkjiao.friends.mm.roundedimageview.RoundedImageView;
-import com.pkjiao.friends.mm.share.CallbackListener;
-import com.pkjiao.friends.mm.share.Constants;
-import com.pkjiao.friends.mm.share.MsgImage;
-import com.pkjiao.friends.mm.share.MsgImageText;
-import com.pkjiao.friends.mm.share.PType;
-import com.pkjiao.friends.mm.share.ShareManager;
-import com.pkjiao.friends.mm.utils.Utils;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -47,18 +24,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.Animation.AnimationListener;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ExpandableListView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.pkjiao.friends.mm.MarrySocialMainActivity;
+import com.pkjiao.friends.mm.R;
+import com.pkjiao.friends.mm.adapter.InviteFriendsExpandableListAdapter;
+import com.pkjiao.friends.mm.base.ContactsInfo;
+import com.pkjiao.friends.mm.common.CommonDataStructure;
+import com.pkjiao.friends.mm.database.MarrySocialDBHelper;
+import com.pkjiao.friends.mm.pingyin.AssortView;
+import com.pkjiao.friends.mm.pingyin.AssortView.OnTouchAssortButtonListener;
+import com.pkjiao.friends.mm.share.CallbackListener;
+import com.pkjiao.friends.mm.share.PType;
+import com.pkjiao.friends.mm.share.ShareManager;
+import com.pkjiao.friends.mm.share.ShareMsg;
+import com.pkjiao.friends.mm.utils.Utils;
 
 public class InviteFriendsActivity extends Activity implements OnClickListener {
 
@@ -187,8 +176,8 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
                 } else {
                     int width = Utils.dp2px(InviteFriendsActivity.this, 80);
                     int height = Utils.dp2px(InviteFriendsActivity.this, 80);
-                    mAssortPopupWindow = new PopupWindow(layoutView, width, height,
-                            false);
+                    mAssortPopupWindow = new PopupWindow(layoutView, width,
+                            height, false);
                     mAssortPopupWindow.showAtLocation(context.getWindow()
                             .getDecorView(), Gravity.CENTER, 0, 0);
                 }
@@ -203,8 +192,6 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
         });
 
         mHandler.sendEmptyMessage(START_TO_UPLOAD_CONTACTS);
-
-        initShare();
     }
 
     @Override
@@ -509,7 +496,8 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
         ly4.setOnClickListener(listener);
         mSharePopupWindow = new PopupWindow(v, LayoutParams.MATCH_PARENT,
                 LayoutParams.WRAP_CONTENT, true);
-        mSharePopupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        mSharePopupWindow.setBackgroundDrawable(new ColorDrawable(
+                Color.TRANSPARENT));
         mSharePopupWindow.setOutsideTouchable(false); // 设置是否允许在外点击使其消失，到底有用没？
         mSharePopupWindow.setAnimationStyle(R.style.AnimationSharePopup); // 设置动画
         final Animation dismissA = AnimationUtils.loadAnimation(this,
@@ -532,37 +520,47 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
                 mSharePopupView.setVisibility(View.GONE);
             }
         });
-        mSharePopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        mSharePopupView.startAnimation(dismissA);
+        mSharePopupWindow
+                .setOnDismissListener(new PopupWindow.OnDismissListener() {
+                    @Override
+                    public void onDismiss() {
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                mSharePopupView.startAnimation(dismissA);
+                            }
+                        });
                     }
                 });
-            }
-        });
         mSharePopupView.setVisibility(View.VISIBLE);
         mSharePopupView.startAnimation(showA);
-        mSharePopupWindow.showAtLocation(getWindow().getDecorView(), Gravity.BOTTOM, 0, 0);
-    }
-
-    private void initShare() {
-        HashMap<String, String> map = new HashMap<String, String>();
-        map.put(ShareManager.KEY_APPID_QQ, Constants.QQ_APP_ID);
-        map.put(ShareManager.KEY_APPID_WX, Constants.WX_APP_ID);
-        ShareManager.init(this, map);
+        mSharePopupWindow.showAtLocation(getWindow().getDecorView(),
+                Gravity.BOTTOM, 0, 0);
     }
 
     private void sendShare(int pType) {
-        MsgImageText msg = new MsgImageText();
+
+        ShareMsg msg = new ShareMsg();
         msg.appName = getString(R.string.app_name);
         msg.pType = pType;
-        msg.title = "nannan title";
-        msg.summary = "nannan summary";
-        msg.targetUrl = "http://www.baidu.com";
-        // msg.imagePath = handleBitmap();
-        msg.share(new CallbackListener() {
+        msg.title = getString(R.string.share_title);
+        msg.summary = getString(R.string.share_summary);
+        msg.targetUrl = "http://www.pkjiao.com";
+
+        switch (pType) {
+        case PType.PLATFORM_WX:// 分享微信好友
+            break;
+        case PType.PLATFORM_WX_friends:// 分享微信朋友圈.
+            break;
+        case PType.PLATFORM_QQzone:// 分享QQ空间
+        case PType.PLATFORM_QQ:// 分享QQ好友
+            msg.imageUrl = "http://static.pkjiao.com/1x1/avatar/1.png";
+            break;
+        default:
+            break;
+        }
+
+        ShareManager.getInstance().sendMsg(this, msg, new CallbackListener() {
+
             @Override
             public void onSuccess() {
                 showToast(InviteFriendsActivity.this, "分享成功");
@@ -575,18 +573,13 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
 
             @Override
             public void onCancel() {
-                // showToast(ImageEditActivity.this,"取消分享");
+                showToast(InviteFriendsActivity.this, "取消分享");
             }
         });
+
     }
 
-    Toast mToast;
-
     public void showToast(Context context, String str) {
-        if (mToast != null) {
-            mToast.cancel();
-        }
-        mToast = Toast.makeText(context, str, Toast.LENGTH_LONG);
-        mToast.show();
+        Toast.makeText(context, str, Toast.LENGTH_LONG).show();
     }
 }
