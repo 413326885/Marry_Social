@@ -32,7 +32,8 @@
         android:id="@+id/share_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/invite_friends_desc" >
+        android:layout_below="@id/invite_friends_desc"
+        android:background="@drawable/gray_bkg_selector" >
 
         <ImageView
             android:id="@+id/share_icon"
@@ -51,7 +52,7 @@
             android:alpha="0.8"
             android:paddingBottom="15dp"
             android:paddingTop="15dp"
-            android:text="分享给好友（暂未开放）"
+            android:text="分享给好友"
             android:textSize="16dp" />
     </RelativeLayout>
 

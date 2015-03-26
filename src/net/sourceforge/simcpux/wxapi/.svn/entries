@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   repos="http://scm.jrj.cn/jrj_mapp"
+   name=""
+   revision="3360"
+   last-author="tongzhui.peng"
+   url="http://scm.jrj.cn/jrj_mapp/Android/JRJmainApp/ShareSdkJrj/src/net/sourceforge/simcpux/wxapi"
+   uuid="42bfe2a8-282e-410c-ae33-c9039dde155a"
+   committed-rev="2286"
+   kind="dir"
+   committed-date="2014-11-14T05:07:16.063584Z"/>
+<entry
+   name="WXEntryActivity.java"
+   checksum="1e408f725fd75113314f8d35958faa0d"
+   last-author="tongzhui.peng"
+   committed-rev="2286"
+   text-time="2014-11-14T05:07:16.063000Z"
+   kind="file"
+   committed-date="2014-11-14T05:07:16.063584Z"/>
+</wc-entries>

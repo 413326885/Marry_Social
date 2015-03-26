@@ -69,4 +69,11 @@
         android:background="@drawable/default_bkg_selector" >
     </com.pkjiao.friends.mm.pingyin.AssortView>
 
+    <View
+        android:id="@+id/popup_masker"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/popwindow_state_fragment_color"
+        android:visibility="gone" />
+
 </RelativeLayout>

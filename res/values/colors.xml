@@ -30,5 +30,6 @@
     <color name="swipe_refresh_color_02">#2ecc71</color>
     <color name="swipe_refresh_color_03">#3498db</color>
     <color name="swipe_refresh_color_04">#e74c3c</color>
+    <color name="popwindow_state_fragment_color">#40000000</color>
 
 </resources>

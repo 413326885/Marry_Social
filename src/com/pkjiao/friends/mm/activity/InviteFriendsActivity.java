@@ -1,6 +1,7 @@
 package com.pkjiao.friends.mm.activity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
@@ -17,6 +18,12 @@ import com.pkjiao.friends.mm.dialog.ProgressLoadDialog;
 import com.pkjiao.friends.mm.pingyin.AssortView;
 import com.pkjiao.friends.mm.pingyin.AssortView.OnTouchAssortButtonListener;
 import com.pkjiao.friends.mm.roundedimageview.RoundedImageView;
+import com.pkjiao.friends.mm.share.CallbackListener;
+import com.pkjiao.friends.mm.share.Constants;
+import com.pkjiao.friends.mm.share.MsgImage;
+import com.pkjiao.friends.mm.share.MsgImageText;
+import com.pkjiao.friends.mm.share.PType;
+import com.pkjiao.friends.mm.share.ShareManager;
 import com.pkjiao.friends.mm.utils.Utils;
 
 import android.app.Activity;
@@ -27,6 +34,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -37,6 +46,10 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.Animation.AnimationListener;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ExpandableListView;
@@ -77,8 +90,10 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
     private Button mInviteFinishBtn;
     private InviteFriendsExpandableListAdapter mListAdapter;
 
+    private View mSharePopupView;
     private AssortView mAssortView;
-    private PopupWindow mPopupWindow;
+    private PopupWindow mAssortPopupWindow;
+    private PopupWindow mSharePopupWindow;
 
     private ArrayList<ContactsInfo> mContactList = new ArrayList<ContactsInfo>();
 
@@ -128,6 +143,7 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
         mReturnBtn = (RelativeLayout) findViewById(R.id.invite_friends_return);
         mListView = (ExpandableListView) findViewById(R.id.invite_friends_listView);
         mInviteFinishBtn = (Button) findViewById(R.id.invite_friends_finish);
+        mSharePopupView = (View) findViewById(R.id.popup_masker);
 
         mReturnBtn.setOnClickListener(this);
         mInviteFinishBtn.setOnClickListener(this);
@@ -166,26 +182,29 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
                 if (index != -1) {
                     mListView.setSelectedGroup(index);
                 }
-                if (mPopupWindow != null) {
+                if (mAssortPopupWindow != null) {
                     text.setText(str);
                 } else {
                     int width = Utils.dp2px(InviteFriendsActivity.this, 80);
                     int height = Utils.dp2px(InviteFriendsActivity.this, 80);
-                    mPopupWindow = new PopupWindow(layoutView, width, height, false);
-                    mPopupWindow.showAtLocation(context.getWindow()
+                    mAssortPopupWindow = new PopupWindow(layoutView, width, height,
+                            false);
+                    mAssortPopupWindow.showAtLocation(context.getWindow()
                             .getDecorView(), Gravity.CENTER, 0, 0);
                 }
                 text.setText(str);
             }
 
             public void onTouchAssortButtonUP() {
-                if (mPopupWindow != null)
-                    mPopupWindow.dismiss();
-                mPopupWindow = null;
+                if (mAssortPopupWindow != null)
+                    mAssortPopupWindow.dismiss();
+                mAssortPopupWindow = null;
             }
         });
 
         mHandler.sendEmptyMessage(START_TO_UPLOAD_CONTACTS);
+
+        initShare();
     }
 
     @Override
@@ -205,8 +224,11 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
             break;
         }
         case R.id.invite_friends_desc:
-        case R.id.contacts_group:
+        case R.id.contacts_group: {
+            break;
+        }
         case R.id.share_group: {
+            showSharePopUpWindow();
             break;
         }
         case R.id.invite_friends_finish: {
@@ -273,8 +295,7 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
 
         try {
             cursor = mDBHelper.query(MarrySocialDBHelper.DATABASE_DIRECT_TABLE,
-                    DIRECT_PROJECTION, null, null, null, null, null,
-                    null);
+                    DIRECT_PROJECTION, null, null, null, null, null, null);
             if (cursor == null || cursor.getCount() == 0) {
                 contactMembers.addAll(getAllContactsInfo());
                 return contactMembers;
@@ -454,5 +475,118 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
                 | intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
+    }
+
+    private void showSharePopUpWindow() {
+        View v = LayoutInflater.from(this).inflate(R.layout.share_popup, null);
+        View ly1 = v.findViewById(R.id.share_ly_1);
+        View ly2 = v.findViewById(R.id.share_ly_2);
+        View ly3 = v.findViewById(R.id.share_ly_3);
+        View ly4 = v.findViewById(R.id.share_ly_4);
+        OnClickListener listener = new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (v.getId()) {
+                case R.id.share_ly_1:// 分享微信好友
+                    sendShare(PType.PLATFORM_WX);
+                    break;
+                case R.id.share_ly_2:// 分享微信朋友圈.
+                    sendShare(PType.PLATFORM_WX_friends);
+                    break;
+                case R.id.share_ly_3:// 分享QQ空间
+                    sendShare(PType.PLATFORM_QQzone);
+                    break;
+                case R.id.share_ly_4:// 分享QQ好友
+                    sendShare(PType.PLATFORM_QQ);
+                    break;
+                }
+                mSharePopupWindow.dismiss();
+            }
+        };
+        ly1.setOnClickListener(listener);
+        ly2.setOnClickListener(listener);
+        ly3.setOnClickListener(listener);
+        ly4.setOnClickListener(listener);
+        mSharePopupWindow = new PopupWindow(v, LayoutParams.MATCH_PARENT,
+                LayoutParams.WRAP_CONTENT, true);
+        mSharePopupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        mSharePopupWindow.setOutsideTouchable(false); // 设置是否允许在外点击使其消失，到底有用没？
+        mSharePopupWindow.setAnimationStyle(R.style.AnimationSharePopup); // 设置动画
+        final Animation dismissA = AnimationUtils.loadAnimation(this,
+                R.anim.popwindow_masker_dismiss);
+        Animation showA = AnimationUtils.loadAnimation(this,
+                R.anim.popwindow_masker_show);
+        dismissA.setAnimationListener(new AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mSharePopupView.setVisibility(View.GONE);
+            }
+        });
+        mSharePopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        mSharePopupView.startAnimation(dismissA);
+                    }
+                });
+            }
+        });
+        mSharePopupView.setVisibility(View.VISIBLE);
+        mSharePopupView.startAnimation(showA);
+        mSharePopupWindow.showAtLocation(getWindow().getDecorView(), Gravity.BOTTOM, 0, 0);
+    }
+
+    private void initShare() {
+        HashMap<String, String> map = new HashMap<String, String>();
+        map.put(ShareManager.KEY_APPID_QQ, Constants.QQ_APP_ID);
+        map.put(ShareManager.KEY_APPID_WX, Constants.WX_APP_ID);
+        ShareManager.init(this, map);
+    }
+
+    private void sendShare(int pType) {
+        MsgImageText msg = new MsgImageText();
+        msg.appName = getString(R.string.app_name);
+        msg.pType = pType;
+        msg.title = "nannan title";
+        msg.summary = "nannan summary";
+        msg.targetUrl = "http://www.baidu.com";
+        // msg.imagePath = handleBitmap();
+        msg.share(new CallbackListener() {
+            @Override
+            public void onSuccess() {
+                showToast(InviteFriendsActivity.this, "分享成功");
+            }
+
+            @Override
+            public void onFailure() {
+                showToast(InviteFriendsActivity.this, "分享失败");
+            }
+
+            @Override
+            public void onCancel() {
+                // showToast(ImageEditActivity.this,"取消分享");
+            }
+        });
+    }
+
+    Toast mToast;
+
+    public void showToast(Context context, String str) {
+        if (mToast != null) {
+            mToast.cancel();
+        }
+        mToast = Toast.makeText(context, str, Toast.LENGTH_LONG);
+        mToast.show();
     }
 }
