@@ -113,31 +113,32 @@ public class DownloadIndirectFriendsIntentServices extends IntentService {
                 }
             }
 
-            if (!isContactExistInContactsDB(CommonDataStructure.FRIENDS_PUBLIC_ACCOUNT_UID)) {
-                ContactsInfo publicAccountInfo = Utils.downloadUserInfo(
-                        CommonDataStructure.URL_GET_USER_PROFILE,
-                        CommonDataStructure.FRIENDS_PUBLIC_ACCOUNT_UID);
-                if (publicAccountInfo != null) {
-                    insertContactToContactsDB(publicAccountInfo);
-                    String headPicOrgUrl = CommonDataStructure.HEAD_PICS_ORG_PATH
-                            + publicAccountInfo.getUid() + ".jpg";
-                    String headPicThumbUrl = CommonDataStructure.HEAD_PICS_THUMB_PATH
-                            + publicAccountInfo.getUid() + ".jpg";
-                    Bitmap headPicBitmap = Utils
-                            .downloadHeadPicBitmap(headPicOrgUrl);
-                    if (headPicBitmap != null) {
-                        if (!isUidExistInHeadPicDB(publicAccountInfo.getUid())) {
-                            insertHeadPicToHeadPicsDB(headPicBitmap,
-                                    publicAccountInfo.getUid(), headPicOrgUrl,
-                                    headPicThumbUrl);
-                        } else {
-                            updateHeadPicToHeadPicsDB(headPicBitmap,
-                                    publicAccountInfo.getUid(), headPicOrgUrl,
-                                    headPicThumbUrl);
-                        }
-                    }
-                }
-            }
+            //delete the friends+
+//            if (!isContactExistInContactsDB(CommonDataStructure.FRIENDS_PUBLIC_ACCOUNT_UID)) {
+//                ContactsInfo publicAccountInfo = Utils.downloadUserInfo(
+//                        CommonDataStructure.URL_GET_USER_PROFILE,
+//                        CommonDataStructure.FRIENDS_PUBLIC_ACCOUNT_UID);
+//                if (publicAccountInfo != null) {
+//                    insertContactToContactsDB(publicAccountInfo);
+//                    String headPicOrgUrl = CommonDataStructure.HEAD_PICS_ORG_PATH
+//                            + publicAccountInfo.getUid() + ".jpg";
+//                    String headPicThumbUrl = CommonDataStructure.HEAD_PICS_THUMB_PATH
+//                            + publicAccountInfo.getUid() + ".jpg";
+//                    Bitmap headPicBitmap = Utils
+//                            .downloadHeadPicBitmap(headPicOrgUrl);
+//                    if (headPicBitmap != null) {
+//                        if (!isUidExistInHeadPicDB(publicAccountInfo.getUid())) {
+//                            insertHeadPicToHeadPicsDB(headPicBitmap,
+//                                    publicAccountInfo.getUid(), headPicOrgUrl,
+//                                    headPicThumbUrl);
+//                        } else {
+//                            updateHeadPicToHeadPicsDB(headPicBitmap,
+//                                    publicAccountInfo.getUid(), headPicOrgUrl,
+//                                    headPicThumbUrl);
+//                        }
+//                    }
+//                }
+//            }
 
             boolean isServerUpdated = Utils.updateIndirectServer(
                     CommonDataStructure.URL_INDIRECT_SERVER_UPDATE, mUid);
