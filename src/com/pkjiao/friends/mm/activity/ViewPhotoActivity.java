@@ -37,7 +37,8 @@ public class ViewPhotoActivity extends FragmentActivity {
             MarrySocialDBHelper.KEY_PHOTO_NAME,
             MarrySocialDBHelper.KEY_PHOTO_LOCAL_PATH,
             MarrySocialDBHelper.KEY_PHOTO_REMOTE_ORG_PATH,
-            MarrySocialDBHelper.KEY_PHOTO_REMOTE_THUMB_PATH,
+            MarrySocialDBHelper.KEY_PHOTO_REMOTE_SMALL_THUMB_PATH,
+            MarrySocialDBHelper.KEY_PHOTO_REMOTE_BIG_THUMB_PATH,
             MarrySocialDBHelper.KEY_PHOTO_POS };
 
     private HackyViewPager mViewPager;
@@ -126,7 +127,8 @@ public class ViewPhotoActivity extends FragmentActivity {
                 item.photoName = cursor.getString(0);
                 item.photoLocalPath = cursor.getString(1);
                 item.photoRemoteOrgPath = cursor.getString(2);
-                item.photoRemoteThumbPath = cursor.getString(3);
+                item.photoRemoteSmallThumbPath = cursor.getString(3);
+                item.photoRemoteBigThumbPath = cursor.getString(4);
                 mSmallPhotoItems.add(item);
             }
         } catch (Exception e) {
@@ -164,7 +166,8 @@ public class ViewPhotoActivity extends FragmentActivity {
         String photoName;
         String photoLocalPath;
         String photoRemoteOrgPath;
-        String photoRemoteThumbPath;
+        String photoRemoteSmallThumbPath;
+        String photoRemoteBigThumbPath;
     }
 
     private PhotoClickListener mPhotoClickListener = new PhotoClickListener() {

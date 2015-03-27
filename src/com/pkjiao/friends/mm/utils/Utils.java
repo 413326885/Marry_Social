@@ -554,14 +554,15 @@ public class Utils {
                 JSONObject respData = response.getJSONObject("data");
                 int pos = respData.getInt("pos");
                 String photoId = respData.getString("pid");
-                String orginal = respData.getString("url");
-                String thumb = respData.getString("thumbnailurl");
+                String orginal = respData.getString("scale");
+                String small = respData.getString("small");
+                String big = respData.getString("big");
                 resultEntry.result = true;
                 resultEntry.photoId = photoId;
                 resultEntry.pos = pos;
                 resultEntry.orgUrl = orginal;
-                resultEntry.smallThumbUrl = thumb;
-                resultEntry.bigThumbUrl = thumb;
+                resultEntry.smallThumbUrl = small;
+                resultEntry.bigThumbUrl = big;
 
             }
         } catch (MalformedURLException e) {

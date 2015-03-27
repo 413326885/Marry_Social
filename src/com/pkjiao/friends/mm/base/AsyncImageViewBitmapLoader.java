@@ -138,14 +138,16 @@ public class AsyncImageViewBitmapLoader {
 
             String photoLocalPath = "";
             String photoRemoteOrgPath = "";
-            String photoRemoteThumbPath = "";
+            String photoRemoteSmallThumbPath = "";
+            String photoRemoteBigThumbPath = "";
             String photoId = "";
 
             cursor.moveToNext();
             photoLocalPath = cursor.getString(1);
             photoRemoteOrgPath = cursor.getString(2);
-            photoRemoteThumbPath = cursor.getString(3);
-            photoId = cursor.getString(4);
+            photoRemoteSmallThumbPath = cursor.getString(3);
+            photoRemoteBigThumbPath = cursor.getString(4);
+            photoId = cursor.getString(5);
 
             Bitmap thumbBitmap = null;
             Bitmap cropBitmap = null;
@@ -158,7 +160,7 @@ public class AsyncImageViewBitmapLoader {
             }
 
             // 最后从指定的url中下载图片
-            File imageFile = Utils.downloadImageAndCache(photoRemoteThumbPath,
+            File imageFile = Utils.downloadImageAndCache(photoRemoteSmallThumbPath,
                     CommonDataStructure.DOWNLOAD_PICS_DIR_URL);
             thumbBitmap = Utils.decodeThumbnail(imageFile.getAbsolutePath(),
                     null, Utils.mThumbPhotoWidth);
