@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:text="没有有效的聊天内容"
+        android:text="认识她（他）开始的地方"
         android:textSize="18sp" />
 
 </LinearLayout>

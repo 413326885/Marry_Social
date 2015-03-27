@@ -30,7 +30,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:text="没有有效的动态内容"
+        android:text="热爱生活，分享点滴"
         android:textSize="18sp" />
 
     <ImageView
@@ -82,7 +82,7 @@
             android:layout_marginTop="6dp"
             android:layout_toLeftOf="@id/dynamic_info_reply_send"
             android:background="@drawable/register_login_edit_selector"
-            android:hint="让世界聆听你的心跳..."
+            android:hint="发布动态..."
             android:textColor="@color/gray"
             android:textSize="15sp" />
     </RelativeLayout>

@@ -80,7 +80,7 @@
             android:background="@drawable/register_login_edit_selector"
             android:textSize="15sp"
             android:textColor="@color/gray"
-            android:hint="让世界聆听你的心跳..." />
+            android:hint="发起聊天..." />
     </RelativeLayout>
 
     <ListView
