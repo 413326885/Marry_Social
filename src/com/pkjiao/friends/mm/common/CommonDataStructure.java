@@ -35,7 +35,7 @@ public class CommonDataStructure {
     public static final String AUTH_CODE = "code";
     public static final String COMMENT_ID_LIST = "comment_id_list";
     public static final String INDIRECT_ID_LIST = "indirect_id_list";
-    
+
     public static final String MULTI_CHOOSE_PHOTO = "multi_choose_photo";
     public static final String MULTI_CHOOSE_PHOTO_COUNT = "multi_choose_photo_count";
 
@@ -214,15 +214,25 @@ public class CommonDataStructure {
             + "MZFwvVDJ4UEkwPSIsInZhbHVlIjoiXC9DM2s5b0M3K2drQ2x4TWU3KzY3NUpkRlUwYklWdW4xNHdVUmhuT1hvQkk9I"
             + "iwibWFjIjoiMDRkNzIwZTQ5MWY5OGQ1YzEwYWZiMGY4NjhkMThiZWVmYTJhNWRmYzA4MTRiMTVhOWNmMzM4NzVmMTJhNjMwNSJ9";
 
-    public static final String URL_UPLOAD_COMMON = "http://www.pkjiao.com/verify/post/";
+    public static final String CMD_USER_FEEDBACK = "eyJpdiI6IlpoUm93NWYwTURrQmlnZ1h5eXd1UDdzUmEyamRwNkhlZ"
+            + "VV2aUNublwvbERZPSIsInZhbHVlIjoiMlpBRlJiMnJEQUZWdXdISHRNQ1wvZ1wvM0FjcmlPVzhFa0NLNlJSSFJkbDd"
+            + "rPSIsIm1hYyI6ImNkOThmN2ExM2YyYzUyOGQwYjMyMDVmNDFmNzExZTBlNTJhNTgxMjc4YmJjMGY3NmM1M2E3OGY0NTdlZjFhZTkifQ==";
 
-    public static final String URL_TOKEN_CHECK = URL_UPLOAD_COMMON
-            + CMD_TOKEN_CHECK;
-    public static final String URL_TOKEN_REFRESH = URL_UPLOAD_COMMON
-            + CMD_TOKEN_REFRESH;
-    public static final String URL_TOKEN_GET = URL_UPLOAD_COMMON
-            + CMD_TOKEN_GET;
+    public static final String URL_UPLOAD_COMMON = "http://www.pkjiao.com/verify/post/";
+    public static final String URL_NOTICE_COMMON = "http://notice.pkjiao.com/verify/post/";
+    public static final String URL_USER_COMMON = "http://user.pkjiao.com/verify/post/";
+    public static final String URL_CHAT_COMMON = "http://chat.pkjiao.com/verify/post/";
+    public static final String URL_UPLOAD_HEAD_PIC = "http://www.pkjiao.com/upload/avatar";
     public static final String URL_TOPIC_PIC = "http://www.pkjiao.com/upload/topicpic";
+
+    // token
+    public static final String URL_TOKEN_CHECK = URL_USER_COMMON
+            + CMD_TOKEN_CHECK;
+    public static final String URL_TOKEN_REFRESH = URL_USER_COMMON
+            + CMD_TOKEN_REFRESH;
+    public static final String URL_TOKEN_GET = URL_USER_COMMON + CMD_TOKEN_GET;
+
+    // dynamic info
     public static final String URL_TOPIC_POST = URL_UPLOAD_COMMON
             + CMD_TOPIC_POST;
     public static final String URL_TOPIC_DROP = URL_UPLOAD_COMMON
@@ -231,52 +241,65 @@ public class CommonDataStructure {
             + CMD_TOPIC_PRAISE;
     public static final String URL_TOPIC_DISPRAISE = URL_UPLOAD_COMMON
             + CMD_TOPIC_DISPRAISE;
-    public static final String URL_PROFILE = URL_UPLOAD_COMMON + CMD_PROFILE;
-    public static final String URL_PROFILE_AVATAR = URL_UPLOAD_COMMON
-            + CMD_PROFILE_AVATAR;
-    public static final String URL_DIRECT_ADD = URL_UPLOAD_COMMON
-            + CMD_DIRECT_ADD;
     public static final String URL_TOPIC_REPLY_POST = URL_UPLOAD_COMMON
             + CMD_TOPIC_REPLY_POST;
     public static final String URL_TOPIC_COMMENT_WITH_REPLY_LIST = URL_UPLOAD_COMMON
             + CMD_TOPIC_COMMENT_WITH_REPLY_LIST;
-    public static final String URL_INDIRECT_LIST = URL_UPLOAD_COMMON
-            + CMD_INDIRECT_LIST;
-    public static final String URL_REPLY_LIST = URL_UPLOAD_COMMON
-            + CMD_REPLY_LIST;
-    public static final String URL_INDIRECT_NOTICE_LIST = URL_UPLOAD_COMMON
-            + CMD_INDIRECT_NOTICE_LIST;
-    public static final String URL_MYSELF_NOTICE_LIST = URL_UPLOAD_COMMON
-            + CMD_MYSELF_NOTICE_LIST;
     public static final String URL_TOPIC_COMMENT_LIST = URL_UPLOAD_COMMON
             + CMD_TOPIC_COMMENT_LIST;
-    public static final String URL_CHAT_TEXT = URL_UPLOAD_COMMON
-            + CMD_CHAT_TEXT;
-    public static final String URL_GET_CHAT_TEXT = URL_UPLOAD_COMMON
-            + CMD_GET_CHAT_TEXT;
-    public static final String URL_GET_USER_PROFILE = URL_UPLOAD_COMMON
+    public static final String URL_REPLY_LIST = URL_UPLOAD_COMMON
+            + CMD_REPLY_LIST;
+
+    // user info
+    // public static final String URL_PROFILE = URL_UPLOAD_COMMON + CMD_PROFILE;
+    // public static final String URL_PROFILE_AVATAR = URL_UPLOAD_COMMON
+    // + CMD_PROFILE_AVATAR;
+    public static final String URL_GET_USER_PROFILE = URL_USER_COMMON
             + CMD_GET_USER_PROFILE;
-    public static final String URL_GET_USER_HEAD_PIC = URL_UPLOAD_COMMON
+    public static final String URL_GET_USER_HEAD_PIC = URL_USER_COMMON
             + CMD_GET_USER_HEAD_PIC;
-    public static final String URL_UPLOAD_HEAD_PIC = "http://www.pkjiao.com/upload/avatar";
-    public static final String URL_PROFILE_BACKGROUND = URL_UPLOAD_COMMON
+    public static final String URL_PROFILE_BACKGROUND = URL_USER_COMMON
             + CMD_PROFILE_BACKGROUND;
-    public static final String URL_USER_REGISTER = URL_UPLOAD_COMMON
+    public static final String URL_USER_REGISTER = URL_USER_COMMON
             + CMD_USER_REGISTER;
-    public static final String URL_USER_LOGIN = URL_UPLOAD_COMMON
+    public static final String URL_USER_LOGIN = URL_USER_COMMON
             + CMD_USER_LOGIN;
-    public static final String URL_UPDATE_USER_INFO = URL_UPLOAD_COMMON
+    public static final String URL_UPDATE_USER_INFO = URL_USER_COMMON
             + CMD_UPDATE_USER_INFO;
+    public static final String URL_CHANGE_PASSWORD = URL_USER_COMMON
+            + CMD_CHANGE_PASSWORD;
+    public static final String URL_USER_FEEDBACK = URL_USER_COMMON
+            + CMD_USER_FEEDBACK;
+    // public static final String URL_UPDATE_USERINFO = URL_UPLOAD_COMMON
+    // + CMD_UPDATE_USERINFO;
+
+    // direct contacts
     public static final String URL_UPLOAD_CONTACTS = URL_UPLOAD_COMMON
             + CMD_UPLOAD_CONTACTS;
-    public static final String URL_UPDATE_USERINFO = URL_UPLOAD_COMMON
-            + CMD_UPDATE_USERINFO;
+    // public static final String URL_DIRECT_ADD = URL_UPLOAD_COMMON
+    // + CMD_DIRECT_ADD;
+
+    // indirect contacts
+    public static final String URL_INDIRECT_LIST = URL_UPLOAD_COMMON
+            + CMD_INDIRECT_LIST;
     public static final String URL_INDIRECT_SERVER_UPDATE = URL_UPLOAD_COMMON
             + CMD_INDIRECT_SERVER_UPDATE;
+
+    // public static final String URL_INDIRECT_NOTICE_LIST = URL_UPLOAD_COMMON
+    // + CMD_INDIRECT_NOTICE_LIST;
+    // public static final String URL_MYSELF_NOTICE_LIST = URL_UPLOAD_COMMON
+    // + CMD_MYSELF_NOTICE_LIST;
+
+    // chat
+    public static final String URL_CHAT_TEXT = URL_CHAT_COMMON + CMD_CHAT_TEXT;
+    public static final String URL_GET_CHAT_TEXT = URL_CHAT_COMMON
+            + CMD_GET_CHAT_TEXT;
+
+    // send sms authcode
     public static final String URL_SEND_AUTHCODE = URL_UPLOAD_COMMON
             + CMD_SEND_AUTHCODE;
-    public static final String URL_CHANGE_PASSWORD = URL_UPLOAD_COMMON
-            + CMD_CHANGE_PASSWORD;
+
+    // notices
     public static final String URL_DOWNLOAD_BRAVOS = URL_UPLOAD_COMMON
             + CMD_DOWNLOAD_BRAVOS;
     public static final String URL_NOTICE_LIST = URL_UPLOAD_COMMON
@@ -418,12 +441,12 @@ public class CommonDataStructure {
         public String headerBkgIndex;
     }
 
-//    public static class ContactEntry {
-//        public String contact_name;
-//        public String contact_phone_number;
-//        public int contact_id;
-//        public String contact_sortKey;
-//        public String direct_id;
-//        public String direct_uid;
-//    }
+    // public static class ContactEntry {
+    // public String contact_name;
+    // public String contact_phone_number;
+    // public int contact_id;
+    // public String contact_sortKey;
+    // public String direct_id;
+    // public String direct_uid;
+    // }
 }
