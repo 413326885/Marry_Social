@@ -2563,7 +2563,8 @@ public class Utils {
     }
 
     public static String updateUserInfo(String RequestURL, String uid,
-            String nickname, int gender, int astro, int hobby, String intro, String profession) {
+            String nickname, int gender, int astro, int hobby, String intro,
+            String profession) {
 
         Log.e(TAG, "nannan updateUserInfo ");
         String result = "";
@@ -2963,6 +2964,85 @@ public class Utils {
 
             String data = response.getString("data");
             result = "true".equalsIgnoreCase(data);
+
+            reader.close();
+
+            return result;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+
+        return result;
+    }
+
+    public static boolean userFeedback(String RequestURL, String uId, String context) {
+
+        Log.e(TAG, "nannan userFeedback ");
+        URL postUrl = null;
+        HttpURLConnection connection = null;
+        DataOutputStream output = null;
+        boolean result = false;
+
+        try {
+            postUrl = new URL(RequestURL);
+            if (postUrl == null)
+                return result;
+
+            connection = (HttpURLConnection) postUrl.openConnection();
+            if (connection == null)
+                return result;
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestMethod("POST");
+            connection.setUseCaches(false);
+            connection.setInstanceFollowRedirects(true);
+            connection.setRequestProperty("Content-Type",
+                    "application/x-www-form-urlencoded");
+            connection.connect();
+
+            OutputStream stream = connection.getOutputStream();
+            output = new DataOutputStream(stream);
+
+            JSONObject contactContent = new JSONObject();
+            contactContent.put("uid", uId);
+            contactContent.put("content", context);
+
+            String content = null;
+            content = "jsondata="
+                    + URLEncoder.encode(contactContent.toString(), "UTF-8");
+
+            if (content == null)
+                return result;
+
+            output.writeBytes(content);
+            output.flush();
+            output.close();
+
+            BufferedReader reader = null;
+            reader = new BufferedReader(new InputStreamReader(
+                    connection.getInputStream()));
+            StringBuffer resp = new StringBuffer();
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                resp.append(line);
+            }
+
+            Log.e(TAG, "nannan resp 555555555555 = " + resp);
+            JSONObject response = new JSONObject(resp.toString());
+            String code = response.getString("code");
+            if (!"200".equalsIgnoreCase(code)) {
+                return result;
+            }
+            result = true;
 
             reader.close();
 

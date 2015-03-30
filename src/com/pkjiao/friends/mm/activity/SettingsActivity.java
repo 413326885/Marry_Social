@@ -33,7 +33,7 @@ public class SettingsActivity extends Activity implements OnClickListener {
     private TextView mFuncDescBtn;
     private TextView mChangePassword;
     private TextView mLogoutBtn;
-    
+    private TextView mUserFeedback;
     private Context mContext;
 
     @Override
@@ -48,6 +48,7 @@ public class SettingsActivity extends Activity implements OnClickListener {
         mVersionUpdate = (RelativeLayout) findViewById(R.id.version_update);
         mAboutUsBtn = (TextView) findViewById(R.id.about_us);
         mFuncDescBtn = (TextView) findViewById(R.id.func_desc);
+        mUserFeedback = (TextView) findViewById(R.id.user_feedback);
         mChangePassword = (TextView) findViewById(R.id.change_password);
         mLogoutBtn = (TextView) findViewById(R.id.logout);
 
@@ -55,6 +56,7 @@ public class SettingsActivity extends Activity implements OnClickListener {
         mVersionUpdate.setOnClickListener(this);
         mAboutUsBtn.setOnClickListener(this);
         mFuncDescBtn.setOnClickListener(this);
+        mUserFeedback.setOnClickListener(this);
         mChangePassword.setOnClickListener(this);
         mLogoutBtn.setOnClickListener(this);
     }
@@ -77,6 +79,10 @@ public class SettingsActivity extends Activity implements OnClickListener {
             startToViewProductDesc();
             break;
         }
+        case R.id.user_feedback: {
+            startToFeedbck();
+            break;
+        }
         case R.id.change_password: {
             startToChangePassword();
             break;
@@ -88,6 +94,11 @@ public class SettingsActivity extends Activity implements OnClickListener {
         default:
             break;
         }
+    }
+
+    private void startToFeedbck() {
+        Intent intent = new Intent(this, UserFeedbackActivity.class);
+        startActivity(intent);
     }
 
     private void startToChangePassword() {
@@ -134,7 +145,8 @@ public class SettingsActivity extends Activity implements OnClickListener {
 
     private void redirectToRegisterActivity() {
         Intent intent = new Intent(this, RegisterActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
     }

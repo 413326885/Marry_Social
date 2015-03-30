@@ -116,6 +116,10 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
+            android:name="com.pkjiao.friends.mm.activity.UserFeedbackActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
             android:name="com.pkjiao.friends.mm.test.MainActivity"
             android:screenOrientation="portrait" >
         </activity>
