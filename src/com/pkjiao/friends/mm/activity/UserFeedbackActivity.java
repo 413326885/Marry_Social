@@ -19,6 +19,7 @@ import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +38,7 @@ public class UserFeedbackActivity extends Activity implements OnClickListener {
     private Handler mHandler;
     private String mUid;
     private ExecutorService mExecutorService;
+    private RelativeLayout mReturnBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,8 +47,10 @@ public class UserFeedbackActivity extends Activity implements OnClickListener {
         setContentView(R.layout.feedback_layout);
         mFeedbackText = (EditText) findViewById(R.id.feedback_input);
         mFeedbackSend = (ImageView) findViewById(R.id.feedback_send);
+        mReturnBtn = (RelativeLayout) findViewById(R.id.feedback_return);
         mFeedbackText.setOnClickListener(this);
         mFeedbackSend.setOnClickListener(this);
+        mReturnBtn.setOnClickListener(this);
 
         mHandler = new Handler() {
             @Override
@@ -98,6 +102,10 @@ public class UserFeedbackActivity extends Activity implements OnClickListener {
 
                 mExecutorService.execute(new UploadFiles());
             }
+            break;
+        }
+        case R.id.feedback_return: {
+            finish();
             break;
         }
         default:
