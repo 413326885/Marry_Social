@@ -1,19 +1,18 @@
 package com.pkjiao.friends.mm;
 
 import java.io.File;
+import java.util.concurrent.ExecutorService;
+
+import android.app.Application;
+import android.content.SharedPreferences;
+import android.os.Environment;
+import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.pkjiao.friends.mm.common.CommonDataStructure;
 import com.pkjiao.friends.mm.database.MarrySocialDBHelper;
-import com.pkjiao.friends.mm.services.DownloadNoticesService;
-
-import com.pkjiao.friends.mm.R;
-import android.app.Application;
-import android.content.Intent;
-import android.os.Environment;
-import android.widget.Toast;
 
 public class MarrySocialApplication extends Application {
 
@@ -79,8 +78,8 @@ public class MarrySocialApplication extends Application {
 
     private void initUILImageLoader() {
         DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-                .showImageForEmptyUri(R.drawable.empty_photo).cacheInMemory(true)
-                .cacheOnDisc(true).build();
+                .showImageForEmptyUri(R.drawable.empty_photo)
+                .cacheInMemory(true).cacheOnDisc(true).build();
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
                 getApplicationContext())
                 .defaultDisplayImageOptions(defaultOptions)

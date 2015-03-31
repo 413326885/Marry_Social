@@ -142,6 +142,8 @@
         </service>
         <service android:name="com.pkjiao.friends.mm.services.DownloadBravosIntentServices" >
         </service>
+        <service android:name="com.pkjiao.friends.mm.services.UpdateAppServices" >
+        </service>
 
         <provider
             android:name="com.pkjiao.friends.mm.provider.DBContentChangeProvider"

@@ -39,10 +39,13 @@ public class CommonDataStructure {
     public static final String MULTI_CHOOSE_PHOTO = "multi_choose_photo";
     public static final String MULTI_CHOOSE_PHOTO_COUNT = "multi_choose_photo_count";
 
+    public static final String IS_APP_NEED_UPDATE = "is_app_need_update";
+
     public static final String IMAGE_CACHE_DIR = ".com.dhn.marrysocial";
     public static final String DOWNLOAD_PICS_DIR = "downloadPics";
     public static final String HEAD_PICS_DIR = "headPics";
     public static final String BACKGROUND_PICS_DIR = "backgroundPics";
+    public static final String DOWNLOAD_APP_DIR = "downloadApps";
 
     public static final String HEAD_PICS_ORG_PATH = "http://static.pkjiao.com/avatar/";
     public static final String HEAD_PICS_THUMB_PATH = "http://static.pkjiao.com/102x102/avatar/";
@@ -62,6 +65,17 @@ public class CommonDataStructure {
             .getExternalStorageDirectory().getAbsolutePath()
             + File.separator
             + IMAGE_CACHE_DIR + File.separator + BACKGROUND_PICS_DIR;
+    public static final String DOWNLOAD_APP_DIR_URL = Environment
+            .getExternalStorageDirectory().getAbsolutePath()
+            + File.separator
+            + IMAGE_CACHE_DIR + File.separator + DOWNLOAD_APP_DIR;
+    public static final String DOWNLOAD_APP_URL = Environment
+            .getExternalStorageDirectory().getAbsolutePath()
+            + File.separator
+            + IMAGE_CACHE_DIR
+            + File.separator
+            + DOWNLOAD_APP_DIR
+            + File.separator + "friends.apk";
 
     public static final String HEAD_PIC_NAME = "head_pic_name";
     public static final String HEAD_PIC_CROP_NAME = "head_pic_crop_name";
@@ -224,6 +238,7 @@ public class CommonDataStructure {
     public static final String URL_CHAT_COMMON = "http://chat.pkjiao.com/verify/post/";
     public static final String URL_UPLOAD_HEAD_PIC = "http://www.pkjiao.com/upload/avatar";
     public static final String URL_TOPIC_PIC = "http://www.pkjiao.com/upload/topicpic";
+    public static final String URL_CHECK_VERSION = "http://www.pkjiao.com/apk/check/version";
 
     // token
     public static final String URL_TOKEN_CHECK = URL_USER_COMMON

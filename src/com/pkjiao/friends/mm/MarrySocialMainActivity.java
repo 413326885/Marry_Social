@@ -1,11 +1,31 @@
 package com.pkjiao.friends.mm;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import com.pkjiao.friends.mm.R;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.Window;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+
 import com.pkjiao.friends.mm.activity.ContactsInfoActivity;
 import com.pkjiao.friends.mm.activity.InviteFriendsActivity;
-import com.pkjiao.friends.mm.activity.LoginActivity;
 import com.pkjiao.friends.mm.activity.RegisterActivity;
 import com.pkjiao.friends.mm.activity.SettingsActivity;
 import com.pkjiao.friends.mm.adapter.ViewPagerFragmentAdapter;
@@ -13,32 +33,17 @@ import com.pkjiao.friends.mm.base.NotificationManagerControl;
 import com.pkjiao.friends.mm.broadcast.receive.NewTipsBroadcastReceiver;
 import com.pkjiao.friends.mm.common.CommonDataStructure;
 import com.pkjiao.friends.mm.database.MarrySocialDBHelper;
+import com.pkjiao.friends.mm.dialog.UpdateAppDialog;
+import com.pkjiao.friends.mm.dialog.UpdateAppDialog.OnConfirmBtnClickListener;
 import com.pkjiao.friends.mm.fragment.ChatMsgFragment;
 import com.pkjiao.friends.mm.fragment.ContactsListFragment;
 import com.pkjiao.friends.mm.fragment.DynamicInfoFragment;
 import com.pkjiao.friends.mm.services.DownloadChatMsgService;
 import com.pkjiao.friends.mm.services.DownloadIndirectFriendsIntentServices;
 import com.pkjiao.friends.mm.services.DownloadNoticesService;
+import com.pkjiao.friends.mm.services.UpdateAppServices;
+import com.pkjiao.friends.mm.utils.Utils;
 import com.pkjiao.friends.mm.viewpagerindicator.TabPageIndicator;
-
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.Window;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.Toast;
 
 public class MarrySocialMainActivity extends FragmentActivity implements
         OnClickListener {
@@ -48,6 +53,7 @@ public class MarrySocialMainActivity extends FragmentActivity implements
     private static final int DYNAMICINFOFRAGMENT = 0;
     private static final int CHATMSGFRAGMENT = 1;
     private static final int CONTACTSLISTFRAGMENT = 2;
+    private static final int APP_NEED_UPDATE = 3;
 
     private ViewPager mViewPager;
     private ArrayList<Fragment> mViewFragmentSets;
@@ -63,6 +69,21 @@ public class MarrySocialMainActivity extends FragmentActivity implements
     private NotificationManagerControl mNotificationManager;
     private NewTipsBroadcastReceiver mBroadcastReceiver;
     private SharedPreferences mPrefs;
+    private ExecutorService mExecutorService;
+
+    private UpdateAppDialog mUpdateDialog;
+    private Handler mHandler = new Handler() {
+        public void handleMessage(android.os.Message msg) {
+            switch (msg.what) {
+            case APP_NEED_UPDATE: {
+                showUpdateAppDialogIfNeeded(MarrySocialMainActivity.this);
+                break;
+            }
+            default:
+                break;
+            }
+        };
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +117,7 @@ public class MarrySocialMainActivity extends FragmentActivity implements
         downloadUserContacts();
         startDownloadNoticesServices();
         startDownloadChatMsgServices();
+        checkAppVersion();
         registerReceiver(mBroadcastReceiver, getIntentFilter());
     }
 
@@ -137,7 +159,8 @@ public class MarrySocialMainActivity extends FragmentActivity implements
                 if (fragmentIndex == CONTACTSLISTFRAGMENT) {
                     Fragment currentFragment = mViewPagerFragmentAdapter
                             .getItem(fragmentIndex);
-                    ((ContactsListFragment) currentFragment).dismissPopupWindow();
+                    ((ContactsListFragment) currentFragment)
+                            .dismissPopupWindow();
                 }
             }
         });
@@ -268,7 +291,8 @@ public class MarrySocialMainActivity extends FragmentActivity implements
 
         @Override
         public void onReceivedNewComments() {
-            if (mPrefs.getInt(CommonDataStructure.NOTIFICATION_COMMENTS_COUNT, 0) == 0) {
+            if (mPrefs.getInt(CommonDataStructure.NOTIFICATION_COMMENTS_COUNT,
+                    0) == 0) {
                 mNewCommentsTips.setVisibility(View.INVISIBLE);
             } else {
                 mNewCommentsTips.setVisibility(View.VISIBLE);
@@ -289,5 +313,55 @@ public class MarrySocialMainActivity extends FragmentActivity implements
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(CommonDataStructure.KEY_BROADCAST_ACTION);
         return intentFilter;
+    }
+
+    private void showUpdateAppDialogIfNeeded(final Context context) {
+
+        mUpdateDialog = new UpdateAppDialog(context);
+        mUpdateDialog.setOnConfirmBtnClickListener(mConfirmBtnClickListener);
+        mUpdateDialog.show();
+    }
+
+    private OnConfirmBtnClickListener mConfirmBtnClickListener = new OnConfirmBtnClickListener() {
+
+        @Override
+        public void onConfirmBtnClick() {
+            startToUpdateApp();
+            mUpdateDialog.dismiss();
+        }
+
+    };
+
+    private void startToUpdateApp() {
+        Intent intent = new Intent(this, UpdateAppServices.class);
+        startService(intent);
+    }
+
+    private void checkAppVersion() {
+        mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
+                .availableProcessors() * CommonDataStructure.THREAD_POOL_SIZE);
+        mExecutorService.execute(new GetAppVersion());
+    }
+
+    class GetAppVersion implements Runnable {
+
+        @Override
+        public void run() {
+            int localVersionCode = 0;
+            int remoteVersionCode = Integer.valueOf(Utils
+                    .getLatestAppVersion(CommonDataStructure.URL_CHECK_VERSION));
+            try {
+                PackageInfo packageInfo = getApplicationContext()
+                        .getPackageManager()
+                        .getPackageInfo(getPackageName(), 0);
+                localVersionCode = packageInfo.versionCode;
+            } catch (NameNotFoundException e) {
+                e.printStackTrace();
+            }
+            boolean isNeedUpdate = remoteVersionCode > localVersionCode;
+            if (isNeedUpdate) {
+                mHandler.sendEmptyMessage(APP_NEED_UPDATE);
+            }
+        }
     }
 }

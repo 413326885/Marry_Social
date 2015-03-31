@@ -2983,7 +2983,8 @@ public class Utils {
         return result;
     }
 
-    public static boolean userFeedback(String RequestURL, String uId, String context) {
+    public static boolean userFeedback(String RequestURL, String uId,
+            String context) {
 
         Log.e(TAG, "nannan userFeedback ");
         URL postUrl = null;
@@ -3247,5 +3248,60 @@ public class Utils {
     public static int px2dp(Context context, float pxValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (pxValue / scale + 0.5f);
+    }
+
+    public static String getLatestAppVersion(String RequestURL) {
+
+        Log.e(TAG, "nannan getLatestAppVersion ");
+        String result = "";
+
+        URL postUrl = null;
+        HttpURLConnection connection = null;
+        BufferedReader inputReader = null;
+
+        try {
+            postUrl = new URL(RequestURL);
+            if (postUrl == null)
+                return result;
+
+            connection = (HttpURLConnection) postUrl.openConnection();
+            if (connection == null)
+                return result;
+
+            connection.setDoInput(true);
+            connection.connect();
+
+            inputReader = new BufferedReader(new InputStreamReader(
+                    connection.getInputStream()));
+            StringBuffer resp = new StringBuffer();
+            String line = null;
+            while ((line = inputReader.readLine()) != null) {
+                resp.append(line);
+            }
+            // String line = inputReader.readLine();
+            // inputReader.close();
+
+            Log.e(TAG, "nannan resp = " + resp.toString() + "#################");
+            JSONObject response = new JSONObject(resp.toString());
+            String code = response.getString("code");
+            if (!"200".equalsIgnoreCase(code)) {
+                return result;
+            }
+
+            result = response.getJSONObject("data").getString("patch_ver");
+
+            inputReader.close();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+        return result;
     }
 }
