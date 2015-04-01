@@ -3253,7 +3253,7 @@ public class Utils {
     public static String getLatestAppVersion(String RequestURL) {
 
         Log.e(TAG, "nannan getLatestAppVersion ");
-        String result = "";
+        String result = "0";
 
         URL postUrl = null;
         HttpURLConnection connection = null;
