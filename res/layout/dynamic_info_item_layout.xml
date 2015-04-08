@@ -36,7 +36,7 @@
             android:alpha="0.8"
             android:text="SWINTER"
             android:textColor="@color/darkgreen"
-            android:textSize="18dp" />
+            android:textSize="20dp" />
 
         <ImageView
             android:id="@+id/dynamic_info_refresh"
@@ -67,12 +67,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/dynamic_info_head"
+        android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
-        android:layout_marginLeft="48dp"
-        android:layout_marginRight="20dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="15dp"
         android:alpha="0.8"
         android:text="今天下午去打球，有人一起吗？"
-        android:textSize="14dp" />
+        android:textSize="18dp" />
 
     <RelativeLayout
         android:id="@+id/comments_pics"
@@ -80,8 +81,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/dynamic_info_contents"
         android:layout_marginBottom="5dp"
-        android:layout_marginLeft="48dp"
-        android:layout_marginRight="20dp" >
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="15dp" >
 
         <RelativeLayout
             android:id="@+id/linearItem01"
@@ -90,8 +91,8 @@
 
             <ImageView
                 android:id="@+id/comments_pics_01"
-                android:layout_width="86dp"
-                android:layout_height="86dp"
+                android:layout_width="108dp"
+                android:layout_height="108dp"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
                 android:background="@color/gray_background_color"
@@ -99,8 +100,8 @@
 
             <ImageView
                 android:id="@+id/comments_pics_02"
-                android:layout_width="86dp"
-                android:layout_height="86dp"
+                android:layout_width="108dp"
+                android:layout_height="108dp"
                 android:layout_marginLeft="2dp"
                 android:layout_toRightOf="@id/comments_pics_01"
                 android:background="@color/gray_background_color"
@@ -108,8 +109,8 @@
 
             <ImageView
                 android:id="@+id/comments_pics_03"
-                android:layout_width="86dp"
-                android:layout_height="86dp"
+                android:layout_width="108dp"
+                android:layout_height="108dp"
                 android:layout_marginLeft="2dp"
                 android:layout_toRightOf="@id/comments_pics_02"
                 android:background="@color/gray_background_color"
@@ -125,15 +126,15 @@
 
             <ImageView
                 android:id="@+id/comments_pics_04"
-                android:layout_width="86dp"
-                android:layout_height="86dp"
+                android:layout_width="108dp"
+                android:layout_height="108dp"
                 android:background="@color/gray_background_color"
                 android:visibility="gone" />
 
             <ImageView
                 android:id="@+id/comments_pics_05"
-                android:layout_width="86dp"
-                android:layout_height="86dp"
+                android:layout_width="108dp"
+                android:layout_height="108dp"
                 android:layout_marginLeft="2dp"
                 android:layout_toRightOf="@id/comments_pics_04"
                 android:background="@color/gray_background_color"
@@ -141,8 +142,8 @@
 
             <ImageView
                 android:id="@+id/comments_pics_06"
-                android:layout_width="86dp"
-                android:layout_height="86dp"
+                android:layout_width="108dp"
+                android:layout_height="108dp"
                 android:layout_marginLeft="2dp"
                 android:layout_toRightOf="@id/comments_pics_05"
                 android:background="@color/gray_background_color"
@@ -158,15 +159,15 @@
 
             <ImageView
                 android:id="@+id/comments_pics_07"
-                android:layout_width="86dp"
-                android:layout_height="86dp"
+                android:layout_width="108dp"
+                android:layout_height="108dp"
                 android:background="@color/gray_background_color"
                 android:visibility="gone" />
 
             <ImageView
                 android:id="@+id/comments_pics_08"
-                android:layout_width="86dp"
-                android:layout_height="86dp"
+                android:layout_width="108dp"
+                android:layout_height="108dp"
                 android:layout_marginLeft="2dp"
                 android:layout_toRightOf="@id/comments_pics_07"
                 android:background="@color/gray_background_color"
@@ -174,8 +175,8 @@
 
             <ImageView
                 android:id="@+id/comments_pics_09"
-                android:layout_width="86dp"
-                android:layout_height="86dp"
+                android:layout_width="108dp"
+                android:layout_height="108dp"
                 android:layout_marginLeft="2dp"
                 android:layout_toRightOf="@id/comments_pics_08"
                 android:background="@color/gray_background_color"
@@ -188,8 +189,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/comments_pics"
-        android:layout_marginLeft="48dp"
-        android:layout_marginRight="50dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="15dp"
         android:alpha="0.5"
         android:background="@color/gray_background_color"
         android:orientation="horizontal"
@@ -217,8 +218,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/dynamic_info_bravo_tips"
-        android:layout_marginLeft="48dp"
-        android:layout_marginRight="50dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="15dp"
         android:alpha="0.5"
         android:background="@color/gray_background_color"
         android:ellipsize="end"
@@ -233,8 +234,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/dynamic_info_bravo_authors"
-        android:layout_marginLeft="48dp"
-        android:layout_marginRight="50dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="15dp"
         android:alpha="0.5"
         android:background="@color/gray_background_color"
         android:orientation="horizontal"
@@ -264,8 +265,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/dynamic_info_reply_tips"
         android:layout_marginBottom="10dp"
-        android:layout_marginLeft="48dp"
-        android:layout_marginRight="50dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="15dp"
         android:alpha="0.5"
         android:background="@color/gray_background_color" >
 
@@ -446,7 +447,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="18dp"
+            android:layout_marginLeft="10dp"
             android:alpha="0.5"
             android:text="来着 楠楠 的好友" />
 
