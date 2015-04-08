@@ -690,7 +690,7 @@ public class DynamicInfoListAdapter extends BaseAdapter {
     }
 
     private void insertBravoStatusToBravosDB(CommentsItem comment) {
-        if (!isCommentIdExist(comment.getCommentId())) {
+        if (!isCommentIdAndUidExist(comment.getCommentId())) {
             ContentValues insertValues = new ContentValues();
             insertValues.put(MarrySocialDBHelper.KEY_UID, mUid);
             insertValues.put(MarrySocialDBHelper.KEY_BUCKET_ID,
@@ -765,11 +765,12 @@ public class DynamicInfoListAdapter extends BaseAdapter {
         // }
     }
 
-    public boolean isCommentIdExist(String commentId) {
+    public boolean isCommentIdAndUidExist(String commentId) {
         Cursor cursor = null;
         try {
             String whereclause = MarrySocialDBHelper.KEY_COMMENT_ID + " = "
-                    + commentId;
+                    + commentId + " AND " + MarrySocialDBHelper.KEY_UID + " = "
+                            + mUid;
             cursor = mDBHelper.query(MarrySocialDBHelper.DATABASE_BRAVOS_TABLE,
                     COMMENTS_PROJECTION, whereclause, null, null, null, null,
                     null);

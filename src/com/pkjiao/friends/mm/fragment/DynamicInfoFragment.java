@@ -592,7 +592,7 @@ public class DynamicInfoFragment extends Fragment implements OnClickListener,
                 return;
             }
             while (cursor.moveToNext()) {
-                author_names.append(cursor.getString(2)).append("  ");
+                author_names.append(cursor.getString(2)).append(" ");
             }
             if (author_names.length() != 0) {
                 mBravoEntrys.put(comment_id, author_names.toString());
