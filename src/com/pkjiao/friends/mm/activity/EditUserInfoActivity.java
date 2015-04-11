@@ -181,7 +181,8 @@ public class EditUserInfoActivity extends Activity implements OnClickListener {
             startToChangeProfession();
             break;
         }
-        case R.id.edit_info_gender_group: {}
+        case R.id.edit_info_gender_group: {
+        }
         case R.id.edit_info_gender: {
             if (mUserGender.isChecked()) {
                 mUserGender.setChecked(false);
@@ -190,7 +191,8 @@ public class EditUserInfoActivity extends Activity implements OnClickListener {
             }
             break;
         }
-        case R.id.edit_info_astro_group: {}
+        case R.id.edit_info_astro_group: {
+        }
         case R.id.edit_info_astro: {
             showAstroPicker();
             break;
@@ -264,7 +266,10 @@ public class EditUserInfoActivity extends Activity implements OnClickListener {
             if (result != null && result.length() != 0) {
                 updateUserinfoToContactsDB(nickname, intro, profession,
                         mGender, mAstro);
-                updateUserinfoToPreference(nickname);
+                updateUserinfoToPreference(nickname, intro);
+                updateAuthorNameToBravosDB(nickname);
+                updateAuthorNameToCommentsDB(nickname);
+                updateAuthorNameToReplysDB(nickname);
                 mHandler.sendEmptyMessage(UPLOAD_USER_INFO_FINISH);
             } else {
                 mHandler.sendEmptyMessage(UPLOAD_USER_INFO_FAIL);
@@ -356,11 +361,54 @@ public class EditUserInfoActivity extends Activity implements OnClickListener {
         }
     }
 
-    private void updateUserinfoToPreference(String nickname) {
+    private void updateAuthorNameToBravosDB(String nickname) {
+        ContentValues values = new ContentValues();
+        values.put(MarrySocialDBHelper.KEY_AUTHOR_NICKNAME, nickname);
+
+        String whereClause = MarrySocialDBHelper.KEY_UID + " = " + mUid;
+        try {
+            ContentResolver resolver = getContentResolver();
+            resolver.update(CommonDataStructure.BRAVOURL, values, whereClause,
+                    null);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+    }
+
+    private void updateAuthorNameToCommentsDB(String nickname) {
+        ContentValues values = new ContentValues();
+        values.put(MarrySocialDBHelper.KEY_AUTHOR_NICKNAME, nickname);
+
+        String whereClause = MarrySocialDBHelper.KEY_UID + " = " + mUid;
+        try {
+            ContentResolver resolver = getContentResolver();
+            resolver.update(CommonDataStructure.COMMENTURL, values,
+                    whereClause, null);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+    }
+
+    private void updateAuthorNameToReplysDB(String nickname) {
+        ContentValues values = new ContentValues();
+        values.put(MarrySocialDBHelper.KEY_AUTHOR_NICKNAME, nickname);
+
+        String whereClause = MarrySocialDBHelper.KEY_UID + " = " + mUid;
+        try {
+            ContentResolver resolver = getContentResolver();
+            resolver.update(CommonDataStructure.REPLYURL, values,
+                    whereClause, null);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+    }
+
+    private void updateUserinfoToPreference(String nickname, String introduce) {
         SharedPreferences prefs = this.getSharedPreferences(
                 CommonDataStructure.PREFS_LAIQIAN_DEFAULT, MODE_PRIVATE);
         Editor editor = prefs.edit();
         editor.putString(CommonDataStructure.AUTHOR_NAME, nickname);
+        editor.putString(CommonDataStructure.INTRODUCE, introduce);
         editor.commit();
     }
 }

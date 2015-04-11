@@ -448,6 +448,20 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         mCommentEntrys.addAll(loadUserCommentsFromDB(mUserInfoUid));
         mListViewAdapter.setCommentDataSource(mCommentEntrys);
         mListViewAdapter.notifyDataSetChanged();
+
+        if (mUserInfoUid.equalsIgnoreCase(mAuthorUid)) {
+            SharedPreferences prefs = this.getSharedPreferences(
+                    CommonDataStructure.PREFS_LAIQIAN_DEFAULT, MODE_PRIVATE);
+            String name = prefs.getString(CommonDataStructure.AUTHOR_NAME, "");
+            String intro = prefs.getString(CommonDataStructure.INTRODUCE, "");
+            if (name != null && name.length() != 0) {
+                mFriendName.setText(name);
+                mUserName.setText(name);
+            }
+            if (intro != null && intro.length() != 0) {
+                mFriendsDesc.setText(intro);
+            }
+        }
     }
 
     // @Override

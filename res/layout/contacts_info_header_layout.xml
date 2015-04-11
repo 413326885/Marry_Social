@@ -75,9 +75,9 @@
 
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="8dp"
+            android:layout_height="12dp"
             android:alpha="0.5"
-            android:background="@color/lightgray" >
+            android:background="#66dddddd" >
         </ImageView>
     </LinearLayout>
 
