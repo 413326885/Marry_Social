@@ -266,6 +266,7 @@ public class MarrySocialMainActivity extends FragmentActivity implements
 
     private void startToInviteFriends() {
         Intent intent = new Intent(this, InviteFriendsActivity.class);
+        intent.putExtra("invite_friends", true);
         startActivity(intent);
     }
 

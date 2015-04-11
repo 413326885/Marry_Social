@@ -137,6 +137,13 @@ public class InviteFriendsActivity extends Activity implements OnClickListener {
         mReturnBtn.setOnClickListener(this);
         mInviteFinishBtn.setOnClickListener(this);
 
+        Intent intent = getIntent();
+        if (intent.getBooleanExtra("invite_friends", false)) {
+            mInviteFinishBtn.setVisibility(View.INVISIBLE);
+        } else {
+            mInviteFinishBtn.setVisibility(View.VISIBLE);
+        }
+
         mInviteFriendsHeader = (LayoutInflater.from(this).inflate(
                 R.layout.invite_friends_header_layout, null, false));
         mInviteDescriptionBtn = (TextView) mInviteFriendsHeader
