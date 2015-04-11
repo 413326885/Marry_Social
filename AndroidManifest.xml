@@ -120,6 +120,14 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
+            android:name="com.pkjiao.friends.mm.activity.EditUserInfoActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.pkjiao.friends.mm.activity.EditUserInfoItemActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
             android:name="com.pkjiao.friends.mm.test.MainActivity"
             android:screenOrientation="portrait" >
         </activity>

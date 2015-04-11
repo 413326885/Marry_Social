@@ -173,6 +173,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
     private ImageView mUserAstro;
     private ImageView mUserHobby;
     private Button mChatButton;
+    private TextView mEditUserInfo;
 
     private RelativeLayout mReplyFoot;
     private ImageView mReplySendBtn;
@@ -370,6 +371,8 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
                 .findViewById(R.id.contacts_info_astro_pic);
         mUserHobby = (ImageView) mContactsInfoHeader
                 .findViewById(R.id.contacts_info_hobby_pic);
+        mEditUserInfo = (TextView) mContactsInfoHeader
+                .findViewById(R.id.contacts_info_edit_info);
 
         mListView = (ListView) findViewById(R.id.contacts_info_listview);
         mListView.addHeaderView(mContactsInfoHeader);
@@ -507,6 +510,10 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
             startToChat(chatId);
             break;
         }
+        case R.id.contacts_info_edit_info: {
+            startToEditUserInfo();
+            break;
+        }
         default:
             break;
         }
@@ -517,6 +524,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
         mHeaderLayoutDetail.setOnClickListener(this);
         mReturnBtn.setOnClickListener(this);
         mUserPic.setOnClickListener(this);
+        mEditUserInfo.setOnClickListener(this);
         if (mUserHeadPic != null) {
             mUserPic.setImageBitmap(mUserHeadPic);
         }
@@ -527,6 +535,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
 
         if (mUserInfoUid.equalsIgnoreCase(mAuthorUid)) {
             mChatButton.setVisibility(View.INVISIBLE);
+            mEditUserInfo.setVisibility(View.VISIBLE);
         } else {
             // String friendsDesc = String.format(
             // this.getString(R.string.chat_msg_friends_more),
@@ -534,6 +543,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
             // mUserInfo.getDirectFriendsCount());
             // mFriendsDesc.setText(friendsDesc);
             showChatBtn();
+            mEditUserInfo.setVisibility(View.GONE);
         }
 
         if (mUserInfo.getGender() == ContactsInfo.GENDER.FEMALE.ordinal()) {
@@ -1395,5 +1405,10 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
             mChatButton.requestFocus();
         }
 
+    }
+
+    private void startToEditUserInfo() {
+        Intent intent = new Intent(this, EditUserInfoActivity.class);
+        startActivity(intent);
     }
 }

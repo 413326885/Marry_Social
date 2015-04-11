@@ -35,6 +35,7 @@ public class CommonDataStructure {
     public static final String AUTH_CODE = "code";
     public static final String COMMENT_ID_LIST = "comment_id_list";
     public static final String INDIRECT_ID_LIST = "indirect_id_list";
+    public static final String UPDATE_USER_INFO = "update_user_info";
 
     public static final String MULTI_CHOOSE_PHOTO = "multi_choose_photo";
     public static final String MULTI_CHOOSE_PHOTO_COUNT = "multi_choose_photo_count";
