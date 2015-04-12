@@ -67,7 +67,8 @@ public class EditUserInfoActivity extends Activity implements OnClickListener {
     private static final String DESCRIPTION = "description";
     private static final String EDITINFO = "editinfo";
 
-    private String mUid;
+    private String mUserInfoUid;
+    private String mAuthorUid;
     private Context mContext;
     private MarrySocialDBHelper mDBHelper;
     private ExecutorService mExecutorService;
@@ -128,6 +129,8 @@ public class EditUserInfoActivity extends Activity implements OnClickListener {
         setContentView(R.layout.edit_contacts_info_layout);
 
         mContext = this;
+        Intent data = getIntent();
+        mUserInfoUid = data.getStringExtra(MarrySocialDBHelper.KEY_UID);
 
         mReturnBtn = (RelativeLayout) findViewById(R.id.edit_info_return);
         mEditUserNameGroup = (RelativeLayout) findViewById(R.id.edit_info_name_group);
@@ -154,12 +157,28 @@ public class EditUserInfoActivity extends Activity implements OnClickListener {
 
         SharedPreferences prefs = this.getSharedPreferences(
                 CommonDataStructure.PREFS_LAIQIAN_DEFAULT, MODE_PRIVATE);
-        mUid = prefs.getString(CommonDataStructure.UID, "");
+        mAuthorUid = prefs.getString(CommonDataStructure.UID, "");
         mDBHelper = MarrySocialDBHelper.newInstance(this);
         mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime()
                 .availableProcessors() * POOL_SIZE);
 
         loadUserInfoFromDB();
+
+        if (mUserInfoUid.equalsIgnoreCase(mAuthorUid)) {
+            mFinishBtn.setVisibility(View.VISIBLE);
+            mEditUserNameGroup.setClickable(true);
+            mEditUserSignatureGroup.setClickable(true);
+            mEditUserProfessionGroup.setClickable(true);
+            mEditUserGenderGroup.setClickable(true);
+            mEditUserAstroGroup.setClickable(true);
+        } else {
+            mFinishBtn.setVisibility(View.GONE);
+            mEditUserNameGroup.setClickable(false);
+            mEditUserSignatureGroup.setClickable(false);
+            mEditUserProfessionGroup.setClickable(false);
+            mEditUserGenderGroup.setClickable(false);
+            mEditUserAstroGroup.setClickable(false);
+        }
     }
 
     @Override
@@ -209,7 +228,7 @@ public class EditUserInfoActivity extends Activity implements OnClickListener {
     private void loadUserInfoFromDB() {
 
         MarrySocialDBHelper dbHelper = MarrySocialDBHelper.newInstance(this);
-        String whereClause = MarrySocialDBHelper.KEY_UID + " = " + mUid;
+        String whereClause = MarrySocialDBHelper.KEY_UID + " = " + mUserInfoUid;
         Cursor cursor = dbHelper.query(
                 MarrySocialDBHelper.DATABASE_CONTACTS_TABLE,
                 CONTACTS_PROJECTION, whereClause, null, null, null, null, null);
@@ -260,7 +279,7 @@ public class EditUserInfoActivity extends Activity implements OnClickListener {
             String profession = mUserProfession.getText().toString();
             mGender = (mUserGender.isChecked()) ? 1 : 0;
             String result = Utils.updateUserInfo(
-                    CommonDataStructure.URL_UPDATE_USER_INFO, mUid, nickname,
+                    CommonDataStructure.URL_UPDATE_USER_INFO, mAuthorUid, nickname,
                     mGender, mAstro, mHobby, intro, profession);
 
             if (result != null && result.length() != 0) {
@@ -352,7 +371,7 @@ public class EditUserInfoActivity extends Activity implements OnClickListener {
         insertValues.put(MarrySocialDBHelper.KEY_GENDER, gender);
         insertValues.put(MarrySocialDBHelper.KEY_ASTRO, astro);
 
-        String whereClause = MarrySocialDBHelper.KEY_UID + " = " + mUid;
+        String whereClause = MarrySocialDBHelper.KEY_UID + " = " + mAuthorUid;
         try {
             mDBHelper.update(MarrySocialDBHelper.DATABASE_CONTACTS_TABLE,
                     insertValues, whereClause, null);
@@ -365,7 +384,7 @@ public class EditUserInfoActivity extends Activity implements OnClickListener {
         ContentValues values = new ContentValues();
         values.put(MarrySocialDBHelper.KEY_AUTHOR_NICKNAME, nickname);
 
-        String whereClause = MarrySocialDBHelper.KEY_UID + " = " + mUid;
+        String whereClause = MarrySocialDBHelper.KEY_UID + " = " + mAuthorUid;
         try {
             ContentResolver resolver = getContentResolver();
             resolver.update(CommonDataStructure.BRAVOURL, values, whereClause,
@@ -379,7 +398,7 @@ public class EditUserInfoActivity extends Activity implements OnClickListener {
         ContentValues values = new ContentValues();
         values.put(MarrySocialDBHelper.KEY_AUTHOR_NICKNAME, nickname);
 
-        String whereClause = MarrySocialDBHelper.KEY_UID + " = " + mUid;
+        String whereClause = MarrySocialDBHelper.KEY_UID + " = " + mAuthorUid;
         try {
             ContentResolver resolver = getContentResolver();
             resolver.update(CommonDataStructure.COMMENTURL, values,
@@ -393,7 +412,7 @@ public class EditUserInfoActivity extends Activity implements OnClickListener {
         ContentValues values = new ContentValues();
         values.put(MarrySocialDBHelper.KEY_AUTHOR_NICKNAME, nickname);
 
-        String whereClause = MarrySocialDBHelper.KEY_UID + " = " + mUid;
+        String whereClause = MarrySocialDBHelper.KEY_UID + " = " + mAuthorUid;
         try {
             ContentResolver resolver = getContentResolver();
             resolver.update(CommonDataStructure.REPLYURL, values,

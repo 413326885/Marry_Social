@@ -549,7 +549,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
 
         if (mUserInfoUid.equalsIgnoreCase(mAuthorUid)) {
             mChatButton.setVisibility(View.INVISIBLE);
-            mEditUserInfo.setVisibility(View.VISIBLE);
+            mEditUserInfo.setText("编辑资料");
         } else {
             // String friendsDesc = String.format(
             // this.getString(R.string.chat_msg_friends_more),
@@ -557,7 +557,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
             // mUserInfo.getDirectFriendsCount());
             // mFriendsDesc.setText(friendsDesc);
             showChatBtn();
-            mEditUserInfo.setVisibility(View.GONE);
+            mEditUserInfo.setText("查看资料");
         }
 
         if (mUserInfo.getGender() == ContactsInfo.GENDER.FEMALE.ordinal()) {
@@ -1423,6 +1423,7 @@ public class ContactsInfoActivity extends Activity implements OnClickListener {
 
     private void startToEditUserInfo() {
         Intent intent = new Intent(this, EditUserInfoActivity.class);
+        intent.putExtra(MarrySocialDBHelper.KEY_UID, mUserInfoUid);
         startActivity(intent);
     }
 }

@@ -7,6 +7,12 @@
     android:descendantFocusability="blocksDescendants"
     android:paddingBottom="10dp" >
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:alpha="0.6"
+        android:background="@color/lightgray" />
+
     <RelativeLayout
         android:id="@+id/dynamic_info_head"
         android:layout_width="match_parent"
@@ -32,23 +38,23 @@
             android:layout_centerVertical="true"
             android:layout_marginTop="8dp"
             android:layout_toRightOf="@id/dynamic_info_person_pic"
-            android:background="@drawable/gray_bkg_selector"
             android:alpha="0.8"
+            android:background="@drawable/gray_bkg_selector"
             android:text="SWINTER"
             android:textColor="@color/darkgreen"
-            android:textSize="20dp" />
+            android:textSize="18dp" />
 
         <ImageView
             android:id="@+id/dynamic_info_refresh"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginTop="8dp"
             android:layout_marginLeft="12dp"
-            android:visibility="gone"
-            android:src="@drawable/ic_comment_refresh"
+            android:layout_marginTop="8dp"
             android:layout_toRightOf="@id/dynamic_info_name"
-            android:alpha="0.8" />
+            android:alpha="0.8"
+            android:src="@drawable/ic_comment_refresh"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/dynamic_info_time"
@@ -67,13 +73,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/dynamic_info_head"
-        android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="15dp"
+        android:layout_marginTop="10dp"
         android:alpha="0.8"
         android:text="今天下午去打球，有人一起吗？"
-        android:textSize="18dp" />
+        android:textSize="16dp" />
 
     <RelativeLayout
         android:id="@+id/comments_pics"

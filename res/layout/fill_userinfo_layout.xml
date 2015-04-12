@@ -28,7 +28,7 @@
         android:layout_marginTop="20dp"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
-        android:text="为了帮您找到尽可能多的朋友的好友，请认真填写如下信息（信息暂不支持修改）"
+        android:text="为了帮您找到尽可能多的朋友的好友，请认真填写如下信息"
         android:textSize="16dp" />
 
     <RelativeLayout
